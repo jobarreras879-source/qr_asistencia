@@ -431,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
+                    MaterialPageRoute(builder: (_) => SheetsConfigScreen(rol: widget.rol)),
                   );
                 },
                 tooltip: 'Google Sheets (Historial)',

@@ -14,7 +14,6 @@ class GoogleDriveService {
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
       drive.DriveApi.driveFileScope,
-      drive.DriveApi.driveAppdataScope,
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );

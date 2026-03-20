@@ -43,10 +43,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         _registros = List<Map<String, dynamic>>.from(data);
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Error cargando historial: $e';
+        _errorMessage = 'No se pudo cargar el historial. Intenta de nuevo.';
         _isLoading = false;
       });
     }

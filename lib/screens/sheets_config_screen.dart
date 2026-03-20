@@ -7,7 +7,8 @@ import '../services/google_drive_service.dart';
 import '../theme/app_theme.dart';
 
 class SheetsConfigScreen extends StatefulWidget {
-  const SheetsConfigScreen({super.key});
+  final String rol;
+  const SheetsConfigScreen({super.key, this.rol = 'USUARIO'});
 
   @override
   State<SheetsConfigScreen> createState() => _SheetsConfigScreenState();
@@ -147,9 +148,21 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
   Future<void> _syncHistory() async {
     if (_sheetsInfo == null) return;
-    
+
+    // Solo ADMIN puede exportar todo el historial
+    if (widget.rol.toUpperCase() != 'ADMIN') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Solo los administradores pueden exportar el historial completo.'),
+          backgroundColor: AppTheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSyncing = true);
-    
+
     try {
       // 1. Fetch ALL records from Supabase
       final data = await Supabase.instance.client
@@ -159,24 +172,24 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
       int successCount = 0;
       int errorCount = 0;
-      
+
       // 2. Append directly row by row (naïve approach but safe for limited data)
       for (var reg in data) {
         final success = await GoogleDriveService.appendAttendanceRow(
-          _sheetsInfo!['id'], 
+          _sheetsInfo!['id'],
           reg,
         );
-        
+
         if (success) {
           successCount++;
         } else {
           errorCount++;
         }
       }
-      
+
       if (!mounted) return;
       setState(() => _isSyncing = false);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Sincronización finalizada: $successCount exitosos, $errorCount errores.'),
@@ -184,13 +197,12 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() => _isSyncing = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Error al sincronizar datos'),
+          content: Text('No se pudo completar la exportación. Intenta de nuevo.'),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
         ),

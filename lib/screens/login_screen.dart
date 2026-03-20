@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../services/api_service.dart';
-import '../services/secure_storage_service.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
@@ -64,13 +63,18 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  /// Restaura sesión activa desde Supabase Auth (no desde almacenamiento local).
   Future<void> _checkSavedLogin() async {
-    final savedUser = await SecureStorageService.getUsuario();
-    final savedRol = await SecureStorageService.getRol() ?? 'USUARIO';
-    if (savedUser != null && mounted) {
+    final session = await AuthService.restoreSession();
+    if (session != null && mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomeScreen(usuario: savedUser, rol: savedRol)),
+        MaterialPageRoute(
+          builder: (_) => HomeScreen(
+            usuario: session['usuario']!,
+            rol: session['rol']!,
+          ),
+        ),
       );
     }
   }
@@ -89,14 +93,12 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = null;
     });
 
-    final rol = await ApiService.loginConRol(user, pass);
+    // Usar Supabase Auth en lugar de consulta directa a tabla usuarios
+    final rol = await AuthService.signIn(user, pass);
 
     setState(() => _isLoading = false);
 
     if (rol != null) {
-      await SecureStorageService.saveUsuario(user);
-      await SecureStorageService.saveRol(rol);
-
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
