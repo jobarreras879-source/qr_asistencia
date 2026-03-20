@@ -1,0 +1,35 @@
+{
+    "name": "QR Asistencia",
+    "short_name": "QR Asistencia",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0A0A1A",
+    "theme_color": "#0A0A1A",
+    "description": "Sistema de registro de asistencia con QR - AVS Ingeniería",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/icon-192-maskable.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/icon-512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

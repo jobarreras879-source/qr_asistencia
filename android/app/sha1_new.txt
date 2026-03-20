@@ -1,0 +1,26 @@
+Nombre de Alias: upload
+Fecha de Creación: 20/03/2026
+Tipo de Entrada: PrivateKeyEntry
+Longitud de la Cadena de Certificado: 1
+Certificado[1]:
+Propietario: CN=QR, OU=AVS, O=AVS, L=Guatemala, ST=Guatemala, C=GT
+Emisor: CN=QR, OU=AVS, O=AVS, L=Guatemala, ST=Guatemala, C=GT
+Número de serie: 1832d89635e46bc
+Válido desde: Fri Mar 20 12:01:45 CST 2026 hasta: Tue Aug 05 12:01:45 CST 2053
+Huellas digitales del certificado:
+	 SHA1: 5C:73:73:E3:E0:D8:15:11:B6:D6:7A:1B:E1:40:64:C6:4C:E9:DB:A5
+	 SHA256: 1E:CE:76:FE:DC:CD:1B:79:71:53:8B:F5:5E:1F:31:95:F7:B4:E1:8A:99:0F:AE:CB:BD:37:97:14:3B:9D:8F:B0
+Nombre del algoritmo de firma: SHA256withRSA
+Algoritmo de clave pública de asunto: Clave RSA de 2048 bits
+Versión: 3
+
+Extensiones: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 74 3A CD AB 08 5F 09 A5   85 DD A1 29 1D CE BE 79  t:..._.....)...y
+0010: 0B B7 28 40                                        ..(@
+]
+]
+

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Asistencia</string>
+    <!-- ID de cliente OAuth 2.0 de Google Cloud Console -->
+    <string name="default_web_client_id">251002473484-4dqs2ianegmp4646mv0rg1kgb2em1go9.apps.googleusercontent.com</string>
+</resources>
