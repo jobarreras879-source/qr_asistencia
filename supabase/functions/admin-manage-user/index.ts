@@ -6,8 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const INTERNAL_DOMAIN = 'avsingenieria.com';
+
 serve(async (req: Request) => {
-  // Manejo de pre-flight requests para CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -16,22 +17,26 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // 1. Instanciar cliente con Service Role para operaciones administrativas
+    // Cliente con service role (privilegios de Admin)
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 2. Extraer el token del usuario que hace la petición
+    // Verificar token del solicitante
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('Falta el token de autorización');
+      return new Response(JSON.stringify({ ok: false, message: 'Sin autorización' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401
+      });
     }
     const token = authHeader.replace('Bearer ', '');
 
-    // 3. Verificar la identidad y rol del usuario llamante
     const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
     if (userError || !user) {
-      throw new Error('Token inválido o expirado');
+      return new Response(JSON.stringify({ ok: false, message: 'Token inválido o expirado' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401
+      });
     }
 
+    // Verificar que el caller sea ADMIN
     const { data: callerProfile, error: profileError } = await supabaseAdmin
       .from('perfiles')
       .select('rol')
@@ -40,92 +45,73 @@ serve(async (req: Request) => {
 
     if (profileError || callerProfile?.rol !== 'ADMIN') {
       return new Response(JSON.stringify({
-        ok: false,
-        errorCode: 'not_admin',
+        ok: false, errorCode: 'not_admin',
         message: 'Acceso denegado: Se requiere rol ADMIN.'
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403
       });
     }
 
-    // 4. Parsear el body de la petición
     const body = await req.json();
-    const action = body.action; // 'create', 'update', 'delete'
-    const targetId = body.targetId;
-    const usuario = body.usuario?.trim();
-    const password = body.password;
-    const rol = body.rol;
+    const action = body.action as string;
+    const targetId = body.targetId as string | undefined;
+    const usuario = (body.usuario as string | undefined)?.trim();
+    const password = body.password as string | undefined;
+    const rol = body.rol as string | undefined;
+    // emailReal: si el admin puso un correo real de Gmail/empresa para recovery
+    const emailReal = (body.emailReal as string | undefined)?.trim().toLowerCase();
 
-    if (!action) {
-      throw new Error('Debe proporcionar una acción (create, update, delete)');
-    }
+    if (!action) throw new Error('Falta la acción (create, update, delete)');
 
-    const internalDomain = '@avsingenieria.internal';
-    const email = usuario ? `${usuario.toLowerCase()}${internalDomain}` : undefined;
+    // El email que usamos para auth: preferimos el email real si viene, si no generamos el interno
+    const internalEmail = usuario ? `${usuario.toLowerCase()}@${INTERNAL_DOMAIN}` : undefined;
+    const authEmail = emailReal || internalEmail;
 
-    // --- ACCIÓN: CREAR ---
+    // ─── CREATE ──────────────────────────────────────────────────────
     if (action === 'create') {
-      if (!usuario || !password || !rol) {
-        throw new Error('Usuario, password y rol son obligatorios para crear');
-      }
+      if (!usuario || !password || !rol) throw new Error('Faltan campos: usuario, password, rol');
+      if (!authEmail) throw new Error('No se pudo determinar el email del usuario');
 
-      // Crear en auth.users
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email: email,
-        password: password,
+        email: authEmail,
+        password,
         email_confirm: true,
-        user_metadata: { usuario: usuario.toUpperCase(), rol: rol },
+        user_metadata: { usuario: usuario.toUpperCase(), rol },
       });
 
       if (createError) throw createError;
 
-      // upsert a perfiles lo hace el trigger automáticamente, pero por si acaso fallara o
-      // quisieramos asegurarnos, lo actualizamos nosotros:
       if (newUser.user) {
         await supabaseAdmin.from('perfiles').upsert({
           id: newUser.user.id,
           usuario: usuario.toUpperCase(),
-          rol: rol
+          rol,
         });
       }
 
       return new Response(JSON.stringify({
-        ok: true,
-        userId: newUser.user?.id,
-        usuario,
-        email,
-        rol
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+        ok: true, userId: newUser.user?.id, email: authEmail
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // --- ACCIÓN: ACTUALIZAR ---
+    // ─── UPDATE ──────────────────────────────────────────────────────
     else if (action === 'update') {
       if (!targetId) throw new Error('Se requiere targetId para actualizar');
 
-      const updatePayload: any = {
-        user_metadata: {}
-      };
+      const updatePayload: Record<string, unknown> = { user_metadata: {} };
 
-      if (email) {
-        updatePayload.email = email;
+      if (authEmail) {
+        updatePayload.email = authEmail;
         updatePayload.email_confirm = true;
       }
-      if (usuario) updatePayload.user_metadata.usuario = usuario.toUpperCase();
-      if (rol) updatePayload.user_metadata.rol = rol;
+      if (usuario) (updatePayload.user_metadata as Record<string, unknown>).usuario = usuario.toUpperCase();
+      if (rol) (updatePayload.user_metadata as Record<string, unknown>).rol = rol;
       if (password && password.length >= 6) updatePayload.password = password;
 
-      const { data: updatedUser, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-        targetId,
-        updatePayload
-      );
-
+      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(targetId, updatePayload);
       if (updateError) throw updateError;
 
-      // Sincronizar tabla perfiles
-      const profilePayload: any = {};
+      const profilePayload: Record<string, unknown> = {};
       if (usuario) profilePayload.usuario = usuario.toUpperCase();
       if (rol) profilePayload.rol = rol;
 
@@ -134,38 +120,33 @@ serve(async (req: Request) => {
       }
 
       return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // --- ACCIÓN: ELIMINAR ---
+    // ─── DELETE ──────────────────────────────────────────────────────
     else if (action === 'delete') {
       if (!targetId) throw new Error('Se requiere targetId para eliminar');
 
-      const { data, error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
-        targetId,
-        /* shouldSoftDelete */ false
-      );
-
+      const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetId, false);
       if (deleteError) throw deleteError;
 
+      // El CASCADE de la FK en perfiles debería limpiarlo, pero por si acaso:
+      await supabaseAdmin.from('perfiles').delete().eq('id', targetId);
+
       return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
     else {
-      throw new Error('Acción no reconocida');
+      throw new Error(`Acción no reconocida: ${action}`);
     }
 
-  } catch (error: any) {
-    return new Response(JSON.stringify({
-      ok: false,
-      errorCode: 'execution_failed',
-      message: error.message || 'Error desconocido'
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return new Response(JSON.stringify({ ok: false, errorCode: 'execution_failed', message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400
     });
   }
 });

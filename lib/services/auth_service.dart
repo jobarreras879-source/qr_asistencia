@@ -39,14 +39,21 @@ class AuthService {
 
       if (response.user == null) return null;
 
-      // Obtener rol desde tabla perfiles
+      // Verificar que exista un perfil valido. Si no tiene perfil,
+      // es una cuenta huerfana o mal configurada -> denegar acceso.
       final rolData = await _supabase
           .from('perfiles')
           .select('rol')
           .eq('id', response.user!.id)
           .maybeSingle();
 
-      return (rolData?['rol'] as String?) ?? 'USUARIO';
+      if (rolData == null) {
+        await _supabase.auth.signOut();
+        _lastErrorMessage = 'Esta cuenta no tiene perfil asignado. Contacta al administrador.';
+        return null;
+      }
+
+      return (rolData['rol'] as String?) ?? 'USUARIO';
     } on AuthException catch (error) {
       _lastErrorMessage = error.message;
       if (kDebugMode) {
