@@ -1,9 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Servicio para CRUD de proyectos.
-/// Movido desde [ApiService] para separar responsabilidades.
+/// Se apoya en RLS para validar qué usuarios pueden modificar proyectos.
 class ProjectService {
   static final _supabase = Supabase.instance.client;
+
+  static void _logError(String action, Object error) {
+    if (kDebugMode) {
+      debugPrint('ProjectService $action: $error');
+    }
+  }
 
   // ─── Lectura ─────────────────────────────────────────────────────
 
@@ -22,7 +29,7 @@ class ProjectService {
         'oc': e['OC']?.toString() ?? '',
       }).toList();
     } catch (e) {
-      print('ERROR getProyectos: $e');
+      _logError('getProyectos', e);
       return [];
     }
   }
@@ -39,8 +46,8 @@ class ProjectService {
       });
       return null;
     } catch (e) {
-      print('ERROR crearProyecto: $e');
-      return e.toString();
+      _logError('crearProyecto', e);
+      return 'No se pudo crear el proyecto. Verifica los datos o tus permisos.';
     }
   }
 
@@ -65,8 +72,8 @@ class ProjectService {
           .eq('"No."', oldNumero);
       return null;
     } catch (e) {
-      print('ERROR editarProyecto: $e');
-      return e.toString();
+      _logError('editarProyecto', e);
+      return 'No se pudo actualizar el proyecto. Intenta de nuevo.';
     }
   }
 
@@ -77,8 +84,8 @@ class ProjectService {
       await _supabase.from('proyecto').delete().eq('"No."', numero);
       return null;
     } catch (e) {
-      print('ERROR eliminarProyecto: $e');
-      return e.toString();
+      _logError('eliminarProyecto', e);
+      return 'No se pudo eliminar el proyecto. Intenta de nuevo.';
     }
   }
 }

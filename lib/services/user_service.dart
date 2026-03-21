@@ -1,9 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Servicio para CRUD de usuarios del sistema.
 /// Opera sobre la tabla [perfiles] en Supabase, ligada a auth.users.
 class UserService {
   static final _supabase = Supabase.instance.client;
+
+  static void _logError(String action, Object error) {
+    if (kDebugMode) {
+      debugPrint('UserService $action: $error');
+    }
+  }
 
   // ─── Lectura ─────────────────────────────────────────────────────
 
@@ -22,37 +29,60 @@ class UserService {
         'rol': (e['rol'] as String?) ?? 'USUARIO',
       }).toList();
     } catch (e) {
-      print('ERROR getUsuarios: $e');
+      _logError('getUsuarios', e);
       return [];
     }
   }
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  /// Crea un nuevo usuario en Supabase Auth y su perfil asociado.
-  /// Solo ADMIN puede hacer esto (RLS en perfiles).
+  /// Crea un nuevo usuario mediante signUp estándar.
+  /// Si el Admin está loggeado, guardamos su sesión temporalmente
+  /// porque signUp auto-loguea al nuevo usuario, y luego la restauramos.
   static Future<String?> crearUsuario(String usuario, String password, String rol) async {
     try {
-      final email = '${usuario.toLowerCase()}@avsingenieria.internal';
+      final input = usuario.trim().toLowerCase();
+      final email = input.contains('@') ? input : '$input@avsingenieria.com';
+      final normalizedUsername = input.contains('@') ? input.split('@')[0] : input;
 
-      await _supabase.rpc('admin_create_user', params: {
-        'email': email,
-        'password': password,
-        'usuario': usuario,
-        'rol': rol,
-      });
+      // 1. Guardar la sesión actual (Admin)
+      final adminSession = _supabase.auth.currentSession;
+      if (adminSession == null) return 'No hay sesión de admin activa.';
 
+      // 2. Registrar al nuevo usuario
+      await _supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'usuario': normalizedUsername.toUpperCase(),
+          'rol': rol,
+        },
+      );
+
+      // 3. Como signUp() cierra la sesión del admin y abre la del nuevo,
+      // cerramos la cuenta nueva y restauramos la del Admin.
+      await _supabase.auth.signOut();
+      await _supabase.auth.setSession(
+        adminSession.refreshToken ?? '',
+      );
+
+      // 4. El trigger de la base de datos se encargará de insertar en la tabla perfiles
       return null;
+    } on AuthException catch (e) {
+      _logError('crearUsuario auth_err', e);
+      return 'Error de Auth: ${e.message}';
     } catch (e) {
-      print('ERROR crearUsuario: $e');
-      return e.toString();
+      _logError('crearUsuario', e);
+      return 'No se pudo crear el usuario. Intenta de nuevo.';
     }
   }
 
   // ─── Edición ─────────────────────────────────────────────────────
 
-  /// Edita el usuario y rol de un perfil existente.
-  /// Si se proporciona [nuevoPassword], también actualiza la contraseña en Auth.
+  /// En el modo simple (sin Edge Functions), la edición de roles se 
+  /// hace modificando la tabla `perfiles` directamente.
+  /// La contraseña NO se puede cambiar por seguridad desde aquí a menos 
+  /// que usemos una Edge Function.
   static Future<String?> editarUsuario(
     String id,
     String nuevoUsuario,
@@ -60,30 +90,45 @@ class UserService {
     String nuevoRol,
   ) async {
     try {
-      await _supabase.rpc('admin_update_user', params: {
-        'target_id': id,
-        'new_usuario': nuevoUsuario,
-        'new_password': nuevoPassword ?? '',
-        'new_rol': nuevoRol,
-      });
+      final normalizedUsername = _normalizeUsername(nuevoUsuario);
+
+      // Actualizar datos en la tabla perfiles (nombre y rol)
+      await _supabase.from('perfiles').update({
+        'usuario': normalizedUsername.toUpperCase(),
+        'rol': nuevoRol,
+      }).eq('id', id);
+
+      // Al no tener Admin API o Edge Function, no podemos cambiar
+      // contraseñas de otros usuarios fácilmente desde el cliente.
+      if (nuevoPassword != null && nuevoPassword.isNotEmpty) {
+        return 'Nota: El perfil se actualizó, pero el cambio de contraseña requiere Edge Functions.';
+      }
 
       return null;
     } catch (e) {
-      print('ERROR editarUsuario: $e');
-      return e.toString();
+      _logError('editarUsuario', e);
+      return 'Error al actualizar el perfil en la base de datos.';
     }
   }
 
   // ─── Eliminación ─────────────────────────────────────────────────
 
-  /// Elimina un usuario de Auth (el perfil se elimina en cascada).
+  /// En el modo simple, eliminamos de `perfiles`. 
+  /// El usuario quedará huerfano en `auth.users` pero inactivo en el sistema.
   static Future<String?> eliminarUsuario(String id) async {
     try {
-      await _supabase.rpc('admin_delete_user', params: {'target_id': id});
-      return null;
+      await _supabase.from('perfiles').delete().eq('id', id);
+      return null; // Éxito
     } catch (e) {
-      print('ERROR eliminarUsuario: $e');
-      return e.toString();
+      _logError('eliminarUsuario', e);
+      return 'Error al eliminar el usuario del sistema.';
     }
+  }
+
+  static String _normalizeUsername(String usuarioOrEmail) {
+    final trimmed = usuarioOrEmail.trim();
+    final atIndex = trimmed.indexOf('@');
+    if (atIndex <= 0) return trimmed;
+    return trimmed.substring(0, atIndex);
   }
 }

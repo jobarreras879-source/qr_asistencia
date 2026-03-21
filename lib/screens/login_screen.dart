@@ -350,7 +350,7 @@ class _LoginScreenState extends State<LoginScreen>
 
                     // Footer
                     Text(
-                      'v1.1.0 • AVS Ingeniería',
+                      'v1.1.1 DEBUG • AVS Ingeniería',
                       style: GoogleFonts.dmSans(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,

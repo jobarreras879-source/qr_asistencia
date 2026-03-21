@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../services/auth_service.dart';
 import '../services/google_drive_service.dart';
 import '../theme/app_theme.dart';
 
 class SheetsConfigScreen extends StatefulWidget {
-  final String rol;
-  const SheetsConfigScreen({super.key, this.rol = 'USUARIO'});
+  const SheetsConfigScreen({super.key});
 
   @override
   State<SheetsConfigScreen> createState() => _SheetsConfigScreenState();
@@ -21,6 +21,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   GoogleSignInAccount? _account;
   Map<String, dynamic>? _sheetsInfo;
   bool _autoSync = false;
+  String _currentRole = 'USUARIO';
 
   @override
   void initState() {
@@ -30,7 +31,18 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
   Future<void> _initSheets() async {
     setState(() => _isLoading = true);
-    
+
+    final currentRole = await AuthService.getCurrentUserRole();
+    if (!mounted) return;
+
+    if (currentRole.toUpperCase() != 'ADMIN') {
+      setState(() {
+        _currentRole = currentRole;
+        _isLoading = false;
+      });
+      return;
+    }
+
     final info = await GoogleDriveService.getSheetsInfo();
     final autoSync = await GoogleDriveService.isAutoSyncEnabled();
     final account = await GoogleDriveService.signInSilently();
@@ -38,6 +50,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     if (!mounted) return;
     
     setState(() {
+      _currentRole = currentRole;
       _sheetsInfo = info;
       _autoSync = autoSync;
       _account = account;
@@ -294,7 +307,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     if (_sheetsInfo == null) return;
 
     // Solo ADMIN puede exportar todo el historial
-    if (widget.rol.toUpperCase() != 'ADMIN') {
+    if (_currentRole.toUpperCase() != 'ADMIN') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Solo los administradores pueden exportar el historial completo.'),
@@ -381,6 +394,38 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   }
 
   Widget _buildBody() {
+    if (_currentRole.toUpperCase() != 'ADMIN') {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_outline_rounded, color: AppTheme.warning, size: 56),
+              const SizedBox(height: 16),
+              Text(
+                'Acceso restringido',
+                style: GoogleFonts.dmSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Solo los administradores pueden vincular o exportar Google Sheets.',
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: AppTheme.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (_account == null) {
       return Center(
         child: Padding(

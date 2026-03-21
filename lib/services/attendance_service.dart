@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'google_drive_service.dart';
 
 /// Servicio para registro y consulta de asistencia.
-/// Movido desde [ApiService] para separar responsabilidades.
+/// Separa el flujo de registros del resto de servicios.
 class AttendanceService {
   static final _supabase = Supabase.instance.client;
 
@@ -92,6 +92,29 @@ class AttendanceService {
       return '✅ $tipo registrado — Proyecto: $proyecto | ID: $id | $nombre';
     } catch (_) {
       return 'Ocurrió un error al registrar. Intenta de nuevo.';
+    }
+  }
+
+  // ─── Historial ───────────────────────────────────────────────────
+
+  /// Obtiene los registros asociados al usuario autenticado actual.
+  static Future<List<Map<String, dynamic>>> getCurrentUserHistory({
+    int limit = 50,
+  }) async {
+    try {
+      final uid = _supabase.auth.currentUser?.id;
+      if (uid == null) return [];
+
+      final data = await _supabase
+          .from('registros')
+          .select()
+          .eq('created_by', uid)
+          .order('fecha_hora', ascending: false)
+          .limit(limit);
+
+      return List<Map<String, dynamic>>.from(data);
+    } catch (_) {
+      return [];
     }
   }
 }

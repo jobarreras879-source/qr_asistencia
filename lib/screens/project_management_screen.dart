@@ -54,13 +54,16 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
       builder: (context) => AlertDialog(
         backgroundColor: Colors.transparent,
         contentPadding: EdgeInsets.zero,
-        content: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          padding: const EdgeInsets.all(24),
-          decoration: AppTheme.dialogDecoration,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        content: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            padding: const EdgeInsets.all(24),
+            decoration: AppTheme.dialogDecoration,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
@@ -218,6 +221,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                 ],
               ),
             ],
+          ),
           ),
         ),
       ),

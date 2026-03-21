@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart'; // Added for kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -20,19 +20,31 @@ class GoogleDriveService {
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
+  static void _logError(String action, Object error) {
+    if (kDebugMode) {
+      debugPrint('GoogleDriveService $action: $error');
+    }
+  }
+
+  static String _escapeDriveQueryValue(String value) {
+    return value.replaceAll("'", "\\'");
+  }
+
   /// Inicia sesión con Google
   static Future<GoogleSignInAccount?> signIn({BuildContext? context}) async {
     try {
       if (currentUser != null) return currentUser;
       return await _googleSignIn.signIn();
-    } catch (e) {
-      print('Error en signIn con Google: $e');
+    } catch (error) {
+      _logError('signIn', error);
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error Google SignIn: $e\n(Revisa tu huella SHA-1 en Google Cloud)'),
+          const SnackBar(
+            content: Text(
+              'No se pudo iniciar sesión con Google. Revisa la configuración OAuth y vuelve a intentar.',
+            ),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 8),
+            duration: Duration(seconds: 8),
           ),
         );
       }
@@ -44,8 +56,8 @@ class GoogleDriveService {
   static Future<void> signOut() async {
     try {
       await _googleSignIn.disconnect();
-    } catch (e) {
-      print('Error en signOut: $e');
+    } catch (error) {
+      _logError('signOut', error);
     }
   }
 
@@ -53,8 +65,8 @@ class GoogleDriveService {
   static Future<GoogleSignInAccount?> signInSilently() async {
     try {
       return await _googleSignIn.signInSilently();
-    } catch (e) {
-      print('Error en signInSilently: $e');
+    } catch (error) {
+      _logError('signInSilently', error);
       return null;
     }
   }
@@ -79,8 +91,8 @@ class GoogleDriveService {
       );
 
       return fileList.files ?? [];
-    } catch (e) {
-      print('Error al listar carpetas de Drive: $e');
+    } catch (error) {
+      _logError('listFolders', error);
       return [];
     }
   }
@@ -101,8 +113,8 @@ class GoogleDriveService {
         ..mimeType = 'application/vnd.google-apps.folder';
 
       return await driveApi.files.create(folder);
-    } catch (e) {
-      print('Error al crear carpeta en Drive: $e');
+    } catch (error) {
+      _logError('createFolder', error);
       return null;
     }
   }
@@ -139,11 +151,8 @@ class GoogleDriveService {
       final result = await driveApi.files.create(fileMetadata, uploadMedia: media);
       
       return result.id != null;
-    } catch (e) {
-      print('====================================================');
-      print('❌ ERROR AL GUARDAR FOTO EN GOOGLE DRIVE ❌');
-      print('Error: $e');
-      print('====================================================');
+    } catch (error) {
+      _logError('uploadPhoto', error);
       return false;
     }
   }
@@ -172,8 +181,8 @@ class GoogleDriveService {
       }
       
       return result;
-    } catch (e) {
-      print('Error al crear Google Sheet: $e');
+    } catch (error) {
+      _logError('createSpreadsheet', error);
       return null;
     }
   }
@@ -192,7 +201,8 @@ class GoogleDriveService {
       // Armar la query. Busca por nombre y solo archivos de Google Sheets
       String q = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
       if (query.isNotEmpty) {
-        q += " and name contains '$query'";
+        final safeQuery = _escapeDriveQueryValue(query);
+        q += " and name contains '$safeQuery'";
       }
 
       final fileList = await driveApi.files.list(
@@ -209,8 +219,8 @@ class GoogleDriveService {
         'name': f.name ?? 'Documento sin título',
         'link': f.webViewLink ?? '',
       }).toList();
-    } catch (e) {
-      print('Error al buscar hojas de cálculo: $e');
+    } catch (error) {
+      _logError('searchSpreadsheets', error);
       return [];
     }
   }
@@ -229,8 +239,8 @@ class GoogleDriveService {
         'A1:G1', // Primera fila
         valueInputOption: 'USER_ENTERED',
       );
-    } catch (e) {
-      print('Error agregando encabezados: $e');
+    } catch (error) {
+      _logError('addHeaders', error);
     }
   }
 
@@ -278,11 +288,8 @@ class GoogleDriveService {
       );
 
       return true;
-    } catch (e) {
-      print('====================================================');
-      print('❌ ERROR AL ENVIAR DATOS A GOOGLE SHEETS ❌');
-      print('Error: $e');
-      print('====================================================');
+    } catch (error) {
+      _logError('appendAttendanceRow', error);
       return false;
     }
   }

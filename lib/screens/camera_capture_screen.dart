@@ -172,9 +172,24 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
         );
         setState(() => _isUploading = false);
       }
-    } catch (e) {
-      print(e);
-      if (mounted) setState(() => _isUploading = false);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isUploading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Expanded(child: Text('No se pudo tomar o subir la fotografía. Intenta de nuevo.')),
+            ],
+          ),
+          backgroundColor: AppTheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
     }
   }
 

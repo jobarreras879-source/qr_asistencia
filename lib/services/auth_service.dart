@@ -1,22 +1,27 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'secure_storage_service.dart';
 
 /// Servicio de autenticación centralizado usando Supabase Auth.
-/// Reemplaza la lógica de login de [ApiService] que consultaba
-/// la tabla `usuarios` directamente con SHA-256.
+/// Centraliza el acceso a la sesión actual y al perfil autenticado.
 class AuthService {
   static final _supabase = Supabase.instance.client;
+  static const _internalDomain = 'avsingenieria.com';
+  static String? _lastErrorMessage;
 
   // ─── Estado de sesión ────────────────────────────────────────────
 
   /// Usuario actualmente autenticado, null si no hay sesión.
-  static get currentUser => _supabase.auth.currentUser;
+  static User? get currentUser => _supabase.auth.currentUser;
 
   /// Sesión actual, null si no hay sesión activa.
-  static get currentSession => _supabase.auth.currentSession;
+  static Session? get currentSession => _supabase.auth.currentSession;
 
   /// Stream de cambios de estado de autenticación.
-  static get onAuthStateChange => _supabase.auth.onAuthStateChange;
+  static Stream<AuthState> get onAuthStateChange => _supabase.auth.onAuthStateChange;
+
+  /// ID del usuario autenticado actual.
+  static String? get currentUserId => currentUser?.id;
+  static String? get lastErrorMessage => _lastErrorMessage;
 
   // ─── Login ───────────────────────────────────────────────────────
 
@@ -24,8 +29,8 @@ class AuthService {
   /// Retorna el rol del usuario si el login es exitoso, null si falla.
   static Future<String?> signIn(String usuario, String password) async {
     try {
-      // Los usuarios se almacenan con email ficticio: usuario@avsingenieria.internal
-      final email = '${usuario.toLowerCase()}@avsingenieria.internal';
+      _lastErrorMessage = null;
+      final email = _normalizeLoginEmail(usuario);
 
       final response = await _supabase.auth.signInWithPassword(
         email: email,
@@ -42,9 +47,17 @@ class AuthService {
           .maybeSingle();
 
       return (rolData?['rol'] as String?) ?? 'USUARIO';
-    } on AuthException {
+    } on AuthException catch (error) {
+      _lastErrorMessage = error.message;
+      if (kDebugMode) {
+        debugPrint('AuthService signIn AuthException: ${error.message}');
+      }
       return null;
-    } catch (_) {
+    } catch (error) {
+      _lastErrorMessage = error.toString();
+      if (kDebugMode) {
+        debugPrint('AuthService signIn error: $error');
+      }
       return null;
     }
   }
@@ -55,7 +68,6 @@ class AuthService {
   static Future<void> signOut() async {
     try {
       await _supabase.auth.signOut();
-      await SecureStorageService.clearAll();
     } catch (_) {}
   }
 
@@ -91,7 +103,15 @@ class AuthService {
           .eq('id', uid)
           .maybeSingle();
 
-      return data?['usuario'] as String?;
+      final username = data?['usuario'] as String?;
+      if (username != null && username.trim().isNotEmpty) {
+        return username;
+      }
+
+      final email = currentUser?.email;
+      if (email == null || email.trim().isEmpty) return null;
+
+      return _usernameFromEmail(email);
     } catch (_) {
       return null;
     }
@@ -120,5 +140,41 @@ class AuthService {
     } catch (_) {
       return null;
     }
+  }
+
+  static String getFriendlyLastError() {
+    final raw = (_lastErrorMessage ?? '').trim();
+    final lower = raw.toLowerCase();
+
+    if (lower.isEmpty) {
+      return 'No se pudo iniciar sesión. Intenta de nuevo.';
+    }
+    if (lower.contains('invalid login credentials')) {
+      return 'Credenciales inválidas. Verifica el usuario/correo y la contraseña.';
+    }
+    if (lower.contains('email not confirmed')) {
+      return 'La cuenta existe, pero el correo no está confirmado en Supabase.';
+    }
+    if (lower.contains('error querying schema')) {
+      return 'Supabase Auth rechazó este usuario. Normalmente pasa cuando fue creado manualmente en auth.users de forma incompleta.';
+    }
+    if (lower.contains('database')) {
+      return 'Hubo un problema interno con la autenticación o el perfil del usuario.';
+    }
+
+    return 'No se pudo iniciar sesión: $raw';
+  }
+
+  static String _normalizeLoginEmail(String usuarioOrEmail) {
+    final raw = usuarioOrEmail.trim().toLowerCase();
+    if (raw.contains('@')) return raw; // Si ya es un email, lo dejamos así
+    return '$raw@$_internalDomain';   // Si es solo un usuario, le ponemos el dominio interno
+  }
+
+  static String _usernameFromEmail(String email) {
+    final normalized = email.trim().toLowerCase();
+    final atIndex = normalized.indexOf('@');
+    if (atIndex <= 0) return normalized;
+    return normalized.substring(0, atIndex);
   }
 }

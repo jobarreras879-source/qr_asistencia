@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/project_service.dart';
-import '../services/secure_storage_service.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'qr_scanner_screen.dart';
@@ -28,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isLoading = true;
   List<Map<String, dynamic>> _proyectos = [];
   String? _proyectoIdSeleccionado;
+  late String _usuarioActual;
+  late String _rolActual;
 
   late AnimationController _fadeController;
   late AnimationController _scanPulseController;
@@ -37,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    _usuarioActual = widget.usuario;
+    _rolActual = widget.rol;
 
     _fadeController = AnimationController(
       vsync: this,
@@ -56,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     _fadeController.forward();
+    _refreshSessionInfo();
     _fetchProyectos();
   }
 
@@ -73,6 +77,25 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() {
       _proyectos = proys;
       _isLoading = false;
+    });
+  }
+
+  Future<void> _refreshSessionInfo() async {
+    final session = await AuthService.restoreSession();
+    if (!mounted) return;
+
+    if (session == null) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+      return;
+    }
+
+    setState(() {
+      _usuarioActual = session['usuario']!;
+      _rolActual = session['rol']!;
     });
   }
 
@@ -102,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen>
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 400),
         pageBuilder: (_, __, ___) => QRScannerScreen(
-          usuario: widget.usuario,
-          rol: widget.rol,
+          usuario: _usuarioActual,
+          rol: _rolActual,
           proyectoInfo: _proyectoIdSeleccionado!,
           tipo: 'Proyecto', // Ahora por defecto
         ),
@@ -124,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _logout() async {
     await AuthService.signOut();
-    await SecureStorageService.clearAll();
     if (!mounted) return;
 
     Navigator.pushReplacement(
@@ -220,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        widget.usuario,
+                        _usuarioActual,
                         style: GoogleFonts.dmSans(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -372,6 +394,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildQuickActions() {
+    final currentRol = _rolActual.toUpperCase();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -402,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen>
           spacing: 12,
           runSpacing: 12,
           children: [
-            if (widget.rol.toUpperCase() == 'ADMIN') ...[
+            if (currentRol == 'ADMIN') ...[
               _buildIconButton(
                 icon: Icons.folder_copy_rounded,
                 onTap: () async {
@@ -433,14 +457,14 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => SheetsConfigScreen(rol: widget.rol)),
+                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
                   );
                 },
                 tooltip: 'Google Sheets (Historial)',
                 accentColor: const Color(0xFF0F9D58),
               ),
             ],
-            if (widget.rol.toUpperCase() == 'ADMIN' || widget.rol.toUpperCase() == 'SUPERVISOR') ...[
+            if (currentRol == 'ADMIN') ...[
               _buildIconButton(
                 icon: Icons.people_rounded,
                 onTap: () {
@@ -457,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen>
               icon: Icons.history_rounded,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => HistoryScreen(usuario: widget.usuario)),
+                MaterialPageRoute(builder: (_) => const HistoryScreen()),
               ),
               tooltip: 'Historial',
             ),

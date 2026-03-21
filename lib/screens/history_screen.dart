@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../services/attendance_service.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
 class HistoryScreen extends StatefulWidget {
-  final String usuario;
-
-  const HistoryScreen({super.key, required this.usuario});
+  const HistoryScreen({super.key});
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -31,16 +30,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
 
     try {
-      final data = await Supabase.instance.client
-          .from('registros')
-          .select()
-          .eq('usuario_logueado', widget.usuario)
-          .order('fecha_hora', ascending: false)
-          .limit(50);
+      if (AuthService.currentUser == null) {
+        if (!mounted) return;
+        setState(() {
+          _errorMessage = 'Tu sesión expiró. Vuelve a iniciar sesión.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final data = await AttendanceService.getCurrentUserHistory();
 
       if (!mounted) return;
       setState(() {
-        _registros = List<Map<String, dynamic>>.from(data);
+        _registros = data;
         _isLoading = false;
       });
     } catch (_) {
