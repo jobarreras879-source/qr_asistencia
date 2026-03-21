@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/api_service.dart';
+import '../services/project_service.dart';
 import '../theme/app_theme.dart';
 
 class ProjectManagementScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
 
   Future<void> _loadProjects() async {
     setState(() => _isLoading = true);
-    final projects = await ApiService.getProyectos();
+    final projects = await ProjectService.getProyectos();
     if (!mounted) return;
     setState(() {
       _projects = projects;
@@ -46,6 +46,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
     final bool isEditing = project != null;
     final numController = TextEditingController(text: project?['numero'] ?? '');
     final nameController = TextEditingController(text: project?['nombre'] ?? '');
+    final clientController = TextEditingController(text: project?['cliente'] ?? '');
+    final ocController = TextEditingController(text: project?['oc'] ?? '');
     
     showDialog(
       context: context,
@@ -116,6 +118,44 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                   prefixIcon: Icons.badge_rounded,
                 ),
               ),
+              const SizedBox(height: 16),
+              Text(
+                'CLIENTE (Opcional)',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: clientController,
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+                decoration: AppTheme.inputDecoration(
+                  hint: 'Ej: PepsiCo',
+                  prefixIcon: Icons.business_center_rounded,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'ORDEN DE COMPRA / OC (Opcional)',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: ocController,
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+                decoration: AppTheme.inputDecoration(
+                  hint: 'Ej: M411',
+                  prefixIcon: Icons.receipt_long_rounded,
+                ),
+              ),
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -132,26 +172,41 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                       onPressed: () async {
                         final num = numController.text.trim();
                         final name = nameController.text.trim();
+                        final cliente = clientController.text.trim();
+                        final oc = ocController.text.trim();
+                        
                         if (num.isEmpty || name.isEmpty) return;
 
-                        bool success;
+                        String? error;
                         if (isEditing) {
-                          success = await ApiService.editarProyecto(
+                          error = await ProjectService.editarProyecto(
                             project['numero'],
                             num,
                             name,
+                            cliente,
+                            oc,
                           );
                         } else {
-                          success = await ApiService.crearProyecto(num, name);
+                          error = await ProjectService.crearProyecto(num, name, cliente, oc);
                         }
 
-                        if (success && mounted) {
+                        if (!mounted) return;
+                        if (error == null) {
                           Navigator.pop(context);
                           _loadProjects();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(isEditing ? 'Proyecto actualizado' : 'Proyecto creado'),
                               backgroundColor: AppTheme.success,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: $error'),
+                              backgroundColor: AppTheme.error,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 8),
                             ),
                           );
                         }
@@ -211,14 +266,24 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        final success = await ApiService.eliminarProyecto(numero);
-                        if (success && mounted) {
+                        final error = await ProjectService.eliminarProyecto(numero);
+                        if (!mounted) return;
+                        if (error == null) {
                           Navigator.pop(context);
                           _loadProjects();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Proyecto eliminado'),
                               backgroundColor: AppTheme.error,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: $error'),
+                              backgroundColor: AppTheme.error,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 8),
                             ),
                           );
                         }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../services/api_service.dart';
+import '../services/project_service.dart';
 import '../services/secure_storage_service.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'qr_scanner_screen.dart';
 import 'login_screen.dart';
@@ -67,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _fetchProyectos() async {
     setState(() => _isLoading = true);
-    final proys = await ApiService.getProyectos();
+    final proys = await ProjectService.getProyectos();
     if (!mounted) return;
     setState(() {
       _proyectos = proys;
@@ -122,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _logout() async {
+    await AuthService.signOut();
     await SecureStorageService.clearAll();
     if (!mounted) return;
 

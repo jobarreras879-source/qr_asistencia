@@ -177,6 +177,44 @@ class GoogleDriveService {
       return null;
     }
   }
+
+  /// Busca hojas de cálculo existentes en el Drive del usuario
+  static Future<List<Map<String, String>>> searchSpreadsheets(String query) async {
+    try {
+      final account = await signInSilently() ?? await signIn();
+      if (account == null) return [];
+
+      final client = await _googleSignIn.authenticatedClient();
+      if (client == null) return [];
+
+      final driveApi = drive.DriveApi(client);
+      
+      // Armar la query. Busca por nombre y solo archivos de Google Sheets
+      String q = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
+      if (query.isNotEmpty) {
+        q += " and name contains '$query'";
+      }
+
+      final fileList = await driveApi.files.list(
+        q: q,
+        spaces: 'drive',
+        $fields: 'files(id, name, createdTime, webViewLink)',
+        orderBy: 'createdTime desc',
+      );
+
+      if (fileList.files == null) return [];
+
+      return fileList.files!.map((f) => {
+        'id': f.id ?? '',
+        'name': f.name ?? 'Documento sin título',
+        'link': f.webViewLink ?? '',
+      }).toList();
+    } catch (e) {
+      print('Error al buscar hojas de cálculo: $e');
+      return [];
+    }
+  }
+  
   
   static Future<void> _addHeaders(sheets.SheetsApi sheetsApi, String spreadsheetId) async {
     try {

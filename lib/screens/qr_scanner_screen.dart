@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../services/api_service.dart';
+import '../services/attendance_service.dart';
 import '../theme/app_theme.dart';
 import 'camera_capture_screen.dart';
 
@@ -95,7 +95,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         ),
       );
 
-      final msgOrError = await ApiService.registrarAsistencia(
+      final msgOrError = await AttendanceService.registrarAsistencia(
         code,
         widget.proyectoInfo,
         widget.usuario,

@@ -69,41 +69,185 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   }
 
   Future<void> _createSpreadsheet() async {
-    final controller = TextEditingController(text: 'Asistencia AVS Ingeniería');
+    final createController = TextEditingController(text: 'Asistencia AVS Ingeniería');
+    final searchController = TextEditingController();
+    bool isSearching = true; // Empieza buscando automáticamente
+    List<Map<String, String>> searchResults = [];
+
+    // Llamamos a la búsqueda inicial antes o justo al abrir el diálogo
+    GoogleDriveService.searchSpreadsheets('').then((results) {
+      searchResults = results;
+      isSearching = false;
+    });
 
     await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: AppTheme.surface,
-          title: Text(
-            'Nueva Hoja de Cálculo',
-            style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          content: TextField(
-            controller: controller,
-            style: const TextStyle(color: Colors.white),
-            decoration: AppTheme.inputDecoration(
-              hint: 'Nombre del archivo',
-              prefixIcon: Icons.table_chart_rounded,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar', style: TextStyle(color: AppTheme.textSecondary)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _doCreateSpreadsheet(controller.text.trim());
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F9D58)),
-              child: const Text('Crear', style: TextStyle(color: Colors.white)),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setStateBuilder) {
+            return AlertDialog(
+              backgroundColor: AppTheme.surface,
+              contentPadding: EdgeInsets.zero,
+              content: DefaultTabController(
+                length: 2,
+                child: SizedBox(
+                  width: double.maxFinite,
+                  height: 480,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: Colors.black26,
+                        child: const TabBar(
+                          indicatorColor: AppTheme.accent,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.white54,
+                          tabs: [
+                            Tab(text: 'Crear Nueva'),
+                            Tab(text: 'Buscar en Drive'),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            // Pestaña Crear
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Crear Hoja de Cálculo',
+                                    style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  TextField(
+                                    controller: createController,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: AppTheme.inputDecoration(
+                                      hint: 'Nombre del archivo',
+                                      prefixIcon: Icons.table_chart_rounded,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _doCreateSpreadsheet(createController.text.trim());
+                                    },
+                                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F9D58)),
+                                    child: const Text('Crear', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Pestaña Buscar
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: searchController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: AppTheme.inputDecoration(
+                                            hint: 'Buscar hoja...',
+                                            prefixIcon: Icons.search,
+                                          ),
+                                          onSubmitted: (val) async {
+                                            setStateBuilder(() => isSearching = true);
+                                            final results = await GoogleDriveService.searchSpreadsheets(val);
+                                            setStateBuilder(() {
+                                              searchResults = results;
+                                              isSearching = false;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.search, color: AppTheme.accent),
+                                        onPressed: () async {
+                                          setStateBuilder(() => isSearching = true);
+                                          final results = await GoogleDriveService.searchSpreadsheets(searchController.text);
+                                          setStateBuilder(() {
+                                            searchResults = results;
+                                            isSearching = false;
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Expanded(
+                                    child: StatefulBuilder(
+                                      builder: (context, setInnerState) {
+                                        // Refrescar automáticamente cuando isSearching cambie por el Future externo
+                                        if (isSearching) {
+                                          Future.delayed(const Duration(milliseconds: 500), () {
+                                            if (mounted) setInnerState(() {});
+                                          });
+                                          return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+                                        }
+
+                                        return searchResults.isEmpty
+                                            ? const Center(
+                                                child: Text(
+                                                    'No se encontraron hojas de cálculo en tu Google Drive.\nUsa el buscador o crea una nueva.',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(color: Colors.grey)))
+                                            : ListView.builder(
+                                                itemCount: searchResults.length,
+                                                itemBuilder: (context, index) {
+                                                  final file = searchResults[index];
+                                                  return ListTile(
+                                                    leading: const Icon(Icons.table_chart, color: Color(0xFF0F9D58)),
+                                                    title: Text(file['name'] ?? 'Sin nombre',
+                                                        style: const TextStyle(color: Colors.white)),
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      _doLinkSpreadsheet(file['id']!, file['name']!, file['link']!);
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
+    );
+  }
+
+  Future<void> _doLinkSpreadsheet(String id, String name, String url) async {
+    setState(() => _isCreating = true);
+    await GoogleDriveService.setSheetsInfo(id, name, url);
+    final info = await GoogleDriveService.getSheetsInfo();
+    if (!mounted) return;
+    setState(() {
+      _sheetsInfo = info;
+      _autoSync = true;
+      _isCreating = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Hoja existente vinculada exitosamente'),
+        backgroundColor: AppTheme.success,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 

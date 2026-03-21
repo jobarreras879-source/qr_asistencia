@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/api_service.dart';
+import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -36,7 +36,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
   Future<void> _loadUsers() async {
     setState(() => _isLoading = true);
-    final users = await ApiService.getUsuarios();
+    final users = await UserService.getUsuarios();
     if (!mounted) return;
     setState(() {
       _users = users;
@@ -264,23 +264,24 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                             if (userName.isEmpty) return;
                             if (!isEditing && pass.isEmpty) return;
 
-                            bool success;
+                            String? error;
                             if (isEditing) {
-                              success = await ApiService.editarUsuario(
-                                user['id'] as int,
+                              error = await UserService.editarUsuario(
+                                user['id'] as String,
                                 userName,
                                 pass.isEmpty ? null : pass,
                                 selectedRol,
                               );
                             } else {
-                              success = await ApiService.crearUsuario(
+                              error = await UserService.crearUsuario(
                                 userName,
                                 pass,
                                 selectedRol,
                               );
                             }
 
-                            if (success && mounted) {
+                            if (!mounted) return;
+                            if (error == null) {
                               Navigator.pop(context);
                               _loadUsers();
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -300,6 +301,18 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(12)),
+                                  margin: const EdgeInsets.all(16),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $error'),
+                                  backgroundColor: AppTheme.error,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 8),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
                                   margin: const EdgeInsets.all(16),
                                 ),
                               );
@@ -371,9 +384,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        final success =
-                            await ApiService.eliminarUsuario(user['id'] as int);
-                        if (success && mounted) {
+                        final error =
+                            await UserService.eliminarUsuario(user['id'] as String);
+                        if (!mounted) return;
+                        if (error == null) {
                           Navigator.pop(context);
                           _loadUsers();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -391,6 +405,15 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
                               margin: const EdgeInsets.all(16),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: $error'),
+                              backgroundColor: AppTheme.error,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 8),
                             ),
                           );
                         }
