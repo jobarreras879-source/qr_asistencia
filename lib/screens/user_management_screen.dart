@@ -264,6 +264,18 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                             if (userName.isEmpty) return;
                             if (!isEditing && pass.isEmpty) return;
 
+                            if (pass.isNotEmpty && pass.length < 6) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('La contraseña debe tener mínimo 6 caracteres.'),
+                                  backgroundColor: AppTheme.warning,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: Duration(seconds: 4),
+                                ),
+                              );
+                              return;
+                            }
+
                             String? error;
                             if (isEditing) {
                               error = await UserService.editarUsuario(

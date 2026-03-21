@@ -62,7 +62,7 @@ class ProjectService {
             'Client': cliente.isEmpty ? null : cliente,
             'OC': oc.isEmpty ? null : oc,
           })
-          .eq('No.', oldNumero);
+          .eq('"No."', oldNumero);
       return null;
     } catch (e) {
       print('ERROR editarProyecto: $e');
@@ -74,7 +74,7 @@ class ProjectService {
 
   static Future<String?> eliminarProyecto(String numero) async {
     try {
-      await _supabase.from('proyecto').delete().eq('No.', numero);
+      await _supabase.from('proyecto').delete().eq('"No."', numero);
       return null;
     } catch (e) {
       print('ERROR eliminarProyecto: $e');
