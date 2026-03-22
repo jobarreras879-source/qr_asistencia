@@ -188,15 +188,15 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        AppTheme.accent.withOpacity(0.8),
+                        AppTheme.accent.withValues(alpha: 0.8),
                         AppTheme.accent,
-                        AppTheme.accent.withOpacity(0.8),
+                        AppTheme.accent.withValues(alpha: 0.8),
                         Colors.transparent,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.accent.withOpacity(0.5),
+                        color: AppTheme.accent.withValues(alpha: 0.5),
                         blurRadius: 12,
                         spreadRadius: 2,
                       ),
@@ -237,7 +237,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.8),
+                    Colors.black.withValues(alpha: 0.8),
                     Colors.transparent,
                   ],
                 ),
@@ -249,7 +249,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(Icons.arrow_back_rounded,
@@ -278,7 +278,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                                 color: (widget.tipo == 'Proyectos'
                                         ? AppTheme.accent
                                         : AppTheme.accent2)
-                                    .withOpacity(0.2),
+                                    .withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -324,10 +324,10 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(30),
                     border:
-                        Border.all(color: Colors.white.withOpacity(0.1)),
+                        Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -364,7 +364,7 @@ class _ScanOverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.black.withOpacity(0.5);
+    final paint = Paint()..color = Colors.black.withValues(alpha: 0.5);
     final centerX = size.width / 2;
     final centerY = size.height / 2;
 
