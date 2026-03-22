@@ -80,7 +80,9 @@ class AttendanceService {
         final infoSheets = await GoogleDriveService.getSheetsInfo();
         if (infoSheets != null && infoSheets['id'] != null) {
           await GoogleDriveService.appendAttendanceRow(
-              infoSheets['id'], filaParaGoogleSheets);
+            infoSheets['id'],
+            filaParaGoogleSheets,
+          );
         }
       }
 

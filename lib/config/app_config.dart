@@ -1,19 +1,14 @@
 /// Configuración de la aplicación.
 /// Las credenciales se ofuscan en partes para dificultar la extracción
 /// automática por herramientas de análisis estático (decompiladores de APK).
-/// 
+///
 /// NOTA IMPORTANTE: Esto NO es seguridad completa. Un atacante determinado
-/// aún podría encontrarlas. La verdadera protección está en tener 
+/// aún podría encontrarlas. La verdadera protección está en tener
 /// Row Level Security (RLS) bien configurado en Supabase.
 class AppConfig {
   // Supabase URL ofuscada (dividida en partes)
   static String get supabaseUrl {
-    const parts = [
-      'https://qwnc',
-      'rihpfckm',
-      'uablqroa',
-      '.supabase.co',
-    ];
+    const parts = ['https://qwnc', 'rihpfckm', 'uablqroa', '.supabase.co'];
     return parts.join();
   }
 
