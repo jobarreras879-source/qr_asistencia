@@ -124,13 +124,13 @@ class _HomeScreenState extends State<HomeScreen>
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 400),
-        pageBuilder: (_, __, ___) => QRScannerScreen(
+        pageBuilder: (_, _, _) => QRScannerScreen(
           usuario: _usuarioActual,
           rol: _rolActual,
           proyectoInfo: _proyectoIdSeleccionado!,
           tipo: 'Proyecto', // Ahora por defecto
         ),
-        transitionsBuilder: (_, anim, __, child) {
+        transitionsBuilder: (_, anim, _, child) {
           return FadeTransition(
             opacity: anim,
             child: ScaleTransition(
