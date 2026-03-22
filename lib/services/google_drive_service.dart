@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logging/logging.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
@@ -9,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 
 class GoogleDriveService {
+  static final _logger = Logger('GoogleDriveService');
+
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
@@ -20,10 +23,8 @@ class GoogleDriveService {
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
-  static void _logError(String action, Object error) {
-    if (kDebugMode) {
-      debugPrint('GoogleDriveService $action: $error');
-    }
+  static void _logError(String action, Object error, [StackTrace? stackTrace]) {
+    _logger.severe('Error en $action', error, stackTrace);
   }
 
   static String _escapeDriveQueryValue(String value) {
@@ -35,8 +36,8 @@ class GoogleDriveService {
     try {
       if (currentUser != null) return currentUser;
       return await _googleSignIn.signIn();
-    } catch (error) {
-      _logError('signIn', error);
+    } catch (error, stackTrace) {
+      _logError('signIn con Google', error, stackTrace);
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
