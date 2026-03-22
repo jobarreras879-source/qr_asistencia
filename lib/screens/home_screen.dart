@@ -22,8 +22,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _isLoading = true;
   List<Map<String, dynamic>> _proyectos = [];
   String? _proyectoIdSeleccionado;
@@ -112,8 +111,9 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           backgroundColor: AppTheme.accent2,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -134,9 +134,10 @@ class _HomeScreenState extends State<HomeScreen>
           return FadeTransition(
             opacity: anim,
             child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-                CurvedAnimation(parent: anim, curve: Curves.easeOut),
-              ),
+              scale: Tween<double>(
+                begin: 0.95,
+                end: 1.0,
+              ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
               child: child,
             ),
           );
@@ -217,17 +218,21 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(height: 12),
                 // User badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppTheme.accent.withOpacity(0.15),
-                        AppTheme.accent.withOpacity(0.05),
+                        AppTheme.accent.withValues(alpha: 0.15),
+                        AppTheme.accent.withValues(alpha: 0.05),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppTheme.accent.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -276,15 +281,17 @@ class _HomeScreenState extends State<HomeScreen>
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.5),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: accentColor?.withOpacity(0.5) ?? AppTheme.border.withOpacity(0.5),
+                color:
+                    accentColor?.withValues(alpha: 0.5) ??
+                    AppTheme.border.withValues(alpha: 0.5),
               ),
             ),
             child: Icon(
-              icon, 
-              color: accentColor ?? AppTheme.textSecondary, 
+              icon,
+              color: accentColor ?? AppTheme.textSecondary,
               size: 20,
             ),
           ),
@@ -329,66 +336,74 @@ class _HomeScreenState extends State<HomeScreen>
                     height: 24,
                     width: 24,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: AppTheme.accent),
+                      strokeWidth: 2.5,
+                      color: AppTheme.accent,
+                    ),
                   ),
                 ),
               )
             : _proyectos.isEmpty
-                ? Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.error.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: AppTheme.error.withOpacity(0.3)),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.error_outline,
-                            color: AppTheme.error, size: 20),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'No se encontraron proyectos. Verifica la configuración de tu base de datos.',
-                            style: TextStyle(
-                                color: AppTheme.error, fontSize: 13),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: AppTheme.cardDecoration,
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        dropdownColor: AppTheme.surface,
-                        value: _proyectoIdSeleccionado,
-                        hint: Text(
-                          '— Selecciona —',
-                          style: GoogleFonts.dmSans(
-                              color: AppTheme.textMuted, fontSize: 14),
-                        ),
-                        icon: const Icon(Icons.unfold_more_rounded,
-                            color: AppTheme.textSecondary, size: 20),
-                        items: _proyectos.map((p) {
-                          return DropdownMenuItem<String>(
-                            value: p['numero'],
-                            child: Text(
-                              '${p['numero']} — ${p['nombre']}',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          setState(() => _proyectoIdSeleccionado = val);
-                        },
+            ? Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.error.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.error_outline, color: AppTheme.error, size: 20),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'No se encontraron proyectos. Verifica la configuración de tu base de datos.',
+                        style: TextStyle(color: AppTheme.error, fontSize: 13),
                       ),
                     ),
+                  ],
+                ),
+              )
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: AppTheme.cardDecoration,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    dropdownColor: AppTheme.surface,
+                    value: _proyectoIdSeleccionado,
+                    hint: Text(
+                      '— Selecciona —',
+                      style: GoogleFonts.dmSans(
+                        color: AppTheme.textMuted,
+                        fontSize: 14,
+                      ),
+                    ),
+                    icon: const Icon(
+                      Icons.unfold_more_rounded,
+                      color: AppTheme.textSecondary,
+                      size: 20,
+                    ),
+                    items: _proyectos.map((p) {
+                      return DropdownMenuItem<String>(
+                        value: p['numero'],
+                        child: Text(
+                          '${p['numero']} — ${p['nombre']}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      setState(() => _proyectoIdSeleccionado = val);
+                    },
                   ),
+                ),
+              ),
       ],
     );
   }
@@ -446,7 +461,9 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const DriveConfigScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Google Drive (Fotos)',
@@ -457,7 +474,9 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const SheetsConfigScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Google Sheets (Historial)',
@@ -470,7 +489,9 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const UserManagementScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const UserManagementScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Usuarios',
@@ -510,8 +531,9 @@ class _HomeScreenState extends State<HomeScreen>
             boxShadow: isReady
                 ? [
                     BoxShadow(
-                      color: AppTheme.accent
-                          .withOpacity(0.2 + 0.15 * _scanPulseAnim.value),
+                      color: AppTheme.accent.withValues(
+                        alpha: 0.2 + 0.15 * _scanPulseAnim.value,
+                      ),
                       blurRadius: 20 + 10 * _scanPulseAnim.value,
                       offset: const Offset(0, 6),
                     ),
