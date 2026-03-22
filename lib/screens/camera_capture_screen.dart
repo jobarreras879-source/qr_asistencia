@@ -43,7 +43,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _uploadAnim = Tween<double>(begin: 0, end: 1).animate(_uploadAnimController);
+    _uploadAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(_uploadAnimController);
 
     _initCamera();
   }
@@ -96,12 +99,18 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             children: [
               Icon(Icons.add_to_drive_rounded, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Expanded(child: Text('Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.')),
+              Expanded(
+                child: Text(
+                  'Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.',
+                ),
+              ),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -123,9 +132,9 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
 
       // SUBIDA DIRECTA A GOOGLE DRIVE
       final success = await GoogleDriveService.uploadPhoto(
-        folderId, 
-        fullBase64, 
-        widget.nombreBase
+        folderId,
+        fullBase64,
+        widget.nombreBase,
       );
 
       if (!mounted) return;
@@ -165,8 +174,9 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             ),
             backgroundColor: AppTheme.error,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -181,12 +191,18 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Expanded(child: Text('No se pudo tomar o subir la fotografía. Intenta de nuevo.')),
+              Expanded(
+                child: Text(
+                  'No se pudo tomar o subir la fotografía. Intenta de nuevo.',
+                ),
+              ),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -206,13 +222,17 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                 height: 40,
                 width: 40,
                 child: CircularProgressIndicator(
-                    color: AppTheme.accent, strokeWidth: 3),
+                  color: AppTheme.accent,
+                  strokeWidth: 3,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Iniciando cámara...',
                 style: GoogleFonts.dmSans(
-                    color: AppTheme.textSecondary, fontSize: 14),
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -225,15 +245,11 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       body: Stack(
         children: [
           // Camera preview
-          Positioned.fill(
-            child: CameraPreview(_controller!),
-          ),
+          Positioned.fill(child: CameraPreview(_controller!)),
 
           // Flash effect overlay
           if (_flashEffect)
-            Positioned.fill(
-              child: Container(color: Colors.white),
-            ),
+            Positioned.fill(child: Container(color: Colors.white)),
 
           // Upload overlay
           if (_isUploading)
@@ -267,8 +283,11 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                                     value: null,
                                   ),
                                 ),
-                                const Icon(Icons.cloud_upload_rounded,
-                                    color: AppTheme.accent, size: 24),
+                                const Icon(
+                                  Icons.cloud_upload_rounded,
+                                  color: AppTheme.accent,
+                                  size: 24,
+                                ),
                               ],
                             );
                           },
@@ -315,10 +334,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
                 ),
               ),
               child: Row(
@@ -331,8 +347,11 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white, size: 22),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),

@@ -69,13 +69,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: _isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                            color: AppTheme.accent, strokeWidth: 3),
+                          color: AppTheme.accent,
+                          strokeWidth: 3,
+                        ),
                       )
                     : _errorMessage != null
-                        ? _buildError()
-                        : _registros.isEmpty
-                            ? _buildEmpty()
-                            : _buildList(),
+                    ? _buildError()
+                    : _registros.isEmpty
+                    ? _buildEmpty()
+                    : _buildList(),
               ),
             ],
           ),
@@ -98,8 +100,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.border.withOpacity(0.5)),
               ),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -128,7 +133,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppTheme.accent.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
@@ -156,8 +164,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.border.withOpacity(0.5)),
               ),
-              child: const Icon(Icons.refresh_rounded,
-                  color: AppTheme.textSecondary, size: 20),
+              child: const Icon(
+                Icons.refresh_rounded,
+                color: AppTheme.textSecondary,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -203,8 +214,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.history_rounded,
-              color: AppTheme.textMuted, size: 64),
+          Icon(Icons.history_rounded, color: AppTheme.textMuted, size: 64),
           const SizedBox(height: 16),
           Text(
             'Sin registros aún',
@@ -217,10 +227,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 6),
           Text(
             'Los registros aparecerán aquí después de escanear',
-            style: GoogleFonts.dmSans(
-              color: AppTheme.textMuted,
-              fontSize: 13,
-            ),
+            style: GoogleFonts.dmSans(color: AppTheme.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -254,7 +261,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 4,
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -281,7 +291,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ...items.map((reg) {
                 final isProyecto = reg['tipo'] == 'Proyecto';
                 final color = isProyecto ? AppTheme.accent : AppTheme.accent2;
-                final icon = isProyecto ? Icons.construction_rounded : Icons.restaurant_rounded;
+                final icon = isProyecto
+                    ? Icons.construction_rounded
+                    : Icons.restaurant_rounded;
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -333,7 +345,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: color.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(4),
@@ -341,9 +355,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   child: Text(
                                     reg['tipo']?.toString() ?? '',
                                     style: TextStyle(
-                                        color: color,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w800),
+                                      color: color,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -361,7 +376,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.border, size: 14),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: AppTheme.border,
+                        size: 14,
+                      ),
                     ],
                   ),
                 );

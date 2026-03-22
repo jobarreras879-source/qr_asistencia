@@ -77,7 +77,9 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   height: 40,
                   width: 40,
                   child: CircularProgressIndicator(
-                      color: AppTheme.accent, strokeWidth: 3),
+                    color: AppTheme.accent,
+                    strokeWidth: 3,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -112,8 +114,10 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 400),
             pageBuilder: (_, __, ___) => CameraCaptureScreen(
-              nombreBase:
-                  code.substring(0, code.length < 13 ? code.length : 13),
+              nombreBase: code.substring(
+                0,
+                code.length < 13 ? code.length : 13,
+              ),
               usuario: widget.usuario,
               rol: widget.rol,
               resultMessage: msgOrError,
@@ -135,8 +139,9 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             ),
             backgroundColor: AppTheme.error,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -174,13 +179,12 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             builder: (context, child) {
               final centerY = MediaQuery.of(context).size.height / 2;
               final top = centerY - scanAreaSize / 2;
-              final lineY =
-                  top + scanAreaSize * _scanLineController.value;
+              final lineY = top + scanAreaSize * _scanLineController.value;
 
               return Positioned(
                 top: lineY,
-                left: (MediaQuery.of(context).size.width - scanAreaSize) / 2 +
-                    8,
+                left:
+                    (MediaQuery.of(context).size.width - scanAreaSize) / 2 + 8,
                 child: Container(
                   width: scanAreaSize - 16,
                   height: 2,
@@ -213,9 +217,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
               child: SizedBox(
                 width: scanAreaSize,
                 height: scanAreaSize,
-                child: CustomPaint(
-                  painter: _CornerPainter(),
-                ),
+                child: CustomPaint(painter: _CornerPainter()),
               ),
             ),
           ),
@@ -236,10 +238,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.8),
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.black.withOpacity(0.8), Colors.transparent],
                 ),
               ),
               child: Row(
@@ -252,8 +251,11 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white, size: 22),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -273,12 +275,15 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: (widget.tipo == 'Proyectos'
-                                        ? AppTheme.accent
-                                        : AppTheme.accent2)
-                                    .withOpacity(0.2),
+                                color:
+                                    (widget.tipo == 'Proyectos'
+                                            ? AppTheme.accent
+                                            : AppTheme.accent2)
+                                        .withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -321,20 +326,24 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             child: Column(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(30),
-                    border:
-                        Border.all(color: Colors.white.withOpacity(0.1)),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.qr_code_rounded,
-                          color: AppTheme.accent, size: 18),
+                      Icon(
+                        Icons.qr_code_rounded,
+                        color: AppTheme.accent,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         'Apunta la cámara al código QR',
@@ -371,13 +380,16 @@ class _ScanOverlayPainter extends CustomPainter {
     // Draw overlay around the scan area
     final path = Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromCenter(
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
             center: Offset(centerX, centerY),
             width: scanAreaSize,
-            height: scanAreaSize),
-        const Radius.circular(16),
-      ))
+            height: scanAreaSize,
+          ),
+          const Radius.circular(16),
+        ),
+      )
       ..fillType = PathFillType.evenOdd;
 
     canvas.drawPath(path, paint);
@@ -405,8 +417,10 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(0, cornerLength)
         ..lineTo(0, radius)
-        ..arcToPoint(const Offset(radius, 0),
-            radius: const Radius.circular(radius))
+        ..arcToPoint(
+          const Offset(radius, 0),
+          radius: const Radius.circular(radius),
+        )
         ..lineTo(cornerLength, 0),
       paint,
     );
@@ -416,8 +430,10 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(size.width - cornerLength, 0)
         ..lineTo(size.width - radius, 0)
-        ..arcToPoint(Offset(size.width, radius),
-            radius: const Radius.circular(radius))
+        ..arcToPoint(
+          Offset(size.width, radius),
+          radius: const Radius.circular(radius),
+        )
         ..lineTo(size.width, cornerLength),
       paint,
     );
@@ -427,8 +443,11 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(0, size.height - cornerLength)
         ..lineTo(0, size.height - radius)
-        ..arcToPoint(Offset(radius, size.height),
-            radius: const Radius.circular(radius), clockwise: false)
+        ..arcToPoint(
+          Offset(radius, size.height),
+          radius: const Radius.circular(radius),
+          clockwise: false,
+        )
         ..lineTo(cornerLength, size.height),
       paint,
     );
@@ -438,8 +457,11 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(size.width - cornerLength, size.height)
         ..lineTo(size.width - radius, size.height)
-        ..arcToPoint(Offset(size.width, size.height - radius),
-            radius: const Radius.circular(radius), clockwise: false)
+        ..arcToPoint(
+          Offset(size.width, size.height - radius),
+          radius: const Radius.circular(radius),
+          clockwise: false,
+        )
         ..lineTo(size.width, size.height - cornerLength),
       paint,
     );
