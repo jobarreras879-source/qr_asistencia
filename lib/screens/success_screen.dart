@@ -140,8 +140,10 @@ class _SuccessScreenState extends State<SuccessScreen>
                         Transform.translate(
                           offset: Offset(0, _contentSlide.value),
                           child: Opacity(
-                            opacity: (1 - _contentSlide.value / 30)
-                                .clamp(0.0, 1.0),
+                            opacity: (1 - _contentSlide.value / 30).clamp(
+                              0.0,
+                              1.0,
+                            ),
                             child: Column(
                               children: [
                                 Text(
@@ -172,9 +174,11 @@ class _SuccessScreenState extends State<SuccessScreen>
                                                   BorderRadius.circular(10),
                                             ),
                                             child: const Icon(
-                                                Icons.assignment_turned_in_rounded,
-                                                color: AppTheme.success,
-                                                size: 20),
+                                              Icons
+                                                  .assignment_turned_in_rounded,
+                                              color: AppTheme.success,
+                                              size: 20,
+                                            ),
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(
@@ -191,13 +195,17 @@ class _SuccessScreenState extends State<SuccessScreen>
                                       ),
                                       const SizedBox(height: 12),
                                       const Divider(
-                                          color: AppTheme.border, height: 1),
+                                        color: AppTheme.border,
+                                        height: 1,
+                                      ),
                                       const SizedBox(height: 12),
                                       Row(
                                         children: [
-                                          const Icon(Icons.photo_camera_rounded,
-                                              color: AppTheme.success,
-                                              size: 16),
+                                          const Icon(
+                                            Icons.photo_camera_rounded,
+                                            color: AppTheme.success,
+                                            size: 16,
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
                                             'Foto guardada correctamente',
@@ -223,8 +231,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                     gradient: AppTheme.accentGradient,
                                     boxShadow: [
                                       BoxShadow(
-                                        color:
-                                            AppTheme.accent.withOpacity(0.3),
+                                        color: AppTheme.accent.withOpacity(0.3),
                                         blurRadius: 16,
                                         offset: const Offset(0, 6),
                                       ),
@@ -236,16 +243,17 @@ class _SuccessScreenState extends State<SuccessScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => HomeScreen(
-                                              usuario: widget.usuario,
-                                              rol: widget.rol,
+                                            usuario: widget.usuario,
+                                            rol: widget.rol,
                                           ),
                                         ),
                                         (route) => false,
                                       );
                                     },
                                     icon: const Icon(
-                                        Icons.qr_code_scanner_rounded,
-                                        size: 20),
+                                      Icons.qr_code_scanner_rounded,
+                                      size: 20,
+                                    ),
                                     label: Text(
                                       'Registrar otra asistencia',
                                       style: GoogleFonts.dmSans(
@@ -258,10 +266,10 @@ class _SuccessScreenState extends State<SuccessScreen>
                                       shadowColor: Colors.transparent,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 16),
+                                        vertical: 16,
+                                      ),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(14),
                                       ),
                                     ),
                                   ),
@@ -287,11 +295,12 @@ class _SuccessScreenState extends State<SuccessScreen>
   Widget _buildParticle(int index) {
     final random = math.Random(index * 42);
     final startX = random.nextDouble() * MediaQuery.of(context).size.width;
-    final startY = MediaQuery.of(context).size.height * 0.4 +
-        random.nextDouble() * 100 - 50;
+    final startY =
+        MediaQuery.of(context).size.height * 0.4 +
+        random.nextDouble() * 100 -
+        50;
     final endY = -50.0;
-    final endX =
-        startX + (random.nextDouble() - 0.5) * 200;
+    final endX = startX + (random.nextDouble() - 0.5) * 200;
     final size = 4.0 + random.nextDouble() * 8;
     final color = [
       AppTheme.success,
@@ -321,7 +330,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: BorderRadius.circular(
-                      random.nextBool() ? size : 2),
+                    random.nextBool() ? size : 2,
+                  ),
                 ),
               ),
             ),
