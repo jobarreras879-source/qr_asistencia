@@ -12,10 +12,7 @@ class GoogleDriveService {
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
-    scopes: [
-      drive.DriveApi.driveFileScope,
-      sheets.SheetsApi.spreadsheetsScope,
-    ],
+    scopes: [drive.DriveApi.driveFileScope, sheets.SheetsApi.spreadsheetsScope],
   );
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
@@ -107,7 +104,7 @@ class GoogleDriveService {
       if (client == null) return null;
 
       final driveApi = drive.DriveApi(client);
-      
+
       final folder = drive.File()
         ..name = folderName
         ..mimeType = 'application/vnd.google-apps.folder';
@@ -120,7 +117,11 @@ class GoogleDriveService {
   }
 
   /// Sube un archivo a una carpeta específica en Drive
-  static Future<bool> uploadPhoto(String folderId, String base64Img, String nombreArchivo) async {
+  static Future<bool> uploadPhoto(
+    String folderId,
+    String base64Img,
+    String nombreArchivo,
+  ) async {
     try {
       final account = await signInSilently() ?? await signIn();
       if (account == null) return false;
@@ -139,7 +140,8 @@ class GoogleDriveService {
 
       final safeName = nombreArchivo.replaceAll(RegExp(r'[/\\?%*:|"<> ]'), '');
       final now = DateTime.now();
-      final dateString = "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}";
+      final dateString =
+          "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}";
       final fileName = '${safeName}_$dateString.jpg';
 
       final fileMetadata = drive.File()
@@ -148,8 +150,11 @@ class GoogleDriveService {
 
       final media = drive.Media(Stream.value(bytes), bytes.length);
 
-      final result = await driveApi.files.create(fileMetadata, uploadMedia: media);
-      
+      final result = await driveApi.files.create(
+        fileMetadata,
+        uploadMedia: media,
+      );
+
       return result.id != null;
     } catch (error) {
       _logError('uploadPhoto', error);
@@ -174,12 +179,12 @@ class GoogleDriveService {
         ..properties = (sheets.SpreadsheetProperties()..title = title);
 
       final result = await sheetsApi.spreadsheets.create(sheet);
-      
+
       // Agregar encabezados
       if (result.spreadsheetId != null) {
         await _addHeaders(sheetsApi, result.spreadsheetId!);
       }
-      
+
       return result;
     } catch (error) {
       _logError('createSpreadsheet', error);
@@ -188,7 +193,9 @@ class GoogleDriveService {
   }
 
   /// Busca hojas de cálculo existentes en el Drive del usuario
-  static Future<List<Map<String, String>>> searchSpreadsheets(String query) async {
+  static Future<List<Map<String, String>>> searchSpreadsheets(
+    String query,
+  ) async {
     try {
       final account = await signInSilently() ?? await signIn();
       if (account == null) return [];
@@ -197,9 +204,10 @@ class GoogleDriveService {
       if (client == null) return [];
 
       final driveApi = drive.DriveApi(client);
-      
+
       // Armar la query. Busca por nombre y solo archivos de Google Sheets
-      String q = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
+      String q =
+          "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
       if (query.isNotEmpty) {
         final safeQuery = _escapeDriveQueryValue(query);
         q += " and name contains '$safeQuery'";
@@ -214,25 +222,39 @@ class GoogleDriveService {
 
       if (fileList.files == null) return [];
 
-      return fileList.files!.map((f) => {
-        'id': f.id ?? '',
-        'name': f.name ?? 'Documento sin título',
-        'link': f.webViewLink ?? '',
-      }).toList();
+      return fileList.files!
+          .map(
+            (f) => {
+              'id': f.id ?? '',
+              'name': f.name ?? 'Documento sin título',
+              'link': f.webViewLink ?? '',
+            },
+          )
+          .toList();
     } catch (error) {
       _logError('searchSpreadsheets', error);
       return [];
     }
   }
-  
-  
-  static Future<void> _addHeaders(sheets.SheetsApi sheetsApi, String spreadsheetId) async {
+
+  static Future<void> _addHeaders(
+    sheets.SheetsApi sheetsApi,
+    String spreadsheetId,
+  ) async {
     try {
       final valueRange = sheets.ValueRange()
         ..values = [
-          ['ID', 'Nombre', 'Proyecto', 'Fecha', 'Hora', 'Usuario', 'Movimientos']
+          [
+            'ID',
+            'Nombre',
+            'Proyecto',
+            'Fecha',
+            'Hora',
+            'Usuario',
+            'Movimientos',
+          ],
         ];
-        
+
       await sheetsApi.spreadsheets.values.update(
         valueRange,
         spreadsheetId,
@@ -245,7 +267,10 @@ class GoogleDriveService {
   }
 
   /// Agrega una fila de asistencia
-  static Future<bool> appendAttendanceRow(String spreadsheetId, Map<String, dynamic> rowData) async {
+  static Future<bool> appendAttendanceRow(
+    String spreadsheetId,
+    Map<String, dynamic> rowData,
+  ) async {
     try {
       // Intentar modo silencioso primero para operaciones background
       final account = await signInSilently() ?? await signIn();
@@ -255,7 +280,7 @@ class GoogleDriveService {
       if (client == null) return false;
 
       final sheetsApi = sheets.SheetsApi(client);
-      
+
       final dpi = rowData['DPI'] ?? '';
       final nombre = rowData['nombre'] ?? '';
       final proyecto = rowData['proyecto'] ?? '';
@@ -276,7 +301,7 @@ class GoogleDriveService {
 
       final valueRange = sheets.ValueRange()
         ..values = [
-          [dpi, nombre, proyecto, fecha, hora, usuario, tipo]
+          [dpi, nombre, proyecto, fecha, hora, usuario, tipo],
         ];
 
       await sheetsApi.spreadsheets.values.append(
@@ -312,7 +337,7 @@ class GoogleDriveService {
     await prefs.remove('drive_folder_id');
     await prefs.remove('drive_folder_name');
   }
-  
+
   static Future<String?> getDriveFolderName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('drive_folder_name');
@@ -328,7 +353,10 @@ class GoogleDriveService {
     await prefs.setString('sheets_spreadsheet_id', id);
     await prefs.setString('sheets_spreadsheet_name', name);
     await prefs.setString('sheets_spreadsheet_url', url);
-    await prefs.setBool('sheets_auto_sync', true); // Auto-sync on by default when linked
+    await prefs.setBool(
+      'sheets_auto_sync',
+      true,
+    ); // Auto-sync on by default when linked
   }
 
   static Future<void> clearSheetsInfo() async {
@@ -338,25 +366,26 @@ class GoogleDriveService {
     await prefs.remove('sheets_spreadsheet_url');
     await prefs.remove('sheets_auto_sync');
   }
-  
+
   static Future<Map<String, dynamic>?> getSheetsInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('sheets_spreadsheet_id');
     if (id == null) return null;
-    
+
     return {
       'id': id,
-      'name': prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
+      'name':
+          prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
       'url': prefs.getString('sheets_spreadsheet_url') ?? '',
       'autoSync': prefs.getBool('sheets_auto_sync') ?? false,
     };
   }
-  
+
   static Future<void> setAutoSync(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('sheets_auto_sync', value);
   }
-  
+
   static Future<bool> isAutoSyncEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sheets_auto_sync') ?? false;
