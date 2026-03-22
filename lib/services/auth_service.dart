@@ -50,7 +50,10 @@ class AuthService {
 
       final storedHash = data['password_hash'] as String?;
       final role = (data['rol'] as String?)?.trim().toUpperCase();
-      if (storedHash == null || storedHash != passwordHash || role == null || role.isEmpty) {
+      if (storedHash == null ||
+          storedHash != passwordHash ||
+          role == null ||
+          role.isEmpty) {
         _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
@@ -113,7 +116,9 @@ class AuthService {
   /// Retorna [usuario, rol] si hay sesión, null si no.
   static Future<Map<String, String>?> restoreSession() async {
     try {
-      if (_currentUserId != null && _currentUsername != null && _currentRole != null) {
+      if (_currentUserId != null &&
+          _currentUsername != null &&
+          _currentRole != null) {
         return {
           'id': _currentUserId!,
           'usuario': _currentUsername!,
