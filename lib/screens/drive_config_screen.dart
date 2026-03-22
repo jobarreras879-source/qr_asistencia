@@ -204,7 +204,7 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_to_drive_rounded, size: 80, color: Colors.grey.withOpacity(0.5)),
+              Icon(Icons.add_to_drive_rounded, size: 80, color: Colors.grey.withValues(alpha: 0.5)),
               const SizedBox(height: 24),
               Text(
                 'Conecta tu cuenta de Google Drive',
@@ -252,7 +252,7 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
             children: [
               CircleAvatar(
                 backgroundImage: _account!.photoUrl != null ? NetworkImage(_account!.photoUrl!) : null,
-                backgroundColor: AppTheme.accent.withOpacity(0.2),
+                backgroundColor: AppTheme.accent.withValues(alpha: 0.2),
                 child: _account!.photoUrl == null ? const Icon(Icons.person, color: AppTheme.accent) : null,
               ),
               const SizedBox(width: 16),
@@ -288,9 +288,9 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.success.withOpacity(0.1),
+              color: AppTheme.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.success.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -374,10 +374,10 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                             return Container(
                               margin: const EdgeInsets.only(bottom: 8),
                               decoration: BoxDecoration(
-                                color: isSelected ? AppTheme.accent.withOpacity(0.15) : AppTheme.surface,
+                                color: isSelected ? AppTheme.accent.withValues(alpha: 0.15) : AppTheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? AppTheme.accent : AppTheme.border.withOpacity(0.5),
+                                  color: isSelected ? AppTheme.accent : AppTheme.border.withValues(alpha: 0.5),
                                 ),
                               ),
                               child: ListTile(
