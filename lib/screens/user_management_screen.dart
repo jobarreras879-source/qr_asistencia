@@ -66,8 +66,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
   void _showUserDialog({Map<String, dynamic>? user}) {
     final bool isEditing = user != null;
-    final userController =
-        TextEditingController(text: user?['usuario'] ?? '');
+    final userController = TextEditingController(text: user?['usuario'] ?? '');
     final passController = TextEditingController();
     String selectedRol = user?['rol'] ?? 'USUARIO';
     bool obscurePassword = true;
@@ -93,7 +92,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withOpacity(0.1),
+                          color: AppTheme.accent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
@@ -167,7 +166,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                           size: 20,
                         ),
                         onPressed: () => setDialogState(
-                            () => obscurePassword = !obscurePassword),
+                          () => obscurePassword = !obscurePassword,
+                        ),
                       ),
                     ),
                   ),
@@ -193,20 +193,20 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       final isSelected = selectedRol == rol;
                       final color = _rolColor(rol);
                       return GestureDetector(
-                        onTap: () =>
-                            setDialogState(() => selectedRol = rol),
+                        onTap: () => setDialogState(() => selectedRol = rol),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? color.withOpacity(0.15)
-                                : AppTheme.surfaceLight.withOpacity(0.5),
+                                ? color.withValues(alpha: 0.15)
+                                : AppTheme.surfaceLight.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color:
-                                  isSelected ? color : AppTheme.border,
+                              color: isSelected ? color : AppTheme.border,
                               width: isSelected ? 1.5 : 1,
                             ),
                           ),
@@ -216,9 +216,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                               Icon(
                                 _rolIcon(rol),
                                 size: 16,
-                                color: isSelected
-                                    ? color
-                                    : AppTheme.textMuted,
+                                color: isSelected ? color : AppTheme.textMuted,
                               ),
                               const SizedBox(width: 6),
                               Text(
@@ -263,7 +261,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                             if (pass.isNotEmpty && pass.length < 6) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('La contraseña debe tener mínimo 6 caracteres.'),
+                                  content: Text(
+                                    'La contraseña debe tener mínimo 6 caracteres.',
+                                  ),
                                   backgroundColor: AppTheme.warning,
                                   behavior: SnackBarBehavior.floating,
                                   duration: Duration(seconds: 4),
@@ -296,19 +296,24 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                                 SnackBar(
                                   content: Row(
                                     children: [
-                                      const Icon(Icons.check_circle_rounded,
-                                          color: Colors.white, size: 18),
+                                      const Icon(
+                                        Icons.check_circle_rounded,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
                                       const SizedBox(width: 8),
-                                      Text(isEditing
-                                          ? 'Usuario actualizado'
-                                          : 'Usuario creado'),
+                                      Text(
+                                        isEditing
+                                            ? 'Usuario actualizado'
+                                            : 'Usuario creado',
+                                      ),
                                     ],
                                   ),
                                   backgroundColor: AppTheme.success,
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12)),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   margin: const EdgeInsets.all(16),
                                 ),
                               );
@@ -320,7 +325,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                                   behavior: SnackBarBehavior.floating,
                                   duration: const Duration(seconds: 8),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   margin: const EdgeInsets.all(16),
                                 ),
                               );
@@ -356,11 +362,14 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.error.withOpacity(0.1),
+                  color: AppTheme.error.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_remove_rounded,
-                    color: AppTheme.error, size: 40),
+                child: const Icon(
+                  Icons.person_remove_rounded,
+                  color: AppTheme.error,
+                  size: 40,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -376,7 +385,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 'Se eliminará permanentemente el usuario "${user['usuario']}". Esta acción no se puede deshacer.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
-                    color: AppTheme.textSecondary, fontSize: 14),
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 32),
               Row(
@@ -392,8 +403,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        final error =
-                            await UserService.eliminarUsuario(user['id'] as String);
+                        final error = await UserService.eliminarUsuario(
+                          user['id'] as String,
+                        );
                         if (!mounted) return;
                         if (error == null) {
                           Navigator.pop(context);
@@ -402,8 +414,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                             SnackBar(
                               content: const Row(
                                 children: [
-                                  Icon(Icons.delete_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.delete_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text('Usuario eliminado'),
                                 ],
@@ -411,7 +426,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                               backgroundColor: AppTheme.error,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               margin: const EdgeInsets.all(16),
                             ),
                           );
@@ -430,7 +446,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                         backgroundColor: AppTheme.error,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text('Eliminar'),
@@ -458,10 +475,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 child: _isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                            color: AppTheme.accent))
+                          color: AppTheme.accent,
+                        ),
+                      )
                     : _users.isEmpty
-                        ? _buildEmptyState()
-                        : _buildUserList(),
+                    ? _buildEmptyState()
+                    : _buildUserList(),
               ),
             ],
           ),
@@ -486,10 +505,14 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             onTap: () => Navigator.pop(context),
             child: Container(
               padding: const EdgeInsets.all(10),
-              decoration: AppTheme.glassDecoration
-                  .copyWith(borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
+              decoration: AppTheme.glassDecoration.copyWith(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -519,12 +542,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           ),
           // User count badge
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(0.1),
+              color: AppTheme.accent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
             ),
             child: Text(
               '${_users.length}',
@@ -538,8 +560,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           const SizedBox(width: 8),
           IconButton(
             onPressed: _loadUsers,
-            icon: const Icon(Icons.refresh_rounded,
-                color: AppTheme.textSecondary),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: AppTheme.textSecondary,
+            ),
           ),
         ],
       ),
@@ -554,19 +578,23 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.3),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people_outline_rounded,
-                size: 56, color: AppTheme.textMuted),
+            child: const Icon(
+              Icons.people_outline_rounded,
+              size: 56,
+              color: AppTheme.textMuted,
+            ),
           ),
           const SizedBox(height: 20),
           Text(
             'No hay usuarios',
             style: GoogleFonts.dmSans(
-                fontSize: 18,
-                color: AppTheme.textSecondary,
-                fontWeight: FontWeight.bold),
+              fontSize: 18,
+              color: AppTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -592,7 +620,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           builder: (context, child) {
             final double delay = (index * 0.1).clamp(0, 1.0);
             final double animValue = Curves.easeOutCubic.transform(
-                (_listController.value - delay * 0.5).clamp(0, 1.0));
+              (_listController.value - delay * 0.5).clamp(0, 1.0),
+            );
 
             return Opacity(
               opacity: animValue,
@@ -613,16 +642,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: color.withOpacity(0.25)),
+                    border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Center(
-                    child: Icon(
-                      _rolIcon(rol),
-                      color: color,
-                      size: 22,
-                    ),
+                    child: Icon(_rolIcon(rol), color: color, size: 22),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -642,12 +667,15 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       // Role badge
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                          color: color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
-                          border:
-                              Border.all(color: color.withOpacity(0.3)),
+                          border: Border.all(
+                            color: color.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Text(
                           rol,
@@ -665,15 +693,21 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 // Edit button
                 IconButton(
                   onPressed: () => _showUserDialog(user: user),
-                  icon: const Icon(Icons.edit_outlined,
-                      color: AppTheme.textSecondary, size: 20),
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: AppTheme.textSecondary,
+                    size: 20,
+                  ),
                 ),
                 // Delete button
                 if (AuthService.currentUserId != user['id'].toString())
                   IconButton(
                     onPressed: () => _confirmDelete(user),
-                    icon: const Icon(Icons.delete_outline_rounded,
-                        color: AppTheme.error, size: 20),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppTheme.error,
+                      size: 20,
+                    ),
                   ),
               ],
             ),
