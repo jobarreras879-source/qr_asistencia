@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/user_service.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   bool _isLoading = true;
   late AnimationController _listController;
 
-  static const List<String> _roles = ['ADMIN', 'SUPERVISOR', 'USUARIO'];
+  static const List<String> _roles = ['ADMIN', 'USUARIO'];
 
   @override
   void initState() {
@@ -49,8 +50,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     switch (rol.toUpperCase()) {
       case 'ADMIN':
         return AppTheme.accent;
-      case 'SUPERVISOR':
-        return AppTheme.accent2;
       default:
         return AppTheme.accentTeal;
     }
@@ -60,8 +59,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     switch (rol.toUpperCase()) {
       case 'ADMIN':
         return Icons.admin_panel_settings_rounded;
-      case 'SUPERVISOR':
-        return Icons.supervisor_account_rounded;
       default:
         return Icons.person_rounded;
     }
@@ -133,7 +130,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(height: 8),
                   TextField(
                     controller: userController,
-                    textCapitalization: TextCapitalization.characters,
                     style: const TextStyle(color: Colors.white, fontSize: 15),
                     decoration: AppTheme.inputDecoration(
                       hint: 'Ej: JPEREZ',
@@ -673,11 +669,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       color: AppTheme.textSecondary, size: 20),
                 ),
                 // Delete button
-                IconButton(
-                  onPressed: () => _confirmDelete(user),
-                  icon: const Icon(Icons.delete_outline_rounded,
-                      color: AppTheme.error, size: 20),
-                ),
+                if (AuthService.currentUserId != user['id'].toString())
+                  IconButton(
+                    onPressed: () => _confirmDelete(user),
+                    icon: const Icon(Icons.delete_outline_rounded,
+                        color: AppTheme.error, size: 20),
+                  ),
               ],
             ),
           ),

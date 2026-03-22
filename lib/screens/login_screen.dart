@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _login() async {
-    final user = _usuarioCtrl.text.trim().toUpperCase();
+    final user = _usuarioCtrl.text.trim();
     final pass = _passwordCtrl.text;
 
     if (user.isEmpty || pass.isEmpty) {
@@ -228,7 +228,6 @@ class _LoginScreenState extends State<LoginScreen>
                             controller: _usuarioCtrl,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 15),
-                            textCapitalization: TextCapitalization.characters,
                             decoration: AppTheme.inputDecoration(
                               hint: 'Tu usuario',
                               prefixIcon: Icons.person_outline_rounded,

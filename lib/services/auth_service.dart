@@ -1,65 +1,67 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'password_hash_service.dart';
 
 /// Servicio de autenticación centralizado usando Supabase Auth.
 /// Centraliza el acceso a la sesión actual y al perfil autenticado.
 class AuthService {
   static final _supabase = Supabase.instance.client;
-  static const _internalDomain = 'avsingenieria.com';
+  static const _tableName = 'usuarios';
+  static const _defaultRole = 'USUARIO';
+  static const _storage = FlutterSecureStorage();
+  static const _keyUserId = 'session_user_id';
+  static const _keyUsername = 'session_username';
+  static const _keyRole = 'session_role';
+
   static String? _lastErrorMessage;
+  static String? _currentUserId;
+  static String? _currentUsername;
+  static String? _currentRole;
 
   // ─── Estado de sesión ────────────────────────────────────────────
 
-  /// Usuario actualmente autenticado, null si no hay sesión.
-  static User? get currentUser => _supabase.auth.currentUser;
-
-  /// Sesión actual, null si no hay sesión activa.
-  static Session? get currentSession => _supabase.auth.currentSession;
-
-  /// Stream de cambios de estado de autenticación.
-  static Stream<AuthState> get onAuthStateChange => _supabase.auth.onAuthStateChange;
-
-  /// ID del usuario autenticado actual.
-  static String? get currentUserId => currentUser?.id;
+  /// ID del usuario actualmente autenticado en la sesión local.
+  static String? get currentUserId => _currentUserId;
   static String? get lastErrorMessage => _lastErrorMessage;
 
   // ─── Login ───────────────────────────────────────────────────────
 
-  /// Inicia sesión con email y contraseña usando Supabase Auth.
+  /// Inicia sesión consultando la tabla local de usuarios.
   /// Retorna el rol del usuario si el login es exitoso, null si falla.
   static Future<String?> signIn(String usuario, String password) async {
     try {
       _lastErrorMessage = null;
-      final email = _normalizeLoginEmail(usuario);
+      final normalizedUser = PasswordHashService.normalizeUsername(usuario);
+      final passwordHash = PasswordHashService.hash(password);
 
-      final response = await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-
-      if (response.user == null) return null;
-
-      // Verificar que exista un perfil valido. Si no tiene perfil,
-      // es una cuenta huerfana o mal configurada -> denegar acceso.
-      final rolData = await _supabase
-          .from('perfiles')
-          .select('rol')
-          .eq('id', response.user!.id)
+      final data = await _supabase
+          .from(_tableName)
+          .select('id, usuario, password_hash, rol, activo')
+          .eq('usuario', normalizedUser)
+          .eq('activo', true)
           .maybeSingle();
 
-      if (rolData == null) {
-        await _supabase.auth.signOut();
-        _lastErrorMessage = 'Esta cuenta no tiene perfil asignado. Contacta al administrador.';
+      if (data == null) {
+        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
 
-      return (rolData['rol'] as String?) ?? 'USUARIO';
-    } on AuthException catch (error) {
-      _lastErrorMessage = error.message;
-      if (kDebugMode) {
-        debugPrint('AuthService signIn AuthException: ${error.message}');
+      final storedHash = data['password_hash'] as String?;
+      final role = (data['rol'] as String?)?.trim().toUpperCase();
+      if (storedHash == null || storedHash != passwordHash || role == null || role.isEmpty) {
+        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
+        return null;
       }
-      return null;
+
+      await _saveSession(
+        userId: data['id'].toString(),
+        username: normalizedUser,
+        role: role,
+      );
+
+      return role;
     } catch (error) {
       _lastErrorMessage = error.toString();
       if (kDebugMode) {
@@ -74,7 +76,12 @@ class AuthService {
   /// Cierra la sesión actual en Supabase y limpia el almacenamiento local.
   static Future<void> signOut() async {
     try {
-      await _supabase.auth.signOut();
+      _currentUserId = null;
+      _currentUsername = null;
+      _currentRole = null;
+      await _storage.delete(key: _keyUserId);
+      await _storage.delete(key: _keyUsername);
+      await _storage.delete(key: _keyRole);
     } catch (_) {}
   }
 
@@ -83,42 +90,18 @@ class AuthService {
   /// Obtiene el rol del usuario actualmente autenticado.
   static Future<String> getCurrentUserRole() async {
     try {
-      final uid = currentUser?.id;
-      if (uid == null) return 'USUARIO';
-
-      final data = await _supabase
-          .from('perfiles')
-          .select('rol')
-          .eq('id', uid)
-          .maybeSingle();
-
-      return (data?['rol'] as String?) ?? 'USUARIO';
+      final session = await restoreSession();
+      return session?['rol'] ?? _defaultRole;
     } catch (_) {
-      return 'USUARIO';
+      return _defaultRole;
     }
   }
 
   /// Obtiene el nombre de usuario del perfil actual.
   static Future<String?> getCurrentUsername() async {
     try {
-      final uid = currentUser?.id;
-      if (uid == null) return null;
-
-      final data = await _supabase
-          .from('perfiles')
-          .select('usuario')
-          .eq('id', uid)
-          .maybeSingle();
-
-      final username = data?['usuario'] as String?;
-      if (username != null && username.trim().isNotEmpty) {
-        return username;
-      }
-
-      final email = currentUser?.email;
-      if (email == null || email.trim().isEmpty) return null;
-
-      return _usernameFromEmail(email);
+      final session = await restoreSession();
+      return session?['usuario'];
     } catch (_) {
       return null;
     }
@@ -130,20 +113,27 @@ class AuthService {
   /// Retorna [usuario, rol] si hay sesión, null si no.
   static Future<Map<String, String>?> restoreSession() async {
     try {
-      final session = currentSession;
-      if (session == null) return null;
+      if (_currentUserId != null && _currentUsername != null && _currentRole != null) {
+        return {
+          'id': _currentUserId!,
+          'usuario': _currentUsername!,
+          'rol': _currentRole!,
+        };
+      }
 
-      // Verificar que el token no haya expirado
-      if (session.isExpired) {
-        await signOut();
+      final userId = await _storage.read(key: _keyUserId);
+      final usuario = await _storage.read(key: _keyUsername);
+      final rol = await _storage.read(key: _keyRole);
+
+      if (userId == null || usuario == null || rol == null) {
         return null;
       }
 
-      final usuario = await getCurrentUsername();
-      final rol = await getCurrentUserRole();
+      _currentUserId = userId;
+      _currentUsername = usuario;
+      _currentRole = rol;
 
-      if (usuario == null) return null;
-      return {'usuario': usuario, 'rol': rol};
+      return {'id': userId, 'usuario': usuario, 'rol': rol};
     } catch (_) {
       return null;
     }
@@ -156,32 +146,45 @@ class AuthService {
     if (lower.isEmpty) {
       return 'No se pudo iniciar sesión. Intenta de nuevo.';
     }
-    if (lower.contains('invalid login credentials')) {
+    if (lower.contains('incorrectos')) {
       return 'Credenciales inválidas. Verifica el usuario/correo y la contraseña.';
     }
-    if (lower.contains('email not confirmed')) {
-      return 'La cuenta existe, pero el correo no está confirmado en Supabase.';
-    }
-    if (lower.contains('error querying schema')) {
-      return 'Supabase Auth rechazó este usuario. Normalmente pasa cuando fue creado manualmente en auth.users de forma incompleta.';
-    }
     if (lower.contains('database')) {
-      return 'Hubo un problema interno con la autenticación o el perfil del usuario.';
+      return 'Hubo un problema interno con la autenticación o la tabla de usuarios.';
     }
 
     return 'No se pudo iniciar sesión: $raw';
   }
 
-  static String _normalizeLoginEmail(String usuarioOrEmail) {
-    final raw = usuarioOrEmail.trim().toLowerCase();
-    if (raw.contains('@')) return raw; // Si ya es un email, lo dejamos así
-    return '$raw@$_internalDomain';   // Si es solo un usuario, le ponemos el dominio interno
+  static Future<void> refreshLocalSession({
+    required String userId,
+    required String username,
+    required String role,
+  }) async {
+    await _saveSession(
+      userId: userId,
+      username: PasswordHashService.normalizeUsername(username),
+      role: role.trim().toUpperCase(),
+    );
   }
 
-  static String _usernameFromEmail(String email) {
-    final normalized = email.trim().toLowerCase();
-    final atIndex = normalized.indexOf('@');
-    if (atIndex <= 0) return normalized;
-    return normalized.substring(0, atIndex);
+  static Future<void> clearLocalSessionIfMatches(String userId) async {
+    if (_currentUserId == userId) {
+      await signOut();
+    }
+  }
+
+  static Future<void> _saveSession({
+    required String userId,
+    required String username,
+    required String role,
+  }) async {
+    _currentUserId = userId;
+    _currentUsername = username;
+    _currentRole = role;
+
+    await _storage.write(key: _keyUserId, value: userId);
+    await _storage.write(key: _keyUsername, value: username);
+    await _storage.write(key: _keyRole, value: role);
   }
 }

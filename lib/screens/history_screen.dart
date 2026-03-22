@@ -30,7 +30,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
 
     try {
-      if (AuthService.currentUser == null) {
+      final session = await AuthService.restoreSession();
+      if (session == null) {
         if (!mounted) return;
         setState(() {
           _errorMessage = 'Tu sesión expiró. Vuelve a iniciar sesión.';

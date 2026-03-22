@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'google_drive_service.dart';
+import 'auth_service.dart';
 
 /// Servicio para registro y consulta de asistencia.
 /// Separa el flujo de registros del resto de servicios.
@@ -29,9 +30,6 @@ class AttendanceService {
   // ─── Registro ────────────────────────────────────────────────────
 
   /// Registra la asistencia de un empleado a partir del código QR.
-  /// El campo [created_by] se obtiene del usuario autenticado actualmente
-  /// (no del parámetro de la UI), reforzado por RLS en Supabase.
-  ///
   /// Formato esperado del QR: `ID/NOMBRE` (ej: 2011704024923/OCTAVIO NARVAEZ)
   static Future<String?> registrarAsistencia(
     String qr,
@@ -65,8 +63,6 @@ class AttendanceService {
           '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
           '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 
-      final uid = _supabase.auth.currentUser?.id;
-
       final filaParaGoogleSheets = {
         'DPI': id,
         'nombre': nombre,
@@ -74,7 +70,6 @@ class AttendanceService {
         'tipo': tipo,
         'fecha_hora': fechaHoraString,
         'usuario_logueado': usuario,
-        if (uid != null) 'created_by': uid, // Campo de auditoría seguro
       };
 
       await _supabase.from('registros').insert(filaParaGoogleSheets);
@@ -97,18 +92,18 @@ class AttendanceService {
 
   // ─── Historial ───────────────────────────────────────────────────
 
-  /// Obtiene los registros asociados al usuario autenticado actual.
+  /// Obtiene los registros asociados al usuario activo de la sesión local.
   static Future<List<Map<String, dynamic>>> getCurrentUserHistory({
     int limit = 50,
   }) async {
     try {
-      final uid = _supabase.auth.currentUser?.id;
-      if (uid == null) return [];
+      final username = await AuthService.getCurrentUsername();
+      if (username == null || username.isEmpty) return [];
 
       final data = await _supabase
           .from('registros')
           .select()
-          .eq('created_by', uid)
+          .eq('usuario_logueado', username)
           .order('fecha_hora', ascending: false)
           .limit(limit);
 

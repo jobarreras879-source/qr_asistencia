@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const INTERNAL_DOMAIN = 'avsingenieria.com';
+const VALID_ROLES = new Set(['ADMIN', 'SUPERVISOR', 'USUARIO']);
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -66,17 +67,25 @@ serve(async (req: Request) => {
     // El email que usamos para auth: preferimos el email real si viene, si no generamos el interno
     const internalEmail = usuario ? `${usuario.toLowerCase()}@${INTERNAL_DOMAIN}` : undefined;
     const authEmail = emailReal || internalEmail;
+    const normalizedRole = rol?.toUpperCase();
+
+    if (normalizedRole && !VALID_ROLES.has(normalizedRole)) {
+      throw new Error('Rol inválido');
+    }
 
     // ─── CREATE ──────────────────────────────────────────────────────
     if (action === 'create') {
-      if (!usuario || !password || !rol) throw new Error('Faltan campos: usuario, password, rol');
+      if (!usuario || !password || !normalizedRole) {
+        throw new Error('Faltan campos: usuario, password, rol');
+      }
       if (!authEmail) throw new Error('No se pudo determinar el email del usuario');
+      if (password.length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres');
 
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: authEmail,
         password,
         email_confirm: true,
-        user_metadata: { usuario: usuario.toUpperCase(), rol },
+        user_metadata: { usuario: usuario.toUpperCase(), rol: normalizedRole },
       });
 
       if (createError) throw createError;
@@ -85,7 +94,7 @@ serve(async (req: Request) => {
         await supabaseAdmin.from('perfiles').upsert({
           id: newUser.user.id,
           usuario: usuario.toUpperCase(),
-          rol,
+          rol: normalizedRole,
         });
       }
 
@@ -97,6 +106,9 @@ serve(async (req: Request) => {
     // ─── UPDATE ──────────────────────────────────────────────────────
     else if (action === 'update') {
       if (!targetId) throw new Error('Se requiere targetId para actualizar');
+      if (targetId === user.id && normalizedRole && normalizedRole !== 'ADMIN') {
+        throw new Error('No puedes quitarte tu propio rol ADMIN desde esta pantalla');
+      }
 
       const updatePayload: Record<string, unknown> = { user_metadata: {} };
 
@@ -105,15 +117,20 @@ serve(async (req: Request) => {
         updatePayload.email_confirm = true;
       }
       if (usuario) (updatePayload.user_metadata as Record<string, unknown>).usuario = usuario.toUpperCase();
-      if (rol) (updatePayload.user_metadata as Record<string, unknown>).rol = rol;
-      if (password && password.length >= 6) updatePayload.password = password;
+      if (normalizedRole) {
+        (updatePayload.user_metadata as Record<string, unknown>).rol = normalizedRole;
+      }
+      if (password) {
+        if (password.length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres');
+        updatePayload.password = password;
+      }
 
       const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(targetId, updatePayload);
       if (updateError) throw updateError;
 
       const profilePayload: Record<string, unknown> = {};
       if (usuario) profilePayload.usuario = usuario.toUpperCase();
-      if (rol) profilePayload.rol = rol;
+      if (normalizedRole) profilePayload.rol = normalizedRole;
 
       if (Object.keys(profilePayload).length > 0) {
         await supabaseAdmin.from('perfiles').update(profilePayload).eq('id', targetId);
@@ -127,6 +144,9 @@ serve(async (req: Request) => {
     // ─── DELETE ──────────────────────────────────────────────────────
     else if (action === 'delete') {
       if (!targetId) throw new Error('Se requiere targetId para eliminar');
+      if (targetId === user.id) {
+        throw new Error('No puedes eliminar tu propio usuario desde esta pantalla');
+      }
 
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetId, false);
       if (deleteError) throw deleteError;

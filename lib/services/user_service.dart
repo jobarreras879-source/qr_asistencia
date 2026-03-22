@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Servicio para CRUD de usuarios del sistema.
-/// Opera mediante la Edge Function [admin-manage-user], que usa
-/// la service role key para gestionar auth.users con privilegios de Admin.
+import 'auth_service.dart';
+import 'password_hash_service.dart';
+
+/// Servicio simple para CRUD de usuarios sobre una tabla propia.
 class UserService {
   static final _supabase = Supabase.instance.client;
+  static const _tableName = 'usuarios';
+  static const _validRoles = {'ADMIN', 'USUARIO'};
 
   static void _logError(String action, Object error) {
     if (kDebugMode) {
@@ -13,21 +16,25 @@ class UserService {
     }
   }
 
+  static String _normalizeRole(String rol) {
+    final normalized = rol.trim().toUpperCase();
+    return _validRoles.contains(normalized) ? normalized : 'USUARIO';
+  }
+
   // ─── Lectura ─────────────────────────────────────────────────────
 
-  /// Obtiene todos los usuarios con su rol.
-  /// Solo accesible por ADMIN (garantizado por RLS).
   static Future<List<Map<String, dynamic>>> getUsuarios() async {
     try {
       final data = await _supabase
-          .from('perfiles')
-          .select('id, usuario, rol')
+          .from(_tableName)
+          .select('id, usuario, rol, activo')
           .order('usuario', ascending: true);
 
       return data.map((e) => <String, dynamic>{
-        'id': e['id'],
+        'id': e['id'].toString(),
         'usuario': e['usuario']?.toString() ?? '',
         'rol': (e['rol'] as String?) ?? 'USUARIO',
+        'activo': e['activo'] == true,
       }).toList();
     } catch (e) {
       _logError('getUsuarios', e);
@@ -37,40 +44,32 @@ class UserService {
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  /// Crea un nuevo usuario mediante Edge Function (Admin API).
-  /// El caller debe ser ADMIN. La Edge Function verifica el rol.
   static Future<String?> crearUsuario(String usuario, String password, String rol) async {
     try {
-      final input = usuario.trim();
-      // Normalizamos: si ya tiene @, lo usamos tal cual; si no, le ponemos el dominio
-      final normalizedUsername = input.contains('@') ? input.split('@')[0] : input;
+      final normalizedUsername = PasswordHashService.normalizeUsername(usuario);
+      if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
+      if (password.length < 6) return 'La contraseña debe tener mínimo 6 caracteres.';
 
-      final res = await _supabase.functions.invoke('admin-manage-user', body: {
-        'action': 'create',
+      await _supabase.from(_tableName).insert({
         'usuario': normalizedUsername,
-        'password': password,
-        'rol': rol,
-        // Si el admin puso un correo real, se lo pasamos para recovery
-        'emailReal': input.contains('@') ? input : null,
+        'password_hash': PasswordHashService.hash(password),
+        'rol': _normalizeRole(rol),
+        'activo': true,
       });
 
-      if (res.status == 200 && res.data['ok'] == true) return null;
-      return res.data['message'] ?? 'Error al crear usuario en el servidor.';
-    } on FunctionException catch (e) {
-      _logError('crearUsuario func_err', e);
-      if (e.details != null && e.details is Map) {
-        return (e.details as Map)['message']?.toString() ?? 'Acceso denegado o error interno.';
-      }
-      return 'Error del servidor: ${e.toString()}';
+      return null;
     } catch (e) {
       _logError('crearUsuario', e);
-      return 'No se pudo crear el usuario. Verifica tu conexión.';
+      final lower = e.toString().toLowerCase();
+      if (lower.contains('duplicate') || lower.contains('unique')) {
+        return 'Ese usuario ya existe.';
+      }
+      return 'No se pudo crear el usuario. Verifica la tabla usuarios_app.';
     }
   }
 
   // ─── Edición ─────────────────────────────────────────────────────
 
-  /// Edita un usuario mediante Edge Function (Admin API).
   static Future<String?> editarUsuario(
     String id,
     String nuevoUsuario,
@@ -78,54 +77,59 @@ class UserService {
     String nuevoRol,
   ) async {
     try {
-      final input = nuevoUsuario.trim();
-      final normalizedUsername = input.contains('@') ? input.split('@')[0] : input;
-
-      final res = await _supabase.functions.invoke('admin-manage-user', body: {
-        'action': 'update',
-        'targetId': id,
-        'usuario': normalizedUsername,
-        'password': nuevoPassword ?? '',
-        'rol': nuevoRol,
-        'emailReal': input.contains('@') ? input : null,
-      });
-
-      if (res.status == 200 && res.data['ok'] == true) return null;
-      return res.data['message'] ?? 'Error al actualizar usuario en el servidor.';
-    } on FunctionException catch (e) {
-      _logError('editarUsuario func_err', e);
-      if (e.details != null && e.details is Map) {
-        return (e.details as Map)['message']?.toString() ?? 'Acceso denegado o error interno.';
+      final normalizedUsername =
+          PasswordHashService.normalizeUsername(nuevoUsuario);
+      if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
+      if (nuevoPassword != null &&
+          nuevoPassword.isNotEmpty &&
+          nuevoPassword.length < 6) {
+        return 'La contraseña debe tener mínimo 6 caracteres.';
       }
-      return 'Error del servidor: ${e.toString()}';
+
+      final payload = <String, dynamic>{
+        'usuario': normalizedUsername,
+        'rol': _normalizeRole(nuevoRol),
+      };
+
+      if (nuevoPassword != null && nuevoPassword.isNotEmpty) {
+        payload['password_hash'] = PasswordHashService.hash(nuevoPassword);
+      }
+
+      await _supabase.from(_tableName).update(payload).eq('id', int.parse(id));
+
+      if (AuthService.currentUserId == id) {
+        await AuthService.refreshLocalSession(
+          userId: id,
+          username: normalizedUsername,
+          role: payload['rol'] as String,
+        );
+      }
+
+      return null;
     } catch (e) {
       _logError('editarUsuario', e);
-      return 'No se pudo actualizar el usuario. Intenta de nuevo.';
+      final lower = e.toString().toLowerCase();
+      if (lower.contains('duplicate') || lower.contains('unique')) {
+        return 'Ese usuario ya existe.';
+      }
+      return 'No se pudo actualizar el usuario.';
     }
   }
 
   // ─── Eliminación ─────────────────────────────────────────────────
 
-  /// Elimina un usuario de Auth mediante Edge Function.
-  /// Esto borra tanto auth.users como public.perfiles (via CASCADE o trigger).
   static Future<String?> eliminarUsuario(String id) async {
     try {
-      final res = await _supabase.functions.invoke('admin-manage-user', body: {
-        'action': 'delete',
-        'targetId': id,
-      });
-
-      if (res.status == 200 && res.data['ok'] == true) return null;
-      return res.data['message'] ?? 'Error al eliminar usuario en el servidor.';
-    } on FunctionException catch (e) {
-      _logError('eliminarUsuario func_err', e);
-      if (e.details != null && e.details is Map) {
-        return (e.details as Map)['message']?.toString() ?? 'Acceso denegado o error interno.';
+      if (AuthService.currentUserId == id) {
+        return 'No puedes eliminar tu propio usuario mientras estás dentro.';
       }
-      return 'Error del servidor: ${e.toString()}';
+
+      await _supabase.from(_tableName).delete().eq('id', int.parse(id));
+      await AuthService.clearLocalSessionIfMatches(id);
+      return null;
     } catch (e) {
       _logError('eliminarUsuario', e);
-      return 'No se pudo eliminar el usuario. Intenta de nuevo.';
+      return 'No se pudo eliminar el usuario.';
     }
   }
 }
