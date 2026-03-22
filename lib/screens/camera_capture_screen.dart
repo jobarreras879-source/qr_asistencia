@@ -193,33 +193,32 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_isCameraInitialized) {
-      return Scaffold(
-        backgroundColor: AppTheme.bg,
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(
-                height: 40,
-                width: 40,
-                child: CircularProgressIndicator(
-                    color: AppTheme.accent, strokeWidth: 3),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Iniciando cámara...',
-                style: GoogleFonts.dmSans(
-                    color: AppTheme.textSecondary, fontSize: 14),
-              ),
-            ],
-          ),
+  Widget _buildLoadingState() {
+    return Scaffold(
+      backgroundColor: AppTheme.bg,
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                  color: AppTheme.accent, strokeWidth: 3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Iniciando cámara...',
+              style: GoogleFonts.dmSans(
+                  color: AppTheme.textSecondary, fontSize: 14),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
+  Widget _buildActiveCamera(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -425,6 +424,15 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isCameraInitialized) {
+      return _buildLoadingState();
+    }
+
+    return _buildActiveCamera(context);
   }
 
   Widget _buildCircleButton({
