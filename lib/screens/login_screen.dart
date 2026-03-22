@@ -70,10 +70,8 @@ class _LoginScreenState extends State<LoginScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeScreen(
-            usuario: session['usuario']!,
-            rol: session['rol']!,
-          ),
+          builder: (_) =>
+              HomeScreen(usuario: session['usuario']!, rol: session['rol']!),
         ),
       );
     }
@@ -144,7 +142,8 @@ class _LoginScreenState extends State<LoginScreen>
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height -
+                height:
+                    MediaQuery.of(context).size.height -
                     MediaQuery.of(context).padding.top -
                     MediaQuery.of(context).padding.bottom,
                 child: Column(
@@ -164,8 +163,9 @@ class _LoginScreenState extends State<LoginScreen>
                             gradient: AppTheme.accentGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.accent
-                                    .withOpacity(0.4 * _pulseAnim.value),
+                                color: AppTheme.accent.withOpacity(
+                                  0.4 * _pulseAnim.value,
+                                ),
                                 blurRadius: 40 * _pulseAnim.value,
                                 spreadRadius: 4 * _pulseAnim.value,
                               ),
@@ -176,8 +176,11 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.qr_code_scanner_rounded,
-                              color: Colors.white, size: 40),
+                          child: const Icon(
+                            Icons.qr_code_scanner_rounded,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         );
                       },
                     ),
@@ -227,7 +230,9 @@ class _LoginScreenState extends State<LoginScreen>
                           TextField(
                             controller: _usuarioCtrl,
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
                             decoration: AppTheme.inputDecoration(
                               hint: 'Tu usuario',
                               prefixIcon: Icons.person_outline_rounded,
@@ -250,7 +255,9 @@ class _LoginScreenState extends State<LoginScreen>
                             controller: _passwordCtrl,
                             obscureText: _obscurePassword,
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
                             decoration: AppTheme.inputDecoration(
                               hint: '••••••••',
                               prefixIcon: Icons.lock_outline_rounded,
@@ -263,7 +270,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   size: 20,
                                 ),
                                 onPressed: () => setState(
-                                    () => _obscurePassword = !_obscurePassword),
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                             ),
                             onSubmitted: (_) => _login(),
@@ -274,23 +282,31 @@ class _LoginScreenState extends State<LoginScreen>
                             const SizedBox(height: 16),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppTheme.error.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: AppTheme.error.withOpacity(0.3)),
+                                  color: AppTheme.error.withOpacity(0.3),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.error_outline,
-                                      color: AppTheme.error, size: 18),
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: AppTheme.error,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       _errorMessage!,
                                       style: const TextStyle(
-                                          color: AppTheme.error, fontSize: 13),
+                                        color: AppTheme.error,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -318,8 +334,9 @@ class _LoginScreenState extends State<LoginScreen>
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -329,7 +346,10 @@ class _LoginScreenState extends State<LoginScreen>
                                       height: 22,
                                       width: 22,
                                       child: CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2.5))
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
                                   : Text(
                                       'Ingresar',
                                       style: GoogleFonts.dmSans(
