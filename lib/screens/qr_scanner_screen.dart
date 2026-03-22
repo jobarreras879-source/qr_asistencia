@@ -111,14 +111,14 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 400),
-            pageBuilder: (_, __, ___) => CameraCaptureScreen(
+            pageBuilder: (_, _, _) => CameraCaptureScreen(
               nombreBase:
                   code.substring(0, code.length < 13 ? code.length : 13),
               usuario: widget.usuario,
               rol: widget.rol,
               resultMessage: msgOrError,
             ),
-            transitionsBuilder: (_, anim, __, child) {
+            transitionsBuilder: (_, anim, _, child) {
               return FadeTransition(opacity: anim, child: child);
             },
           ),

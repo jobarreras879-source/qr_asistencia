@@ -135,12 +135,12 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (_, __, ___) => SuccessScreen(
+            pageBuilder: (_, _, _) => SuccessScreen(
               message: widget.resultMessage,
               usuario: widget.usuario,
               rol: widget.rol,
             ),
-            transitionsBuilder: (_, anim, __, child) {
+            transitionsBuilder: (_, anim, _, child) {
               return FadeTransition(
                 opacity: anim,
                 child: ScaleTransition(

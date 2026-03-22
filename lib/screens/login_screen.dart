@@ -104,8 +104,8 @@ class _LoginScreenState extends State<LoginScreen>
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => HomeScreen(usuario: user, rol: rol),
-          transitionsBuilder: (_, anim, __, child) {
+          pageBuilder: (_, _, _) => HomeScreen(usuario: user, rol: rol),
+          transitionsBuilder: (_, anim, _, child) {
             return FadeTransition(
               opacity: anim,
               child: SlideTransition(
