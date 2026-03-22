@@ -70,10 +70,8 @@ class _LoginScreenState extends State<LoginScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeScreen(
-            usuario: session['usuario']!,
-            rol: session['rol']!,
-          ),
+          builder: (_) =>
+              HomeScreen(usuario: session['usuario']!, rol: session['rol']!),
         ),
       );
     }
@@ -144,7 +142,8 @@ class _LoginScreenState extends State<LoginScreen>
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height -
+                height:
+                    MediaQuery.of(context).size.height -
                     MediaQuery.of(context).padding.top -
                     MediaQuery.of(context).padding.bottom,
                 child: Column(
@@ -164,8 +163,9 @@ class _LoginScreenState extends State<LoginScreen>
                             gradient: AppTheme.accentGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.accent
-                                    .withOpacity(0.4 * _pulseAnim.value),
+                                color: AppTheme.accent.withOpacity(
+                                  0.4 * _pulseAnim.value,
+                                ),
                                 blurRadius: 40 * _pulseAnim.value,
                                 spreadRadius: 4 * _pulseAnim.value,
                               ),
@@ -176,8 +176,11 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.qr_code_scanner_rounded,
-                              color: Colors.white, size: 40),
+                          child: const Icon(
+                            Icons.qr_code_scanner_rounded,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         );
                       },
                     ),
@@ -207,142 +210,15 @@ class _LoginScreenState extends State<LoginScreen>
                     const SizedBox(height: 48),
 
                     // ─── Glass Card Form ────────────────────
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: AppTheme.glassDecoration,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Usuario label
-                          Text(
-                            'USUARIO',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _usuarioCtrl,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
-                            decoration: AppTheme.inputDecoration(
-                              hint: 'Tu usuario',
-                              prefixIcon: Icons.person_outline_rounded,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Password label
-                          Text(
-                            'CONTRASEÑA',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _passwordCtrl,
-                            obscureText: _obscurePassword,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
-                            decoration: AppTheme.inputDecoration(
-                              hint: '••••••••',
-                              prefixIcon: Icons.lock_outline_rounded,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_rounded
-                                      : Icons.visibility_rounded,
-                                  color: AppTheme.textMuted,
-                                  size: 20,
-                                ),
-                                onPressed: () => setState(
-                                    () => _obscurePassword = !_obscurePassword),
-                              ),
-                            ),
-                            onSubmitted: (_) => _login(),
-                          ),
-
-                          // Error message
-                          if (_errorMessage != null) ...[
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: AppTheme.error.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: AppTheme.error.withOpacity(0.3)),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.error_outline,
-                                      color: AppTheme.error, size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      _errorMessage!,
-                                      style: const TextStyle(
-                                          color: AppTheme.error, fontSize: 13),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-
-                          const SizedBox(height: 24),
-
-                          // Login button
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: AppTheme.accentGradient,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.accent.withOpacity(0.3),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 22,
-                                      width: 22,
-                                      child: CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2.5))
-                                  : Text(
-                                      'Ingresar',
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    _LoginForm(
+                      usuarioCtrl: _usuarioCtrl,
+                      passwordCtrl: _passwordCtrl,
+                      isLoading: _isLoading,
+                      errorMessage: _errorMessage,
+                      obscurePassword: _obscurePassword,
+                      onTogglePassword: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                      onLogin: _login,
                     ),
 
                     const Spacer(flex: 3),
@@ -373,6 +249,169 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  final TextEditingController usuarioCtrl;
+  final TextEditingController passwordCtrl;
+  final bool isLoading;
+  final String? errorMessage;
+  final bool obscurePassword;
+  final VoidCallback onTogglePassword;
+  final VoidCallback onLogin;
+
+  const _LoginForm({
+    required this.usuarioCtrl,
+    required this.passwordCtrl,
+    required this.isLoading,
+    required this.errorMessage,
+    required this.obscurePassword,
+    required this.onTogglePassword,
+    required this.onLogin,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.glassDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Usuario label
+          Text(
+            'USUARIO',
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: usuarioCtrl,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
+            decoration: AppTheme.inputDecoration(
+              hint: 'Tu usuario',
+              prefixIcon: Icons.person_outline_rounded,
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Password label
+          Text(
+            'CONTRASEÑA',
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: passwordCtrl,
+            obscureText: obscurePassword,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
+            decoration: AppTheme.inputDecoration(
+              hint: '••••••••',
+              prefixIcon: Icons.lock_outline_rounded,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  obscurePassword
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  color: AppTheme.textMuted,
+                  size: 20,
+                ),
+                onPressed: onTogglePassword,
+              ),
+            ),
+            onSubmitted: (_) => onLogin(),
+          ),
+
+          // Error message
+          if (errorMessage != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTheme.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.error.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: AppTheme.error,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      errorMessage!,
+                      style: const TextStyle(
+                        color: AppTheme.error,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 24),
+
+          // Login button
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: AppTheme.accentGradient,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.accent.withOpacity(0.3),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: isLoading ? null : onLogin,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: isLoading
+                  ? const SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      'Ingresar',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }
