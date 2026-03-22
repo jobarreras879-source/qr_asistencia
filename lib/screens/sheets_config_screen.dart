@@ -433,7 +433,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.table_chart_rounded, size: 80, color: Colors.grey.withOpacity(0.5)),
+              Icon(Icons.table_chart_rounded, size: 80, color: Colors.grey.withValues(alpha: 0.5)),
               const SizedBox(height: 24),
               Text(
                 'Conecta tu cuenta de Google',
@@ -483,7 +483,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
               children: [
                 CircleAvatar(
                   backgroundImage: _account!.photoUrl != null ? NetworkImage(_account!.photoUrl!) : null,
-                  backgroundColor: AppTheme.accent.withOpacity(0.2),
+                  backgroundColor: AppTheme.accent.withValues(alpha: 0.2),
                   child: _account!.photoUrl == null ? const Icon(Icons.person, color: AppTheme.accent) : null,
                 ),
                 const SizedBox(width: 16),
@@ -530,7 +530,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          Icon(Icons.file_copy_rounded, size: 60, color: AppTheme.textMuted.withOpacity(0.5)),
+          Icon(Icons.file_copy_rounded, size: 60, color: AppTheme.textMuted.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
           Text(
             'Sin hoja de cálculo vinculada',
@@ -572,9 +572,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F9D58).withOpacity(0.1),
+            color: const Color(0xFF0F9D58).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF0F9D58).withOpacity(0.3)),
+            border: Border.all(color: const Color(0xFF0F9D58).withValues(alpha: 0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
