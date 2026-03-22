@@ -157,6 +157,61 @@ class GoogleDriveService {
     }
   }
 
+  /// Agrega múltiples filas de asistencia de una sola vez
+  static Future<bool> appendAttendanceRows(String spreadsheetId, List<Map<String, dynamic>> rowsData) async {
+    if (rowsData.isEmpty) return true;
+
+    try {
+      // Intentar modo silencioso primero para operaciones background
+      final account = await signInSilently() ?? await signIn();
+      if (account == null) return false;
+
+      final client = await _googleSignIn.authenticatedClient();
+      if (client == null) return false;
+
+      final sheetsApi = sheets.SheetsApi(client);
+
+      final List<List<Object>> allValues = [];
+
+      for (var rowData in rowsData) {
+        final dpi = rowData['DPI'] ?? '';
+        final nombre = rowData['nombre'] ?? '';
+        final proyecto = rowData['proyecto'] ?? '';
+        final tipo = rowData['tipo'] ?? '';
+        final fechaHora = rowData['fecha_hora'] ?? '';
+        final usuario = rowData['usuario_logueado'] ?? '';
+
+        // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
+        String fecha = '';
+        String hora = '';
+        if (fechaHora.contains(' ')) {
+          final parts = fechaHora.split(' ');
+          fecha = parts[0];
+          hora = parts[1];
+        } else {
+          fecha = fechaHora;
+        }
+
+        allValues.add([dpi, nombre, proyecto, fecha, hora, usuario, tipo]);
+      }
+
+      final valueRange = sheets.ValueRange()..values = allValues;
+
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        'A1:G', // Rango para buscar la última fila escrita
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+      );
+
+      return true;
+    } catch (error) {
+      _logError('appendAttendanceRows', error);
+      return false;
+    }
+  }
+
   // ============== MÉTODOS DE GOOGLE SHEETS ==============
 
   /// Crea una hoja de cálculo nueva con los encabezados
