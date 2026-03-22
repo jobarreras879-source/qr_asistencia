@@ -1,4 +1,4 @@
-package com.example.qr_asistencia
+package com.qrasistencia.app
 
 import io.flutter.embedding.android.FlutterActivity
 
