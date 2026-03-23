@@ -9,14 +9,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 
 class GoogleDriveService {
-  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+  static GoogleSignIn? _mockGoogleSignIn;
+
+  @visibleForTesting
+  static set mockGoogleSignIn(GoogleSignIn? mock) {
+    _mockGoogleSignIn = mock;
+  }
+
+  static final GoogleSignIn _realGoogleSignIn = GoogleSignIn(
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
-      drive.DriveApi.driveReadonlyScope, // Antes era driveFileScope (limitado)
+      drive.DriveApi.driveFileScope,
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
+
+  static GoogleSignIn get _googleSignIn => _mockGoogleSignIn ?? _realGoogleSignIn;
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
