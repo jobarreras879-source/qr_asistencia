@@ -69,12 +69,12 @@ class AppTheme {
 
   // ─── Decorations ──────────────────────────────────────────
   static BoxDecoration get cardDecoration => BoxDecoration(
-        color: surface.withOpacity(0.7),
+        color: surface.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: border.withOpacity(0.5)),
+        border: Border.all(color: border.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -84,10 +84,10 @@ class AppTheme {
   static BoxDecoration get glassDecoration => BoxDecoration(
         gradient: glassGradient,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -95,9 +95,9 @@ class AppTheme {
       );
 
   static BoxDecoration get accentGlassDecoration => BoxDecoration(
-        color: accent.withOpacity(0.05),
+        color: accent.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withOpacity(0.2)),
+        border: Border.all(color: accent.withValues(alpha: 0.2)),
       );
 
   static BoxDecoration get dialogDecoration => BoxDecoration(
@@ -106,7 +106,7 @@ class AppTheme {
         border: Border.all(color: border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 40,
             offset: const Offset(0, 10),
           ),
@@ -120,7 +120,7 @@ class AppTheme {
   }) =>
       InputDecoration(
         filled: true,
-        fillColor: surfaceLight.withOpacity(0.5),
+        fillColor: surfaceLight.withValues(alpha: 0.5),
         hintText: hint,
         hintStyle: const TextStyle(color: textMuted, fontSize: 14),
         prefixIcon: prefixIcon != null

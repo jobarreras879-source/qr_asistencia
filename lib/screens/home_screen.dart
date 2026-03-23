@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ? [
                     BoxShadow(
                       color: AppTheme.accent
-                          .withOpacity(0.2 + 0.15 * _scanPulseAnim.value),
+                          .withValues(alpha: 0.2 + 0.15 * _scanPulseAnim.value),
                       blurRadius: 20 + 10 * _scanPulseAnim.value,
                       offset: const Offset(0, 6),
                     ),
@@ -250,5 +250,4 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
 

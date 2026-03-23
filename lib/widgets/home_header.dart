@@ -53,12 +53,12 @@ class HomeHeader extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.accent.withOpacity(0.15),
-            AppTheme.accent.withOpacity(0.05),
+            AppTheme.accent.withValues(alpha: 0.15),
+            AppTheme.accent.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
