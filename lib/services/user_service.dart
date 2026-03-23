@@ -65,7 +65,7 @@ class UserService {
       if (lower.contains('duplicate') || lower.contains('unique')) {
         return 'Ese usuario ya existe.';
       }
-      return 'No se pudo crear el usuario. Verifica la tabla usuarios_app.';
+      return 'No se pudo crear el usuario. Verifica la tabla usuarios.';
     }
   }
 
@@ -78,6 +78,7 @@ class UserService {
     String nuevoRol,
   ) async {
     try {
+      final normalizedRole = _normalizeRole(nuevoRol);
       final normalizedUsername =
           PasswordHashService.normalizeUsername(nuevoUsuario);
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
@@ -86,10 +87,13 @@ class UserService {
           nuevoPassword.length < 6) {
         return 'La contraseña debe tener mínimo 6 caracteres.';
       }
+      if (AuthService.currentUserId == id && normalizedRole != 'ADMIN') {
+        return 'No puedes quitarte tu propio rol ADMIN mientras estás dentro.';
+      }
 
       final payload = <String, dynamic>{
         'usuario': normalizedUsername,
-        'rol': _normalizeRole(nuevoRol),
+        'rol': normalizedRole,
       };
 
       if (nuevoPassword != null && nuevoPassword.isNotEmpty) {

@@ -15,6 +15,13 @@ class AuthService {
   static const _keyUsername = 'session_username';
   static const _keyRole = 'session_role';
 
+  static void _logError(String action, Object error, [StackTrace? stack]) {
+    if (kDebugMode) {
+      debugPrint('❌ AuthService ERROR [$action]: $error');
+      if (stack != null) debugPrint(stack.toString());
+    }
+  }
+
   static String? _lastErrorMessage;
   static String? _currentUserId;
   static String? _currentUsername;
@@ -62,11 +69,9 @@ class AuthService {
       );
 
       return role;
-    } catch (error) {
+    } catch (error, stack) {
       _lastErrorMessage = error.toString();
-      if (kDebugMode) {
-        debugPrint('AuthService signIn error: $error');
-      }
+      _logError('signIn', error, stack);
       return null;
     }
   }
@@ -82,7 +87,9 @@ class AuthService {
       await _storage.delete(key: _keyUserId);
       await _storage.delete(key: _keyUsername);
       await _storage.delete(key: _keyRole);
-    } catch (_) {}
+    } catch (e, stack) {
+      _logError('signOut', e, stack);
+    }
   }
 
   // ─── Rol ─────────────────────────────────────────────────────────
@@ -92,7 +99,8 @@ class AuthService {
     try {
       final session = await restoreSession();
       return session?['rol'] ?? _defaultRole;
-    } catch (_) {
+    } catch (e, stack) {
+      _logError('getCurrentUserRole', e, stack);
       return _defaultRole;
     }
   }
@@ -102,7 +110,8 @@ class AuthService {
     try {
       final session = await restoreSession();
       return session?['usuario'];
-    } catch (_) {
+    } catch (e, stack) {
+      _logError('getCurrentUsername', e, stack);
       return null;
     }
   }
@@ -134,7 +143,8 @@ class AuthService {
       _currentRole = rol;
 
       return {'id': userId, 'usuario': usuario, 'rol': rol};
-    } catch (_) {
+    } catch (e, stack) {
+      _logError('restoreSession', e, stack);
       return null;
     }
   }

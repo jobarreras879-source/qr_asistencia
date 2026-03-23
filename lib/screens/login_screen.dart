@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_logo.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,10 +22,8 @@ class _LoginScreenState extends State<LoginScreen>
   bool _obscurePassword = true;
 
   late AnimationController _fadeController;
-  late AnimationController _pulseController;
   late Animation<double> _fadeAnim;
   late Animation<double> _slideAnim;
-  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
@@ -42,14 +41,6 @@ class _LoginScreenState extends State<LoginScreen>
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
     );
 
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
     _fadeController.forward();
     _checkSavedLogin();
   }
@@ -57,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _fadeController.dispose();
-    _pulseController.dispose();
     _usuarioCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
@@ -152,36 +142,7 @@ class _LoginScreenState extends State<LoginScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(flex: 2),
-
-                    // ─── Logo / Icon ────────────────────────
-                    AnimatedBuilder(
-                      animation: _pulseAnim,
-                      builder: (context, child) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: AppTheme.accentGradient,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.accent
-                                    .withValues(alpha: 0.4 * _pulseAnim.value),
-                                blurRadius: 40 * _pulseAnim.value,
-                                spreadRadius: 4 * _pulseAnim.value,
-                              ),
-                              BoxShadow(
-                                color: AppTheme.accent.withValues(alpha: 0.1),
-                                blurRadius: 100,
-                                spreadRadius: 10,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.qr_code_scanner_rounded,
-                              color: Colors.white, size: 40),
-                        );
-                      },
-                    ),
+                    const BrandLogo(),
                     const SizedBox(height: 24),
 
                     // ─── Brand Title ────────────────────────
@@ -280,7 +241,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 color: AppTheme.error.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: AppTheme.error.withValues(alpha: 0.3)),
+                                    color:
+                                        AppTheme.error.withValues(alpha: 0.3)),
                               ),
                               child: Row(
                                 children: [

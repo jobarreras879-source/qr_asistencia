@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 
@@ -94,6 +95,8 @@ class _UserDialogState extends State<UserDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.user != null;
+    final isCurrentUser =
+        widget.user?['id']?.toString() == AuthService.currentUserId;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -147,7 +150,17 @@ class _UserDialogState extends State<UserDialog> {
               const SizedBox(height: 16),
               _buildLabel('ROL'),
               const SizedBox(height: 10),
-              _buildRoleSelector(),
+              _buildRoleSelector(isCurrentUser: isCurrentUser),
+              if (isCurrentUser) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Tu propio usuario debe conservar el rol ADMIN mientras la sesión esté activa.',
+                  style: GoogleFonts.dmSans(
+                    color: AppTheme.warning,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
               const SizedBox(height: 32),
               _buildActions(),
             ],
@@ -197,25 +210,32 @@ class _UserDialogState extends State<UserDialog> {
     );
   }
 
-  Widget _buildRoleSelector() {
+  Widget _buildRoleSelector({required bool isCurrentUser}) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: _roles.map((rol) {
         final isSelected = _selectedRol == rol;
         final color = _rolColor(rol);
+        final isDisabled = isCurrentUser && rol != 'ADMIN';
         return GestureDetector(
-          onTap: () => setState(() => _selectedRol = rol),
+          onTap: isDisabled ? null : () => setState(() => _selectedRol = rol),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected
+              color: isDisabled
+                  ? AppTheme.surfaceLight.withValues(alpha: 0.25)
+                  : isSelected
                   ? color.withValues(alpha: 0.15)
                   : AppTheme.surfaceLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? color : AppTheme.border,
+                color: isDisabled
+                    ? AppTheme.border.withValues(alpha: 0.5)
+                    : isSelected
+                        ? color
+                        : AppTheme.border,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -225,7 +245,11 @@ class _UserDialogState extends State<UserDialog> {
                 Icon(
                   _rolIcon(rol),
                   size: 16,
-                  color: isSelected ? color : AppTheme.textMuted,
+                  color: isDisabled
+                      ? AppTheme.textMuted
+                      : isSelected
+                          ? color
+                          : AppTheme.textMuted,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -234,7 +258,11 @@ class _UserDialogState extends State<UserDialog> {
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1,
-                    color: isSelected ? color : AppTheme.textSecondary,
+                    color: isDisabled
+                        ? AppTheme.textMuted
+                        : isSelected
+                            ? color
+                            : AppTheme.textSecondary,
                   ),
                 ),
               ],

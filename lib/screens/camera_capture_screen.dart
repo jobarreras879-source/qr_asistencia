@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/google_drive_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/processing_overlay.dart';
 import 'success_screen.dart';
 
 class CameraCaptureScreen extends StatefulWidget {
@@ -24,8 +25,7 @@ class CameraCaptureScreen extends StatefulWidget {
   State<CameraCaptureScreen> createState() => _CameraCaptureScreenState();
 }
 
-class _CameraCaptureScreenState extends State<CameraCaptureScreen>
-    with SingleTickerProviderStateMixin {
+class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
   int _currentCameraIndex = 0;
@@ -33,24 +33,14 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
   bool _isUploading = false;
   bool _flashEffect = false;
 
-  late AnimationController _uploadAnimController;
-  late Animation<double> _uploadAnim;
-
   @override
   void initState() {
     super.initState();
-    _uploadAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
-    _uploadAnim = Tween<double>(begin: 0, end: 1).animate(_uploadAnimController);
-
     _initCamera();
   }
 
   @override
   void dispose() {
-    _uploadAnimController.dispose();
     _controller?.dispose();
     super.dispose();
   }
@@ -86,7 +76,6 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
   Future<void> _takePictureAndUpload() async {
     if (!_controller!.value.isInitialized || _isUploading) return;
 
-    // Verificar primero si Drive está configurado
     final folderId = await GoogleDriveService.getDriveFolderId();
     if (folderId == null) {
       if (!mounted) return;
@@ -96,19 +85,21 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             children: [
               Icon(Icons.add_to_drive_rounded, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Expanded(child: Text('Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.')),
+              Expanded(
+                  child: Text(
+                      'Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.')),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: const EdgeInsets.all(16),
         ),
       );
       return;
     }
 
-    // Flash effect
     setState(() => _flashEffect = true);
     await Future.delayed(const Duration(milliseconds: 150));
     if (mounted) setState(() => _flashEffect = false);
@@ -121,12 +112,8 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       final base64String = base64Encode(bytes);
       final fullBase64 = 'data:image/jpeg;base64,$base64String';
 
-      // SUBIDA DIRECTA A GOOGLE DRIVE
       final success = await GoogleDriveService.uploadPhoto(
-        folderId, 
-        fullBase64, 
-        widget.nombreBase
-      );
+          folderId, fullBase64, widget.nombreBase);
 
       if (!mounted) return;
 
@@ -135,21 +122,14 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) => SuccessScreen(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                SuccessScreen(
               message: widget.resultMessage,
               usuario: widget.usuario,
               rol: widget.rol,
             ),
             transitionsBuilder: (context, anim, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: anim,
-                child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(parent: anim, curve: Curves.easeOutBack),
-                  ),
-                  child: child,
-                ),
-              );
+              return FadeTransition(opacity: anim, child: child);
             },
           ),
         );
@@ -181,12 +161,15 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Expanded(child: Text('No se pudo tomar o subir la fotografía. Intenta de nuevo.')),
+              Expanded(
+                  child: Text(
+                      'No se pudo tomar o subir la fotografía. Intenta de nuevo.')),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -203,8 +186,8 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(
-                height: 40,
-                width: 40,
+                height: 48,
+                width: 48,
                 child: CircularProgressIndicator(
                     color: AppTheme.accent, strokeWidth: 3),
               ),
@@ -224,206 +207,133 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera preview
-          Positioned.fill(
-            child: CameraPreview(_controller!),
-          ),
-
-          // Flash effect overlay
-          if (_flashEffect)
-            Positioned.fill(
-              child: Container(color: Colors.white),
-            ),
-
-          // Upload overlay
+          Positioned.fill(child: CameraPreview(_controller!)),
+          if (_flashEffect) Positioned.fill(child: Container(color: Colors.white)),
           if (_isUploading)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.7),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(32),
-                    margin: const EdgeInsets.all(40),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppTheme.border),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _uploadAnim,
-                          builder: (context, child) {
-                            return Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  height: 56,
-                                  width: 56,
-                                  child: CircularProgressIndicator(
-                                    color: AppTheme.accent,
-                                    strokeWidth: 3,
-                                    value: null,
-                                  ),
-                                ),
-                                const Icon(Icons.cloud_upload_rounded,
-                                    color: AppTheme.accent, size: 24),
-                              ],
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Subiendo imagen...',
-                          style: GoogleFonts.dmSans(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Por favor espera',
-                          style: GoogleFonts.dmSans(
-                            color: AppTheme.textSecondary,
-                            fontSize: 13,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            const ProcessingOverlay(
+              message: 'Subiendo imagen...',
+              subMessage: 'Por favor espera',
+              icon: Icons.cloud_upload_rounded,
             ),
-
-          // Top bar
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 12,
-                left: 20,
-                right: 20,
-                bottom: 16,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.7),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: _isUploading ? null : () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white, size: 22),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Tomar Fotografía',
-                        style: GoogleFonts.bebasNeue(
-                          fontSize: 22,
-                          letterSpacing: 2,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Evidencia de asistencia',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12,
-                          color: Colors.white54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            child: _buildTopBar(),
           ),
-
-          // Bottom controls
           if (!_isUploading)
             Positioned(
               bottom: 50,
               left: 0,
               right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Cancel
-                  _buildCircleButton(
-                    icon: Icons.close_rounded,
-                    size: 52,
-                    onTap: () => Navigator.pop(context),
-                  ),
-
-                  // Capture
-                  GestureDetector(
-                    onTap: _takePictureAndUpload,
-                    child: Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.accent.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Container(
-                          height: 64,
-                          width: 64,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.white,
-                                Colors.white.withValues(alpha: 0.9),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Flip camera
-                  _buildCircleButton(
-                    icon: Icons.flip_camera_android_rounded,
-                    size: 52,
-                    onTap: _switchCamera,
-                  ),
-                ],
-              ),
+              child: _buildControls(),
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return Container(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12,
+        left: 20,
+        right: 20,
+        bottom: 16,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withValues(alpha: 0.7),
+            Colors.transparent,
+          ],
+        ),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: _isUploading ? null : () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.arrow_back_rounded,
+                  color: Colors.white, size: 22),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Tomar Fotografía',
+                style: GoogleFonts.bebasNeue(
+                  fontSize: 22,
+                  letterSpacing: 2,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Evidencia de asistencia',
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  color: Colors.white54,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControls() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildCircleButton(
+          icon: Icons.close_rounded,
+          size: 52,
+          onTap: () => Navigator.pop(context),
+        ),
+        GestureDetector(
+          onTap: _takePictureAndUpload,
+          child: Container(
+            height: 80,
+            width: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 4),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.accent.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Container(
+                height: 64,
+                width: 64,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+        ),
+        _buildCircleButton(
+          icon: Icons.flip_camera_android_rounded,
+          size: 52,
+          onTap: _switchCamera,
+        ),
+      ],
     );
   }
 
