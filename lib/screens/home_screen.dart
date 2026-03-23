@@ -4,13 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/project_service.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/home_header.dart';
+import '../widgets/project_selector_card.dart';
+import '../widgets/quick_actions_grid.dart';
 import 'qr_scanner_screen.dart';
 import 'login_screen.dart';
-import 'history_screen.dart';
-import 'project_management_screen.dart';
-import 'user_management_screen.dart';
-import 'drive_config_screen.dart';
-import 'sheets_config_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String usuario;
@@ -128,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
           usuario: _usuarioActual,
           rol: _rolActual,
           proyectoInfo: _proyectoIdSeleccionado!,
-          tipo: 'Proyecto', // Ahora por defecto
+          tipo: 'Proyecto',
         ),
         transitionsBuilder: (_, anim, __, child) {
           return FadeTransition(
@@ -168,11 +166,21 @@ class _HomeScreenState extends State<HomeScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildHeader(),
+                  HomeHeader(usuario: _usuarioActual),
                   const SizedBox(height: 28),
-                  _buildProjectSelector(),
+                  ProjectSelectorCard(
+                    isLoading: _isLoading,
+                    proyectos: _proyectos,
+                    proyectoIdSeleccionado: _proyectoIdSeleccionado,
+                    onChanged: (val) =>
+                        setState(() => _proyectoIdSeleccionado = val),
+                  ),
                   const SizedBox(height: 24),
-                  _buildQuickActions(),
+                  QuickActionsGrid(
+                    rol: _rolActual,
+                    onLogout: _logout,
+                    onRefreshProyectos: _fetchProyectos,
+                  ),
                   const Spacer(),
                   _buildScanButton(),
                   const SizedBox(height: 16),
@@ -182,317 +190,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: AppTheme.glassDecoration,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AVS Ingeniería',
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 26,
-                    letterSpacing: 3,
-                    color: AppTheme.accent,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'REGISTRAR ASISTENCIA',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    letterSpacing: 2.5,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // User badge
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppTheme.accent.withOpacity(0.15),
-                        AppTheme.accent.withOpacity(0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: AppTheme.success,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _usuarioActual,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.accent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required String tooltip,
-    Color? accentColor,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: Tooltip(
-        message: tooltip,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: accentColor?.withOpacity(0.5) ?? AppTheme.border.withOpacity(0.5),
-              ),
-            ),
-            child: Icon(
-              icon, 
-              color: accentColor ?? AppTheme.textSecondary, 
-              size: 20,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProjectSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 3,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'PROYECTO',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _isLoading
-            ? Container(
-                padding: const EdgeInsets.all(20),
-                decoration: AppTheme.cardDecoration,
-                child: const Center(
-                  child: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: AppTheme.accent),
-                  ),
-                ),
-              )
-            : _proyectos.isEmpty
-                ? Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.error.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: AppTheme.error.withOpacity(0.3)),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.error_outline,
-                            color: AppTheme.error, size: 20),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'No se encontraron proyectos. Verifica la configuración de tu base de datos.',
-                            style: TextStyle(
-                                color: AppTheme.error, fontSize: 13),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: AppTheme.cardDecoration,
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        dropdownColor: AppTheme.surface,
-                        value: _proyectoIdSeleccionado,
-                        hint: Text(
-                          '— Selecciona —',
-                          style: GoogleFonts.dmSans(
-                              color: AppTheme.textMuted, fontSize: 14),
-                        ),
-                        icon: const Icon(Icons.unfold_more_rounded,
-                            color: AppTheme.textSecondary, size: 20),
-                        items: _proyectos.map((p) {
-                          return DropdownMenuItem<String>(
-                            value: p['numero'],
-                            child: Text(
-                              '${p['numero']} — ${p['nombre']}',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          setState(() => _proyectoIdSeleccionado = val);
-                        },
-                      ),
-                    ),
-                  ),
-      ],
-    );
-  }
-
-  Widget _buildQuickActions() {
-    final currentRol = _rolActual.toUpperCase();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 3,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppTheme.accentTeal,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'ACCIONES RÁPIDAS',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            if (currentRol == 'ADMIN') ...[
-              _buildIconButton(
-                icon: Icons.folder_copy_rounded,
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ProjectManagementScreen(),
-                    ),
-                  );
-                  _fetchProyectos(); // Refresh after returning
-                },
-                tooltip: 'Proyectos',
-                accentColor: AppTheme.accentTeal,
-              ),
-              _buildIconButton(
-                icon: Icons.add_to_drive_rounded,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
-                  );
-                },
-                tooltip: 'Google Drive (Fotos)',
-                accentColor: const Color(0xFF4285F4),
-              ),
-              _buildIconButton(
-                icon: Icons.table_chart_rounded,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
-                  );
-                },
-                tooltip: 'Google Sheets (Historial)',
-                accentColor: const Color(0xFF0F9D58),
-              ),
-            ],
-            if (currentRol == 'ADMIN') ...[
-              _buildIconButton(
-                icon: Icons.people_rounded,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const UserManagementScreen()),
-                  );
-                },
-                tooltip: 'Usuarios',
-                accentColor: AppTheme.accent2,
-              ),
-            ],
-            _buildIconButton(
-              icon: Icons.history_rounded,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HistoryScreen()),
-              ),
-              tooltip: 'Historial',
-            ),
-            _buildIconButton(
-              icon: Icons.logout_rounded,
-              onTap: _logout,
-              tooltip: 'Cerrar Sesión',
-            ),
-          ],
-        ),
-      ],
     );
   }
 
@@ -553,4 +250,5 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
+
 

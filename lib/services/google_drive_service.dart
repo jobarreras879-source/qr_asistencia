@@ -20,9 +20,10 @@ class GoogleDriveService {
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
-  static void _logError(String action, Object error) {
+  static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
-      debugPrint('GoogleDriveService $action: $error');
+      debugPrint('❌ GoogleDriveService ERROR [$action]: $error');
+      if (stack != null) debugPrint(stack.toString());
     }
   }
 
@@ -35,16 +36,21 @@ class GoogleDriveService {
     try {
       if (currentUser != null) return currentUser;
       return await _googleSignIn.signIn();
-    } catch (error) {
-      _logError('signIn', error);
+    } catch (error, stack) {
+      _logError('signIn', error, stack);
       if (context != null) {
+        String message = 'No se pudo iniciar sesión con Google.';
+        if (error.toString().contains('network_error')) {
+          message = 'Error de red. Revisa tu conexión a internet.';
+        } else if (error.toString().contains('access_denied')) {
+          message = 'Acceso denegado. Se requieren permisos para continuar.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No se pudo iniciar sesión con Google. Revisa la configuración OAuth y vuelve a intentar.',
-            ),
+          SnackBar(
+            content: Text(message),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 8),
+            duration: const Duration(seconds: 8),
           ),
         );
       }
@@ -151,8 +157,8 @@ class GoogleDriveService {
       final result = await driveApi.files.create(fileMetadata, uploadMedia: media);
       
       return result.id != null;
-    } catch (error) {
-      _logError('uploadPhoto', error);
+    } catch (error, stack) {
+      _logError('uploadPhoto', error, stack);
       return false;
     }
   }
@@ -288,8 +294,8 @@ class GoogleDriveService {
       );
 
       return true;
-    } catch (error) {
-      _logError('appendAttendanceRow', error);
+    } catch (error, stack) {
+      _logError('appendAttendanceRow', error, stack);
       return false;
     }
   }
