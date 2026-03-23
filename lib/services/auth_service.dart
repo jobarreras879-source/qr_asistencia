@@ -7,7 +7,15 @@ import 'password_hash_service.dart';
 /// Servicio de autenticación centralizado usando Supabase Auth.
 /// Centraliza el acceso a la sesión actual y al perfil autenticado.
 class AuthService {
-  static final _supabase = Supabase.instance.client;
+  static SupabaseClient? _mockSupabase;
+
+  @visibleForTesting
+  static void setMockSupabase(SupabaseClient? client) {
+    _mockSupabase = client;
+  }
+
+  static SupabaseClient get _supabase => _mockSupabase ?? Supabase.instance.client;
+
   static const _tableName = 'usuarios';
   static const _defaultRole = 'USUARIO';
   static const _storage = FlutterSecureStorage();
