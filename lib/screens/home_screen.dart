@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../services/project_service.dart';
 import '../services/auth_service.dart';
-import '../services/google_drive_service.dart';
 import '../theme/app_theme.dart';
 import 'qr_scanner_screen.dart';
 import 'login_screen.dart';
@@ -31,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen>
   String? _proyectoIdSeleccionado;
   late String _usuarioActual;
   late String _rolActual;
-  GoogleSignInAccount? _googleAccount;
 
   late AnimationController _fadeController;
   late AnimationController _scanPulseController;
@@ -63,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     _fadeController.forward();
     _refreshSessionInfo();
-    _initGoogleAccount();
     _fetchProyectos();
   }
 
@@ -72,12 +68,6 @@ class _HomeScreenState extends State<HomeScreen>
     _fadeController.dispose();
     _scanPulseController.dispose();
     super.dispose();
-  }
-
-  Future<void> _initGoogleAccount() async {
-    final account = await GoogleDriveService.signInSilently();
-    if (!mounted) return;
-    setState(() => _googleAccount = account);
   }
 
   Future<void> _fetchProyectos() async {
@@ -225,83 +215,44 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                // User & Google badges
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildUserBadge(),
-                    if (_googleAccount != null) _buildGoogleBadge(),
-                  ],
+                // User badge
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.accent.withOpacity(0.15),
+                        AppTheme.accent.withOpacity(0.05),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.success,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _usuarioActual,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.accent,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.accent.withOpacity(0.15),
-            AppTheme.accent.withOpacity(0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: AppTheme.success,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            _usuarioActual,
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.accent,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGoogleBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF4285F4).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF4285F4).withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.g_mobiledata_rounded, size: 16, color: Color(0xFF4285F4)),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              _googleAccount?.email ?? '',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Colors.white70,
-              ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -492,24 +443,22 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               _buildIconButton(
                 icon: Icons.add_to_drive_rounded,
-                onTap: () async {
-                  await Navigator.push(
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
                   );
-                  _initGoogleAccount(); // Sync if it changed
                 },
                 tooltip: 'Google Drive (Fotos)',
                 accentColor: const Color(0xFF4285F4),
               ),
               _buildIconButton(
                 icon: Icons.table_chart_rounded,
-                onTap: () async {
-                  await Navigator.push(
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
                   );
-                  _initGoogleAccount(); // Sync if it changed
                 },
                 tooltip: 'Google Sheets (Historial)',
                 accentColor: const Color(0xFF0F9D58),
@@ -604,3 +553,4 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
+
