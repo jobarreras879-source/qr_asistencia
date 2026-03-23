@@ -193,7 +193,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                           error = await ProjectService.crearProyecto(num, name, cliente, oc);
                         }
 
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         if (error == null) {
                           Navigator.pop(context);
                           _loadProjects();
@@ -271,7 +271,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                     child: ElevatedButton(
                       onPressed: () async {
                         final error = await ProjectService.eliminarProyecto(numero);
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         if (error == null) {
                           Navigator.pop(context);
                           _loadProjects();
@@ -439,9 +439,9 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen> with 
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppTheme.accent.withOpacity(0.1),
+                    color: AppTheme.accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.accent.withOpacity(0.2)),
+                    border: Border.all(color: AppTheme.accent.withValues(alpha: 0.2)),
                   ),
                   child: Center(
                     child: Text(

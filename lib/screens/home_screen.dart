@@ -124,13 +124,13 @@ class _HomeScreenState extends State<HomeScreen>
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 400),
-        pageBuilder: (_, __, ___) => QRScannerScreen(
+        pageBuilder: (c, a1, a2) => QRScannerScreen(
           usuario: _usuarioActual,
           rol: _rolActual,
           proyectoInfo: _proyectoIdSeleccionado!,
           tipo: 'Proyecto', // Ahora por defecto
         ),
-        transitionsBuilder: (_, anim, __, child) {
+        transitionsBuilder: (c, anim, a2, child) {
           return FadeTransition(
             opacity: anim,
             child: ScaleTransition(
@@ -222,12 +222,12 @@ class _HomeScreenState extends State<HomeScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppTheme.accent.withOpacity(0.15),
-                        AppTheme.accent.withOpacity(0.05),
+                        AppTheme.accent.withValues(alpha: 0.15),
+                        AppTheme.accent.withValues(alpha: 0.05),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+                    border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -276,10 +276,10 @@ class _HomeScreenState extends State<HomeScreen>
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.5),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: accentColor?.withOpacity(0.5) ?? AppTheme.border.withOpacity(0.5),
+                color: accentColor?.withValues(alpha: 0.5) ?? AppTheme.border.withValues(alpha: 0.5),
               ),
             ),
             child: Icon(
@@ -337,10 +337,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ? Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.error.withOpacity(0.08),
+                      color: AppTheme.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
                       border:
-                          Border.all(color: AppTheme.error.withOpacity(0.3)),
+                          Border.all(color: AppTheme.error.withValues(alpha: 0.3)),
                     ),
                     child: const Row(
                       children: [
@@ -511,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ? [
                     BoxShadow(
                       color: AppTheme.accent
-                          .withOpacity(0.2 + 0.15 * _scanPulseAnim.value),
+                          .withValues(alpha: 0.2 + 0.15 * _scanPulseAnim.value),
                       blurRadius: 20 + 10 * _scanPulseAnim.value,
                       offset: const Offset(0, 6),
                     ),

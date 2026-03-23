@@ -93,7 +93,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withOpacity(0.1),
+                          color: AppTheme.accent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
@@ -201,8 +201,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                               horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? color.withOpacity(0.15)
-                                : AppTheme.surfaceLight.withOpacity(0.5),
+                                ? color.withValues(alpha: 0.15)
+                                : AppTheme.surfaceLight.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color:
@@ -288,7 +288,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                               );
                             }
 
-                            if (!mounted) return;
+                            if (!context.mounted) return;
                             if (error == null) {
                               Navigator.pop(context);
                               _loadUsers();
@@ -356,7 +356,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.error.withOpacity(0.1),
+                  color: AppTheme.error.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.person_remove_rounded,
@@ -394,7 +394,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       onPressed: () async {
                         final error =
                             await UserService.eliminarUsuario(user['id'] as String);
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         if (error == null) {
                           Navigator.pop(context);
                           _loadUsers();
@@ -522,9 +522,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(0.1),
+              color: AppTheme.accent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
             ),
             child: Text(
               '${_users.length}',
@@ -554,7 +554,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.3),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.people_outline_rounded,
@@ -613,9 +613,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: color.withOpacity(0.25)),
+                    border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Center(
                     child: Icon(
@@ -644,10 +644,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                          color: color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                           border:
-                              Border.all(color: color.withOpacity(0.3)),
+                              Border.all(color: color.withValues(alpha: 0.3)),
                         ),
                         child: Text(
                           rol,

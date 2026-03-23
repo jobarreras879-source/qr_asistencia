@@ -104,8 +104,8 @@ class _LoginScreenState extends State<LoginScreen>
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => HomeScreen(usuario: user, rol: rol),
-          transitionsBuilder: (_, anim, __, child) {
+          pageBuilder: (c, a1, a2) => HomeScreen(usuario: user, rol: rol),
+          transitionsBuilder: (c, anim, a2, child) {
             return FadeTransition(
               opacity: anim,
               child: SlideTransition(
@@ -165,12 +165,12 @@ class _LoginScreenState extends State<LoginScreen>
                             boxShadow: [
                               BoxShadow(
                                 color: AppTheme.accent
-                                    .withOpacity(0.4 * _pulseAnim.value),
+                                    .withValues(alpha: 0.4 * _pulseAnim.value),
                                 blurRadius: 40 * _pulseAnim.value,
                                 spreadRadius: 4 * _pulseAnim.value,
                               ),
                               BoxShadow(
-                                color: AppTheme.accent.withOpacity(0.1),
+                                color: AppTheme.accent.withValues(alpha: 0.1),
                                 blurRadius: 100,
                                 spreadRadius: 10,
                               ),
@@ -276,10 +276,10 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 10),
                               decoration: BoxDecoration(
-                                color: AppTheme.error.withOpacity(0.1),
+                                color: AppTheme.error.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: AppTheme.error.withOpacity(0.3)),
+                                    color: AppTheme.error.withValues(alpha: 0.3)),
                               ),
                               child: Row(
                                 children: [
@@ -307,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen>
                               gradient: AppTheme.accentGradient,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.accent.withOpacity(0.3),
+                                  color: AppTheme.accent.withValues(alpha: 0.3),
                                   blurRadius: 16,
                                   offset: const Offset(0, 6),
                                 ),
@@ -362,7 +362,7 @@ class _LoginScreenState extends State<LoginScreen>
                       'Powered by Supabase Security',
                       style: GoogleFonts.dmSans(
                         fontSize: 9,
-                        color: AppTheme.textMuted.withOpacity(0.5),
+                        color: AppTheme.textMuted.withValues(alpha: 0.5),
                         letterSpacing: 0.5,
                       ),
                     ),
