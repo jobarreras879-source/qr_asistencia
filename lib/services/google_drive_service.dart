@@ -13,7 +13,7 @@ class GoogleDriveService {
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
-      drive.DriveApi.driveFileScope,
+      drive.DriveApi.driveReadonlyScope, // Antes era driveFileScope (limitado)
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
@@ -204,8 +204,11 @@ class GoogleDriveService {
 
       final driveApi = drive.DriveApi(client);
       
-      // Armar la query. Busca por nombre y solo archivos de Google Sheets
-      String q = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
+      // Armar la query. Busca por nombre y archivos de Google Sheets o Excel
+      String q = "(mimeType='application/vnd.google-apps.spreadsheet' or "
+                 "mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or "
+                 "mimeType='application/vnd.ms-excel') and trashed=false";
+                 
       if (query.isNotEmpty) {
         final safeQuery = _escapeDriveQueryValue(query);
         q += " and name contains '$safeQuery'";
