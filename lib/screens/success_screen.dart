@@ -119,7 +119,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppTheme.success.withOpacity(0.4),
+                                    color: AppTheme.success.withValues(alpha: 0.4),
                                     blurRadius: 40,
                                     spreadRadius: 5,
                                   ),
@@ -167,7 +167,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                             padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
                                               color: AppTheme.success
-                                                  .withOpacity(0.15),
+                                                  .withValues(alpha: 0.15),
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -224,7 +224,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                     boxShadow: [
                                       BoxShadow(
                                         color:
-                                            AppTheme.accent.withOpacity(0.3),
+                                            AppTheme.accent.withValues(alpha: 0.3),
                                         blurRadius: 16,
                                         offset: const Offset(0, 6),
                                       ),

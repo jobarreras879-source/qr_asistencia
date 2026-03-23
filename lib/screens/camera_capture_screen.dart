@@ -239,7 +239,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
           if (_isUploading)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(32),
@@ -316,7 +316,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.7),
+                    Colors.black.withValues(alpha: 0.7),
                     Colors.transparent,
                   ],
                 ),
@@ -328,7 +328,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(Icons.arrow_back_rounded,
@@ -388,7 +388,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                         border: Border.all(color: Colors.white, width: 4),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.accent.withOpacity(0.3),
+                            color: AppTheme.accent.withValues(alpha: 0.3),
                             blurRadius: 20,
                             spreadRadius: 2,
                           ),
@@ -404,7 +404,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                             gradient: RadialGradient(
                               colors: [
                                 Colors.white,
-                                Colors.white.withOpacity(0.9),
+                                Colors.white.withValues(alpha: 0.9),
                               ],
                             ),
                           ),
@@ -439,8 +439,8 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.12),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
+          color: Colors.white.withValues(alpha: 0.12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
         ),
         child: Icon(icon, color: Colors.white, size: size * 0.45),
       ),

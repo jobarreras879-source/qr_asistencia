@@ -144,11 +144,11 @@ class QuickActionsGrid extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.5),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: accentColor?.withOpacity(0.5) ??
-                    AppTheme.border.withOpacity(0.5),
+                color: accentColor?.withValues(alpha: 0.5) ??
+                    AppTheme.border.withValues(alpha: 0.5),
               ),
             ),
             child: Icon(
