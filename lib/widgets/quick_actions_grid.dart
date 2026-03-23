@@ -75,7 +75,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const DriveConfigScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Google Drive (Fotos)',
@@ -87,7 +89,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const SheetsConfigScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Google Sheets (Historial)',
@@ -99,7 +103,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const UserManagementScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const UserManagementScreen(),
+                    ),
                   );
                 },
                 tooltip: 'Usuarios',
@@ -144,11 +150,12 @@ class QuickActionsGrid extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.5),
+              color: AppTheme.surfaceLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: accentColor?.withOpacity(0.5) ??
-                    AppTheme.border.withOpacity(0.5),
+                color:
+                    accentColor?.withValues(alpha: 0.5) ??
+                    AppTheme.border.withValues(alpha: 0.5),
               ),
             ),
             child: Icon(

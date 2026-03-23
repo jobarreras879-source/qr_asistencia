@@ -20,8 +20,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _isLoading = true;
   List<Map<String, dynamic>> _proyectos = [];
   String? _proyectoIdSeleccionado;
@@ -110,8 +109,9 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           backgroundColor: AppTheme.accent2,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -132,9 +132,10 @@ class _HomeScreenState extends State<HomeScreen>
           return FadeTransition(
             opacity: anim,
             child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-                CurvedAnimation(parent: anim, curve: Curves.easeOut),
-              ),
+              scale: Tween<double>(
+                begin: 0.95,
+                end: 1.0,
+              ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
               child: child,
             ),
           );
@@ -207,8 +208,9 @@ class _HomeScreenState extends State<HomeScreen>
             boxShadow: isReady
                 ? [
                     BoxShadow(
-                      color: AppTheme.accent
-                          .withOpacity(0.2 + 0.15 * _scanPulseAnim.value),
+                      color: AppTheme.accent.withValues(
+                        alpha: 0.2 + 0.15 * _scanPulseAnim.value,
+                      ),
                       blurRadius: 20 + 10 * _scanPulseAnim.value,
                       offset: const Offset(0, 6),
                     ),
@@ -250,5 +252,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
-
