@@ -208,66 +208,76 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: AppTheme.glassDecoration
-                  .copyWith(borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Usuarios',
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 28,
-                    letterSpacing: 2,
-                    color: AppTheme.accent,
-                  ),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: AppTheme.headerGradient,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+        ),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.borderLight),
                 ),
-                Text(
-                  'ADMINISTRACIÓN',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppTheme.accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
-            ),
-            child: Text(
-              '${_users.length}',
-              style: GoogleFonts.dmSans(
-                fontWeight: FontWeight.w700,
-                color: AppTheme.accent,
-                fontSize: 14,
+                child: const Icon(Icons.arrow_back_rounded,
+                    color: Colors.white, size: 22),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: _loadUsers,
-            icon: const Icon(Icons.refresh_rounded,
-                color: AppTheme.textSecondary),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Gestion de usuarios',
+                    style: GoogleFonts.ibmPlexSerif(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Administra accesos y perfiles operativos.',
+                    style: GoogleFonts.ibmPlexSans(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.accent2.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppTheme.accent2.withValues(alpha: 0.35)),
+              ),
+              child: Text(
+                '${_users.length}',
+                style: GoogleFonts.ibmPlexSans(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.accent2Light,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: _loadUsers,
+              icon: const Icon(Icons.refresh_rounded,
+                  color: AppTheme.textSecondary),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -289,7 +299,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           const SizedBox(height: 20),
           Text(
             'No hay usuarios',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
                 fontSize: 18,
                 color: AppTheme.textSecondary,
                 fontWeight: FontWeight.bold),
@@ -297,7 +307,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           const SizedBox(height: 8),
           Text(
             'Comienza creando uno nuevo',
-            style: GoogleFonts.dmSans(color: AppTheme.textMuted),
+            style: GoogleFonts.ibmPlexSans(color: AppTheme.textMuted),
           ),
         ],
       ),

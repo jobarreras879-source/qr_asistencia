@@ -26,37 +26,36 @@ class QuickActionsGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 3,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppTheme.accentTeal,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'ACCIONES RÁPIDAS',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
+        Text(
+          'Acciones disponibles',
+          style: GoogleFonts.ibmPlexSans(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
+        const SizedBox(height: 4),
+        Text(
+          'Accede a configuraciones y tareas administrativas desde este panel.',
+          style: GoogleFonts.ibmPlexSans(
+            fontSize: 12,
+            color: AppTheme.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 14),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.08,
           children: [
             if (currentRol == 'ADMIN') ...[
-              _buildIconButton(
+              _buildActionButton(
                 context,
                 icon: Icons.folder_copy_rounded,
+                label: 'Proyectos',
                 onTap: () async {
                   await Navigator.push(
                     context,
@@ -66,60 +65,59 @@ class QuickActionsGrid extends StatelessWidget {
                   );
                   onRefreshProyectos();
                 },
-                tooltip: 'Proyectos',
-                accentColor: AppTheme.accentTeal,
+                accentColor: AppTheme.accent,
               ),
-              _buildIconButton(
+              _buildActionButton(
                 context,
                 icon: Icons.add_to_drive_rounded,
+                label: 'Drive',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
                   );
                 },
-                tooltip: 'Google Drive (Fotos)',
-                accentColor: const Color(0xFF4285F4),
+                accentColor: const Color(0xFF5B87C5),
               ),
-              _buildIconButton(
+              _buildActionButton(
                 context,
                 icon: Icons.table_chart_rounded,
+                label: 'Sheets',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
                   );
                 },
-                tooltip: 'Google Sheets (Historial)',
-                accentColor: const Color(0xFF0F9D58),
+                accentColor: const Color(0xFF4B8A63),
               ),
-              _buildIconButton(
+              _buildActionButton(
                 context,
                 icon: Icons.people_rounded,
+                label: 'Usuarios',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const UserManagementScreen()),
                   );
                 },
-                tooltip: 'Usuarios',
                 accentColor: AppTheme.accent2,
               ),
             ],
-            _buildIconButton(
+            _buildActionButton(
               context,
               icon: Icons.history_rounded,
+              label: 'Historial',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const HistoryScreen()),
               ),
-              tooltip: 'Historial',
             ),
-            _buildIconButton(
+            _buildActionButton(
               context,
               icon: Icons.logout_rounded,
+              label: 'Salir',
               onTap: onLogout,
-              tooltip: 'Cerrar Sesión',
             ),
           ],
         ),
@@ -127,35 +125,56 @@ class QuickActionsGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(
+  Widget _buildActionButton(
     BuildContext context, {
     required IconData icon,
     required VoidCallback onTap,
-    required String tooltip,
+    required String label,
     Color? accentColor,
   }) {
     return Material(
       color: Colors.transparent,
-      child: Tooltip(
-        message: tooltip,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: accentColor?.withValues(alpha: 0.5) ??
-                    AppTheme.border.withValues(alpha: 0.5),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: accentColor?.withValues(alpha: 0.35) ??
+                  AppTheme.borderLight.withValues(alpha: 0.8),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: (accentColor ?? AppTheme.accent)
+                      .withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: accentColor ?? AppTheme.textPrimary,
+                  size: 20,
+                ),
               ),
-            ),
-            child: Icon(
-              icon,
-              color: accentColor ?? AppTheme.textSecondary,
-              size: 20,
-            ),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.ibmPlexSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -89,83 +89,87 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceLight.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-                border:
-                    Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: AppTheme.headerGradient,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+        ),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.borderLight),
+                ),
+                child: const Icon(Icons.arrow_back_rounded,
+                    color: Colors.white, size: 22),
               ),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Historial',
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 26,
-                    letterSpacing: 3,
-                    color: AppTheme.accent,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Historial de registros',
+                    style: GoogleFonts.ibmPlexSerif(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'REGISTROS RECIENTES',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 10,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textSecondary,
-                      ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Consulta trazabilidad reciente de asistencia.',
+                    style: GoogleFonts.ibmPlexSans(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accent.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${_registros.length}',
-                        style: const TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: _fetchHistory,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceLight.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-                border:
-                    Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.refresh_rounded,
-                  color: AppTheme.textSecondary, size: 20),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.accent2.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AppTheme.accent2.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Text(
+                '${_registros.length}',
+                style: GoogleFonts.ibmPlexSans(
+                  color: AppTheme.accent2Light,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: _fetchHistory,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.borderLight),
+                ),
+                child: const Icon(Icons.refresh_rounded,
+                    color: AppTheme.textSecondary, size: 20),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -212,7 +216,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 16),
           Text(
             'Sin registros aún',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               color: AppTheme.textSecondary,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -221,7 +225,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 6),
           Text(
             'Los registros aparecerán aquí después de escanear',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               color: AppTheme.textMuted,
               fontSize: 13,
             ),
@@ -280,7 +284,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(width: 8),
           Text(
             date.toUpperCase(),
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.5,

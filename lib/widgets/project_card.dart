@@ -24,7 +24,7 @@ class ProjectCard extends StatelessWidget {
         offset: Offset(0, 20 * (1 - animation.value)),
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: AppTheme.cardDecoration,
           child: Row(
             children: [
@@ -51,7 +51,7 @@ class ProjectCard extends StatelessWidget {
       child: Center(
         child: Text(
           project['numero'] ?? '?',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.ibmPlexSans(
             fontWeight: FontWeight.bold,
             color: AppTheme.accent,
             fontSize: 16,
@@ -68,7 +68,7 @@ class ProjectCard extends StatelessWidget {
         children: [
           Text(
             project['nombre'] ?? 'Sin nombre',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               fontWeight: FontWeight.w700,
               fontSize: 15,
               color: Colors.white,
@@ -76,7 +76,7 @@ class ProjectCard extends StatelessWidget {
           ),
           Text(
             'ID: ${project['numero']}',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               fontSize: 12,
               color: AppTheme.textSecondary,
             ),

@@ -183,48 +183,59 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: AppTheme.glassDecoration
-                  .copyWith(borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: AppTheme.headerGradient,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+        ),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.borderLight),
+                ),
+                child: const Icon(Icons.arrow_back_rounded,
+                    color: Colors.white, size: 22),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Proyectos',
-                style: GoogleFonts.bebasNeue(
-                  fontSize: 28,
-                  letterSpacing: 2,
-                  color: AppTheme.accent,
-                ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Gestion de proyectos',
+                    style: GoogleFonts.ibmPlexSerif(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Administra catalogos y frentes de trabajo.',
+                    style: GoogleFonts.ibmPlexSans(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'ADMINISTRACIÓN',
-                style: GoogleFonts.dmSans(
-                  fontSize: 10,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: _loadProjects,
-            icon: const Icon(Icons.refresh_rounded,
-                color: AppTheme.textSecondary),
-          ),
-        ],
+            ),
+            IconButton(
+              onPressed: _loadProjects,
+              icon: const Icon(Icons.refresh_rounded,
+                  color: AppTheme.textSecondary),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -239,7 +250,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
           const SizedBox(height: 16),
           Text(
             'No hay proyectos',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
                 fontSize: 18,
                 color: AppTheme.textSecondary,
                 fontWeight: FontWeight.bold),
@@ -247,7 +258,7 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
           const SizedBox(height: 8),
           Text(
             'Comienza creando uno nuevo',
-            style: GoogleFonts.dmSans(color: AppTheme.textMuted),
+            style: GoogleFonts.ibmPlexSans(color: AppTheme.textMuted),
           ),
         ],
       ),

@@ -10,37 +10,45 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: AppTheme.glassDecoration,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        gradient: AppTheme.headerGradient,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AVS Ingeniería',
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 26,
-                    letterSpacing: 3,
-                    color: AppTheme.accent,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'REGISTRAR ASISTENCIA',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    letterSpacing: 2.5,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _buildUserBadge(usuario),
-              ],
+          Text(
+            'AVS Ingenieria',
+            style: GoogleFonts.ibmPlexSerif(
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Panel de control de asistencia y registro operativo',
+            style: GoogleFonts.ibmPlexSans(
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(child: _buildUserBadge(usuario)),
+              const SizedBox(width: 12),
+              _buildStatusBadge(),
+            ],
           ),
         ],
       ),
@@ -51,14 +59,9 @@ class HomeHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.accent.withValues(alpha: 0.15),
-            AppTheme.accent.withValues(alpha: 0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.9)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -72,15 +75,52 @@ class HomeHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            usuario,
-            style: GoogleFonts.dmSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.accent,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Usuario activo',
+                  style: GoogleFonts.ibmPlexSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                Text(
+                  usuario,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.ibmPlexSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.accent2.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent2.withValues(alpha: 0.4)),
+      ),
+      child: Text(
+        'OPERATIVO',
+        style: GoogleFonts.ibmPlexSans(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+          color: AppTheme.accent2Light,
+        ),
       ),
     );
   }

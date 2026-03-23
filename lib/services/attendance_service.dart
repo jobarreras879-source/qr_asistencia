@@ -87,7 +87,9 @@ class AttendanceService {
         final infoSheets = await GoogleDriveService.getSheetsInfo();
         if (infoSheets != null && infoSheets['id'] != null) {
           await GoogleDriveService.appendAttendanceRow(
-              infoSheets['id'], filaParaGoogleSheets);
+            infoSheets['id'],
+            filaParaGoogleSheets,
+          );
         }
       }
 
@@ -99,6 +101,30 @@ class AttendanceService {
   }
 
   // ─── Historial ───────────────────────────────────────────────────
+
+  /// Obtiene la cantidad de registros del día actual asociados al usuario.
+  static Future<int> getTodayCount(String username) async {
+    try {
+      final normalizedUsername = username.trim();
+      if (normalizedUsername.isEmpty) return 0;
+
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
+
+      final data = await _supabase
+          .from('registros')
+          .select('fecha_hora')
+          .eq('usuario_logueado', normalizedUsername)
+          .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
+          .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
+
+      return List<Map<String, dynamic>>.from(data).length;
+    } catch (e, stack) {
+      _logError('getTodayCount', e, stack);
+      return 0;
+    }
+  }
 
   /// Obtiene los registros asociados al usuario activo de la sesión local.
   static Future<List<Map<String, dynamic>>> getCurrentUserHistory({

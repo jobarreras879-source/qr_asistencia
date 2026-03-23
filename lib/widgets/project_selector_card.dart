@@ -18,49 +18,43 @@ class ProjectSelectorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 3,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(2),
-              ),
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.cardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Proyecto operativo',
+            style: GoogleFonts.ibmPlexSans(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
-            const SizedBox(width: 8),
-            Text(
-              'PROYECTO',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: AppTheme.textSecondary,
-              ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Selecciona el frente de trabajo antes de iniciar un registro.',
+            style: GoogleFonts.ibmPlexSans(
+              fontSize: 12,
+              color: AppTheme.textSecondary,
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        isLoading
-            ? Container(
-                padding: const EdgeInsets.all(20),
-                decoration: AppTheme.cardDecoration,
-                child: const Center(
+          ),
+          const SizedBox(height: 16),
+          isLoading
+              ? const Center(
                   child: SizedBox(
                     height: 24,
                     width: 24,
                     child: CircularProgressIndicator(
                         strokeWidth: 2.5, color: AppTheme.accent),
                   ),
-                ),
-              )
-            : proyectos.isEmpty
-                ? _buildEmptyState()
-                : _buildDropdown(),
-      ],
+                )
+              : proyectos.isEmpty
+                  ? _buildEmptyState()
+                  : _buildDropdown(),
+        ],
+      ),
     );
   }
 
@@ -89,8 +83,12 @@ class ProjectSelectorCard extends StatelessWidget {
 
   Widget _buildDropdown() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: AppTheme.cardDecoration,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppTheme.bg.withValues(alpha: 0.26),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.borderLight),
+      ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true,

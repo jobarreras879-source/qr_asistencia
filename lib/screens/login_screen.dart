@@ -139,49 +139,85 @@ class _LoginScreenState extends State<LoginScreen>
                     MediaQuery.of(context).padding.top -
                     MediaQuery.of(context).padding.bottom,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Spacer(flex: 2),
-                    const BrandLogo(),
-                    const SizedBox(height: 24),
-
-                    // ─── Brand Title ────────────────────────
-                    Text(
-                      'AVS Ingeniería',
-                      style: GoogleFonts.bebasNeue(
-                        fontSize: 36,
-                        letterSpacing: 4,
-                        color: AppTheme.accent,
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accent2.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: AppTheme.accent2.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: Text(
+                          'Plataforma de asistencia',
+                          style: GoogleFonts.ibmPlexSans(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.accent2Light,
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 18),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: BrandLogo(size: 74),
+                    ),
+                    const SizedBox(height: 22),
                     Text(
-                      'CONTROL DE ASISTENCIA',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        letterSpacing: 3,
-                        fontWeight: FontWeight.w500,
+                      'AVS Ingenieria',
+                      style: GoogleFonts.ibmPlexSerif(
+                        fontSize: 38,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Accede al sistema para registrar asistencia, evidencias y operaciones de campo con una interfaz mas formal y controlada.',
+                      style: GoogleFonts.ibmPlexSans(
+                        fontSize: 14,
+                        height: 1.5,
                         color: AppTheme.textSecondary,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
-
-                    // ─── Glass Card Form ────────────────────
+                    const SizedBox(height: 30),
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: AppTheme.glassDecoration,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Usuario label
+                          Text(
+                            'Acceso al sistema',
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Ingresa con tus credenciales autorizadas.',
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 22),
                           Text(
                             'USUARIO',
-                            style: GoogleFonts.dmSans(
+                            style: GoogleFonts.ibmPlexSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
+                              letterSpacing: 1.6,
                               color: AppTheme.textSecondary,
                             ),
                           ),
@@ -191,19 +227,17 @@ class _LoginScreenState extends State<LoginScreen>
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 15),
                             decoration: AppTheme.inputDecoration(
-                              hint: 'Tu usuario',
+                              hint: 'Ingresa tu usuario',
                               prefixIcon: Icons.person_outline_rounded,
                             ),
                           ),
-                          const SizedBox(height: 20),
-
-                          // Password label
+                          const SizedBox(height: 18),
                           Text(
-                            'CONTRASEÑA',
-                            style: GoogleFonts.dmSans(
+                            'CONTRASENA',
+                            style: GoogleFonts.ibmPlexSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
+                              letterSpacing: 1.6,
                               color: AppTheme.textSecondary,
                             ),
                           ),
@@ -230,8 +264,6 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             onSubmitted: (_) => _login(),
                           ),
-
-                          // Error message
                           if (_errorMessage != null) ...[
                             const SizedBox(height: 16),
                             Container(
@@ -241,8 +273,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 color: AppTheme.error.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color:
-                                        AppTheme.error.withValues(alpha: 0.3)),
+                                  color: AppTheme.error.withValues(alpha: 0.3),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -260,19 +292,16 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                           ],
-
                           const SizedBox(height: 24),
-
-                          // Login button
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               gradient: AppTheme.accentGradient,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.accent.withValues(alpha: 0.3),
+                                  color: AppTheme.accent.withValues(alpha: 0.24),
                                   blurRadius: 16,
-                                  offset: const Offset(0, 6),
+                                  offset: const Offset(0, 8),
                                 ),
                               ],
                             ),
@@ -292,14 +321,14 @@ class _LoginScreenState extends State<LoginScreen>
                                       height: 22,
                                       width: 22,
                                       child: CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2.5))
+                                          color: Colors.white, strokeWidth: 2.5),
+                                    )
                                   : Text(
-                                      'Ingresar',
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 16,
+                                      'Ingresar al panel',
+                                      style: GoogleFonts.ibmPlexSans(
+                                        fontSize: 15,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white,
-                                        letterSpacing: 0.5,
                                       ),
                                     ),
                             ),
@@ -307,29 +336,19 @@ class _LoginScreenState extends State<LoginScreen>
                         ],
                       ),
                     ),
-
-                    const Spacer(flex: 3),
-
-                    // Footer
-                    Text(
-                      'v1.2.0 • AVS Ingeniería',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.textMuted,
-                        letterSpacing: 1,
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'AVS Ingenieria  •  Entorno seguro de operacion',
+                        style: GoogleFonts.ibmPlexSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.textMuted,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Powered by Supabase Security',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 9,
-                        color: AppTheme.textMuted.withValues(alpha: 0.5),
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),

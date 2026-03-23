@@ -86,14 +86,17 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
               Icon(Icons.add_to_drive_rounded, color: Colors.white, size: 20),
               SizedBox(width: 10),
               Expanded(
-                  child: Text(
-                      'Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.')),
+                child: Text(
+                  'Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.',
+                ),
+              ),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -113,7 +116,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
       final fullBase64 = 'data:image/jpeg;base64,$base64String';
 
       final success = await GoogleDriveService.uploadPhoto(
-          folderId, fullBase64, widget.nombreBase);
+        folderId,
+        fullBase64,
+        widget.nombreBase,
+      );
 
       if (!mounted) return;
 
@@ -124,10 +130,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
             transitionDuration: const Duration(milliseconds: 500),
             pageBuilder: (context, animation, secondaryAnimation) =>
                 SuccessScreen(
-              message: widget.resultMessage,
-              usuario: widget.usuario,
-              rol: widget.rol,
-            ),
+                  message: widget.resultMessage,
+                  usuario: widget.usuario,
+                  rol: widget.rol,
+                ),
             transitionsBuilder: (context, anim, secondaryAnimation, child) {
               return FadeTransition(opacity: anim, child: child);
             },
@@ -145,8 +151,9 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
             ),
             backgroundColor: AppTheme.error,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -162,14 +169,17 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
               Icon(Icons.error_outline, color: Colors.white, size: 20),
               SizedBox(width: 10),
               Expanded(
-                  child: Text(
-                      'No se pudo tomar o subir la fotografía. Intenta de nuevo.')),
+                child: Text(
+                  'No se pudo tomar o subir la fotografía. Intenta de nuevo.',
+                ),
+              ),
             ],
           ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -189,13 +199,17 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
                 height: 48,
                 width: 48,
                 child: CircularProgressIndicator(
-                    color: AppTheme.accent, strokeWidth: 3),
+                  color: AppTheme.accent,
+                  strokeWidth: 3,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Iniciando cámara...',
                 style: GoogleFonts.dmSans(
-                    color: AppTheme.textSecondary, fontSize: 14),
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -207,28 +221,44 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Positioned.fill(child: CameraPreview(_controller!)),
-          if (_flashEffect) Positioned.fill(child: Container(color: Colors.white)),
+          Positioned.fill(child: _buildCameraPreview()),
+          if (_flashEffect)
+            Positioned.fill(child: Container(color: Colors.white)),
           if (_isUploading)
             const ProcessingOverlay(
               message: 'Subiendo imagen...',
               subMessage: 'Por favor espera',
               icon: Icons.cloud_upload_rounded,
             ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildTopBar(),
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: _buildTopBar()),
           if (!_isUploading)
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: _buildControls(),
-            ),
+            Positioned(bottom: 50, left: 0, right: 0, child: _buildControls()),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCameraPreview() {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) {
+      return const SizedBox.expand();
+    }
+
+    final previewSize = controller.value.previewSize;
+    if (previewSize == null) {
+      return CameraPreview(controller);
+    }
+
+    return ClipRect(
+      child: SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: previewSize.height,
+            height: previewSize.width,
+            child: CameraPreview(controller),
+          ),
+        ),
       ),
     );
   }
@@ -245,10 +275,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Colors.black.withValues(alpha: 0.7),
-            Colors.transparent,
-          ],
+          colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
         ),
       ),
       child: Row(
@@ -261,8 +288,11 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
                 color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -279,10 +309,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
               ),
               Text(
                 'Evidencia de asistencia',
-                style: GoogleFonts.dmSans(
-                  fontSize: 12,
-                  color: Colors.white54,
-                ),
+                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white54),
               ),
             ],
           ),

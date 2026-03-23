@@ -27,7 +27,7 @@ class UserCard extends StatelessWidget {
         offset: Offset(0, 20 * (1 - animation.value)),
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: AppTheme.cardDecoration,
           child: Row(
             children: [
@@ -68,7 +68,7 @@ class UserCard extends StatelessWidget {
         children: [
           Text(
             user['usuario'] ?? 'Sin nombre',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               fontWeight: FontWeight.w700,
               fontSize: 15,
               color: Colors.white,
@@ -84,7 +84,7 @@ class UserCard extends StatelessWidget {
             ),
             child: Text(
               rol,
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.ibmPlexSans(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.5,

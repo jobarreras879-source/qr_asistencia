@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// App logo with a pulsing animation used in Login and other screens.
+/// App logo with a restrained, more formal presentation.
 class BrandLogo extends StatefulWidget {
   final double size;
   final IconData icon;
@@ -49,26 +49,37 @@ class _BrandLogoState extends State<BrandLogo>
           width: widget.size,
           height: widget.size,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: AppTheme.accentGradient,
+            borderRadius: BorderRadius.circular(widget.size * 0.24),
+            gradient: AppTheme.headerGradient,
+            border: Border.all(
+              color: AppTheme.borderLight.withValues(alpha: 0.9),
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppTheme.accent
-                    .withValues(alpha: 0.4 * _pulseAnim.value),
-                blurRadius: 40 * _pulseAnim.value,
-                spreadRadius: 4 * _pulseAnim.value,
-              ),
-              BoxShadow(
-                color: AppTheme.accent.withValues(alpha: 0.1),
-                blurRadius: 100,
-                spreadRadius: 10,
+                    .withValues(alpha: 0.16 * _pulseAnim.value),
+                blurRadius: 24 * _pulseAnim.value,
+                spreadRadius: 1.5 * _pulseAnim.value,
               ),
             ],
           ),
-          child: Icon(
-            widget.icon,
-            color: Colors.white,
-            size: widget.size * 0.5,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                top: widget.size * 0.18,
+                child: Container(
+                  width: widget.size * 0.42,
+                  height: 2,
+                  color: AppTheme.accent2.withValues(alpha: 0.9),
+                ),
+              ),
+              Icon(
+                widget.icon,
+                color: Colors.white,
+                size: widget.size * 0.44,
+              ),
+            ],
           ),
         );
       },

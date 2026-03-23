@@ -21,9 +21,9 @@ class HistoryRecordCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.border.withValues(alpha: 0.4)),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.75)),
       ),
       child: Row(
         children: [
@@ -58,7 +58,7 @@ class HistoryRecordCard extends StatelessWidget {
         children: [
           Text(
             registro['nombre']?.toString() ?? 'Sin nombre',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               fontWeight: FontWeight.w700,
               fontSize: 14,
               color: Colors.white,
@@ -70,7 +70,7 @@ class HistoryRecordCard extends StatelessWidget {
             children: [
               Text(
                 DateFormatter.formatTime(registro['fecha_hora']?.toString()),
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.ibmPlexSans(
                   color: AppTheme.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class HistoryRecordCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Proyecto: ${registro['proyecto'] ?? ''}',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.ibmPlexSans(
               color: AppTheme.textMuted,
               fontSize: 11,
             ),
