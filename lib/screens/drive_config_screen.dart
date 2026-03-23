@@ -29,16 +29,16 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
 
   Future<void> _initDrive() async {
     setState(() => _isLoading = true);
-    
+
     // Check local preferences
     final folderId = await GoogleDriveService.getDriveFolderId();
     final folderName = await GoogleDriveService.getDriveFolderName();
-    
+
     // Check silent login
     final account = await GoogleDriveService.signInSilently();
-    
+
     if (!mounted) return;
-    
+
     setState(() {
       _selectedFolderId = folderId;
       _selectedFolderName = folderName;
@@ -65,7 +65,7 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
   Future<void> _signIn() async {
     setState(() => _isLoading = true);
     final account = await GoogleDriveService.signIn(context: context);
-    
+
     if (!mounted) return;
     setState(() => _account = account);
 
@@ -79,7 +79,7 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
   Future<void> _signOut() async {
     await GoogleDriveService.signOut();
     await GoogleDriveService.clearDriveFolder();
-    
+
     if (!mounted) return;
     setState(() {
       _account = null;
@@ -91,10 +91,10 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
 
   Future<void> _selectFolder(drive.File folder) async {
     if (folder.id == null || folder.name == null) return;
-    
+
     await GoogleDriveService.setDriveFolder(folder.id!, folder.name!);
     if (!mounted) return;
-    
+
     setState(() {
       _selectedFolderId = folder.id;
       _selectedFolderName = folder.name;
@@ -119,7 +119,10 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           backgroundColor: AppTheme.surface,
           title: Text(
             'Nueva Carpeta',
-            style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold),
+            style: GoogleFonts.dmSans(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: TextField(
             controller: controller,
@@ -132,7 +135,10 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar', style: TextStyle(color: AppTheme.textSecondary)),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: AppTheme.textSecondary),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -190,9 +196,11 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           ),
         ),
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.accent))
-        : _buildBody(),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppTheme.accent),
+            )
+          : _buildBody(),
     );
   }
 
@@ -204,7 +212,11 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_to_drive_rounded, size: 80, color: Colors.grey.withOpacity(0.5)),
+              Icon(
+                Icons.add_to_drive_rounded,
+                size: 80,
+                color: Colors.grey.withValues(alpha: 0.5),
+              ),
               const SizedBox(height: 24),
               Text(
                 'Conecta tu cuenta de Google Drive',
@@ -227,12 +239,24 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
               const SizedBox(height: 48),
               ElevatedButton.icon(
                 onPressed: _signIn,
-                icon: const Icon(Icons.g_mobiledata_rounded, size: 32, color: Colors.white),
-                label: const Text('Iniciar con Google', style: TextStyle(color: Colors.white, fontSize: 16)),
+                icon: const Icon(
+                  Icons.g_mobiledata_rounded,
+                  size: 32,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  'Iniciar con Google',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4285F4), // Google Blue
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],
@@ -251,9 +275,13 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: _account!.photoUrl != null ? NetworkImage(_account!.photoUrl!) : null,
-                backgroundColor: AppTheme.accent.withOpacity(0.2),
-                child: _account!.photoUrl == null ? const Icon(Icons.person, color: AppTheme.accent) : null,
+                backgroundImage: _account!.photoUrl != null
+                    ? NetworkImage(_account!.photoUrl!)
+                    : null,
+                backgroundColor: AppTheme.accent.withValues(alpha: 0.2),
+                child: _account!.photoUrl == null
+                    ? const Icon(Icons.person, color: AppTheme.accent)
+                    : null,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -262,12 +290,19 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                   children: [
                     Text(
                       _account!.displayName ?? 'Usuario de Google',
-                      style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: GoogleFonts.dmSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       _account!.email,
-                      style: GoogleFonts.dmSans(color: AppTheme.textSecondary, fontSize: 13),
+                      style: GoogleFonts.dmSans(
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -288,9 +323,11 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.success.withOpacity(0.1),
+              color: AppTheme.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.success.withOpacity(0.3)),
+              border: Border.all(
+                color: AppTheme.success.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -302,12 +339,20 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                     children: [
                       Text(
                         'Carpeta seleccionada para fotos:',
-                        style: GoogleFonts.dmSans(color: AppTheme.success, fontSize: 12, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.dmSans(
+                          color: AppTheme.success,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         _selectedFolderName ?? 'Carpeta desconocida',
-                        style: GoogleFonts.dmSans(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.dmSans(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -322,7 +367,9 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
             margin: const EdgeInsets.only(top: 16),
             decoration: BoxDecoration(
               color: AppTheme.surfaceLight,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
+              ),
               border: Border.all(color: AppTheme.border),
             ),
             child: Column(
@@ -342,65 +389,91 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                         ),
                       ),
                       _isCreating
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                        : TextButton.icon(
-                            onPressed: _createFolderDialog,
-                            icon: const Icon(Icons.add_rounded, size: 18),
-                            label: const Text('Nueva'),
-                            style: TextButton.styleFrom(foregroundColor: AppTheme.accent),
-                          ),
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : TextButton.icon(
+                              onPressed: _createFolderDialog,
+                              icon: const Icon(Icons.add_rounded, size: 18),
+                              label: const Text('Nueva'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppTheme.accent,
+                              ),
+                            ),
                     ],
                   ),
                 ),
 
                 Expanded(
                   child: _folders.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No se encontraron carpetas',
-                          style: GoogleFonts.dmSans(color: AppTheme.textMuted),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _loadFolders,
-                        color: AppTheme.accent,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          itemCount: _folders.length,
-                          itemBuilder: (context, index) {
-                            final folder = _folders[index];
-                            final isSelected = folder.id == _selectedFolderId;
+                      ? Center(
+                          child: Text(
+                            'No se encontraron carpetas',
+                            style: GoogleFonts.dmSans(
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _loadFolders,
+                          color: AppTheme.accent,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            itemCount: _folders.length,
+                            itemBuilder: (context, index) {
+                              final folder = _folders[index];
+                              final isSelected = folder.id == _selectedFolderId;
 
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: BoxDecoration(
-                                color: isSelected ? AppTheme.accent.withOpacity(0.15) : AppTheme.surface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isSelected ? AppTheme.accent : AppTheme.border.withOpacity(0.5),
-                                ),
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  isSelected ? Icons.folder_special_rounded : Icons.folder_rounded,
-                                  color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
-                                ),
-                                title: Text(
-                                  folder.name ?? 'Sin nombre',
-                                  style: GoogleFonts.dmSans(
-                                    color: Colors.white,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppTheme.accent.withValues(alpha: 0.15)
+                                      : AppTheme.surface,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppTheme.accent
+                                        : AppTheme.border.withValues(
+                                            alpha: 0.5,
+                                          ),
                                   ),
                                 ),
-                                trailing: isSelected
-                                  ? const Icon(Icons.check_circle_rounded, color: AppTheme.accent)
-                                  : null,
-                                onTap: () => _selectFolder(folder),
-                              ),
-                            );
-                          },
+                                child: ListTile(
+                                  leading: Icon(
+                                    isSelected
+                                        ? Icons.folder_special_rounded
+                                        : Icons.folder_rounded,
+                                    color: isSelected
+                                        ? AppTheme.accent
+                                        : AppTheme.textSecondary,
+                                  ),
+                                  title: Text(
+                                    folder.name ?? 'Sin nombre',
+                                    style: GoogleFonts.dmSans(
+                                      color: Colors.white,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                  trailing: isSelected
+                                      ? const Icon(
+                                          Icons.check_circle_rounded,
+                                          color: AppTheme.accent,
+                                        )
+                                      : null,
+                                  onTap: () => _selectFolder(folder),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
                 ),
               ],
             ),

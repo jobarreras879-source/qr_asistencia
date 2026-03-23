@@ -53,13 +53,15 @@ class ProjectSelectorCard extends StatelessWidget {
                     height: 24,
                     width: 24,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: AppTheme.accent),
+                      strokeWidth: 2.5,
+                      color: AppTheme.accent,
+                    ),
                   ),
                 ),
               )
             : proyectos.isEmpty
-                ? _buildEmptyState()
-                : _buildDropdown(),
+            ? _buildEmptyState()
+            : _buildDropdown(),
       ],
     );
   }
@@ -68,9 +70,9 @@ class ProjectSelectorCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.error.withOpacity(0.08),
+        color: AppTheme.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.error.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.error.withValues(alpha: 0.3)),
       ),
       child: const Row(
         children: [
@@ -100,8 +102,11 @@ class ProjectSelectorCard extends StatelessWidget {
             '— Selecciona —',
             style: GoogleFonts.dmSans(color: AppTheme.textMuted, fontSize: 14),
           ),
-          icon: const Icon(Icons.unfold_more_rounded,
-              color: AppTheme.textSecondary, size: 20),
+          icon: const Icon(
+            Icons.unfold_more_rounded,
+            color: AppTheme.textSecondary,
+            size: 20,
+          ),
           items: proyectos.map((p) {
             return DropdownMenuItem<String>(
               value: p['numero'],
