@@ -4,7 +4,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Servicio para CRUD de proyectos.
 /// Se apoya en RLS para validar qué usuarios pueden modificar proyectos.
 class ProjectService {
-  static final _supabase = Supabase.instance.client;
+  @visibleForTesting
+  static SupabaseClient? mockClient;
+
+  static SupabaseClient get _supabase => mockClient ?? Supabase.instance.client;
 
   static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
