@@ -7,7 +7,12 @@ import '../utils/date_formatter.dart';
 /// Servicio para registro y consulta de asistencia.
 /// Separa el flujo de registros del resto de servicios.
 class AttendanceService {
-  static final _supabase = Supabase.instance.client;
+  @visibleForTesting
+  static SupabaseClient? mockClient;
+  static SupabaseClient get _supabase => mockClient ?? Supabase.instance.client;
+
+  @visibleForTesting
+  static String? sanitizeQrInput(String raw) => _sanitizeQrInput(raw);
 
   static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
