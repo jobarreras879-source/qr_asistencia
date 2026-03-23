@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/attendance_service.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/date_formatter.dart';
+import '../widgets/history_record_card.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -96,7 +98,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.surfaceLight.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
+                border:
+                    Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
               ),
               child: const Icon(Icons.arrow_back_rounded,
                   color: Colors.white, size: 22),
@@ -128,7 +131,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppTheme.accent.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
@@ -154,7 +158,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.surfaceLight.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
+                border:
+                    Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
               ),
               child: const Icon(Icons.refresh_rounded,
                   color: AppTheme.textSecondary, size: 20),
@@ -203,8 +208,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.history_rounded,
-              color: AppTheme.textMuted, size: 64),
+          Icon(Icons.history_rounded, color: AppTheme.textMuted, size: 64),
           const SizedBox(height: 16),
           Text(
             'Sin registros aún',
@@ -231,11 +235,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     // Group records by date
     final Map<String, List<Map<String, dynamic>>> grouped = {};
     for (var reg in _registros) {
-      final date = _formatDate(reg['fecha_hora']?.toString());
-      if (!grouped.containsKey(date)) {
-        grouped[date] = [];
-      }
-      grouped[date]!.add(reg);
+      final date = DateFormatter.formatDate(reg['fecha_hora']?.toString());
+      grouped.putIfAbsent(date, () => []).add(reg);
     }
 
     final keys = grouped.keys.toList();
@@ -253,119 +254,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 4,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: AppTheme.accent.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      date.toUpperCase(),
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
-                        color: AppTheme.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ...items.map((reg) {
-                final isProyecto = reg['tipo'] == 'Proyecto';
-                final color = isProyecto ? AppTheme.accent : AppTheme.accent2;
-                final icon = isProyecto ? Icons.construction_rounded : Icons.restaurant_rounded;
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.border.withValues(alpha: 0.4)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: color.withValues(alpha: 0.2)),
-                        ),
-                        child: Center(
-                          child: Icon(icon, color: color, size: 20),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              reg['nombre']?.toString() ?? 'Sin nombre',
-                              style: GoogleFonts.dmSans(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Text(
-                                  _formatTime(reg['fecha_hora']?.toString()),
-                                  style: GoogleFonts.dmSans(
-                                    color: AppTheme.textSecondary,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: color.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    reg['tipo']?.toString() ?? '',
-                                    style: TextStyle(
-                                        color: color,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Proyecto: ${reg['proyecto'] ?? ''}',
-                              style: GoogleFonts.dmSans(
-                                color: AppTheme.textMuted,
-                                fontSize: 11,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.border, size: 14),
-                    ],
-                  ),
-                );
-              }),
+              _buildDateHeader(date),
+              ...items.map((reg) => HistoryRecordCard(registro: reg)),
               const SizedBox(height: 8),
             ],
           );
@@ -374,23 +264,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null) return '';
-    try {
-      final dt = DateTime.parse(dateStr);
-      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
-    } catch (_) {
-      return dateStr;
-    }
-  }
-
-  String _formatTime(String? dateStr) {
-    if (dateStr == null) return '';
-    try {
-      final dt = DateTime.parse(dateStr);
-      return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return '';
-    }
+  Widget _buildDateHeader(String date) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 14,
+            decoration: BoxDecoration(
+              color: AppTheme.accent.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            date.toUpperCase(),
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.5,
+              color: AppTheme.textMuted,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

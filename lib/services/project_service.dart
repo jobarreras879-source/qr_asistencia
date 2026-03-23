@@ -6,9 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ProjectService {
   static final _supabase = Supabase.instance.client;
 
-  static void _logError(String action, Object error) {
+  static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
-      debugPrint('ProjectService $action: $error');
+      debugPrint('❌ ProjectService ERROR [$action]: $error');
+      if (stack != null) debugPrint(stack.toString());
     }
   }
 
@@ -28,8 +29,8 @@ class ProjectService {
         'cliente': e['Client']?.toString() ?? '',
         'oc': e['OC']?.toString() ?? '',
       }).toList();
-    } catch (e) {
-      _logError('getProyectos', e);
+    } catch (e, stack) {
+      _logError('getProyectos', e, stack);
       return [];
     }
   }
@@ -45,8 +46,8 @@ class ProjectService {
         'OC': oc.isEmpty ? null : oc,
       });
       return null;
-    } catch (e) {
-      _logError('crearProyecto', e);
+    } catch (e, stack) {
+      _logError('crearProyecto', e, stack);
       return 'No se pudo crear el proyecto. Verifica los datos o tus permisos.';
     }
   }
@@ -71,8 +72,8 @@ class ProjectService {
           })
           .eq('"No."', oldNumero);
       return null;
-    } catch (e) {
-      _logError('editarProyecto', e);
+    } catch (e, stack) {
+      _logError('editarProyecto', e, stack);
       return 'No se pudo actualizar el proyecto. Intenta de nuevo.';
     }
   }
@@ -83,8 +84,8 @@ class ProjectService {
     try {
       await _supabase.from('proyecto').delete().eq('"No."', numero);
       return null;
-    } catch (e) {
-      _logError('eliminarProyecto', e);
+    } catch (e, stack) {
+      _logError('eliminarProyecto', e, stack);
       return 'No se pudo eliminar el proyecto. Intenta de nuevo.';
     }
   }

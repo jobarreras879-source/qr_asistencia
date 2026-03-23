@@ -10,9 +10,10 @@ class UserService {
   static const _tableName = 'usuarios';
   static const _validRoles = {'ADMIN', 'USUARIO'};
 
-  static void _logError(String action, Object error) {
+  static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
-      debugPrint('UserService $action: $error');
+      debugPrint('❌ UserService ERROR [$action]: $error');
+      if (stack != null) debugPrint(stack.toString());
     }
   }
 
@@ -36,8 +37,8 @@ class UserService {
         'rol': (e['rol'] as String?) ?? 'USUARIO',
         'activo': e['activo'] == true,
       }).toList();
-    } catch (e) {
-      _logError('getUsuarios', e);
+    } catch (e, stack) {
+      _logError('getUsuarios', e, stack);
       return [];
     }
   }
@@ -58,8 +59,8 @@ class UserService {
       });
 
       return null;
-    } catch (e) {
-      _logError('crearUsuario', e);
+    } catch (e, stack) {
+      _logError('crearUsuario', e, stack);
       final lower = e.toString().toLowerCase();
       if (lower.contains('duplicate') || lower.contains('unique')) {
         return 'Ese usuario ya existe.';
@@ -106,8 +107,8 @@ class UserService {
       }
 
       return null;
-    } catch (e) {
-      _logError('editarUsuario', e);
+    } catch (e, stack) {
+      _logError('editarUsuario', e, stack);
       final lower = e.toString().toLowerCase();
       if (lower.contains('duplicate') || lower.contains('unique')) {
         return 'Ese usuario ya existe.';
@@ -127,8 +128,8 @@ class UserService {
       await _supabase.from(_tableName).delete().eq('id', int.parse(id));
       await AuthService.clearLocalSessionIfMatches(id);
       return null;
-    } catch (e) {
-      _logError('eliminarUsuario', e);
+    } catch (e, stack) {
+      _logError('eliminarUsuario', e, stack);
       return 'No se pudo eliminar el usuario.';
     }
   }

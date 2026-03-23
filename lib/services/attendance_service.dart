@@ -1,11 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'google_drive_service.dart';
 import 'auth_service.dart';
+import '../utils/date_formatter.dart';
 
 /// Servicio para registro y consulta de asistencia.
 /// Separa el flujo de registros del resto de servicios.
 class AttendanceService {
   static final _supabase = Supabase.instance.client;
+
+  static void _logError(String action, Object error, [StackTrace? stack]) {
+    if (kDebugMode) {
+      debugPrint('❌ AttendanceService ERROR [$action]: $error');
+      if (stack != null) debugPrint(stack.toString());
+    }
+  }
 
   // ─── Sanitización ────────────────────────────────────────────────
 
@@ -59,9 +68,7 @@ class AttendanceService {
       }
 
       final now = DateTime.now();
-      final fechaHoraString =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
-          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+      final fechaHoraString = DateFormatter.toStorageString(now);
 
       final filaParaGoogleSheets = {
         'DPI': id,
@@ -85,7 +92,8 @@ class AttendanceService {
       }
 
       return '✅ $tipo registrado — Proyecto: $proyecto | ID: $id | $nombre';
-    } catch (_) {
+    } catch (e, stack) {
+      _logError('registrarAsistencia', e, stack);
       return 'Ocurrió un error al registrar. Intenta de nuevo.';
     }
   }
@@ -108,7 +116,8 @@ class AttendanceService {
           .limit(limit);
 
       return List<Map<String, dynamic>>.from(data);
-    } catch (_) {
+    } catch (e, stack) {
+      _logError('getCurrentUserHistory', e, stack);
       return [];
     }
   }
