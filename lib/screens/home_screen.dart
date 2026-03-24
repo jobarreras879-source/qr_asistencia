@@ -620,33 +620,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildActionTile(_ActionItem item) {
-    return GestureDetector(
-      onTap: item.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: _C.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _C.border),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: item.bgColor,
-                borderRadius: BorderRadius.circular(12),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: item.onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: _C.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: _C.border),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: item.bgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(item.icon, color: item.iconColor, size: 20),
               ),
-              child: Icon(item.icon, color: item.iconColor, size: 20),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.label,
-              style: GoogleFonts.dmSans(fontSize: 12, color: _C.textSec),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                item.label,
+                style: GoogleFonts.dmSans(fontSize: 12, color: _C.textSec),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -655,44 +659,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildCTA() {
     final ready = _proyectoIdSeleccionado != null;
 
-    return GestureDetector(
-      onTap: _iniciarRegistro,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-        padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
-        decoration: BoxDecoration(
-          color: ready ? const Color(0xFF1A3A6E) : _C.surface,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _iniciarRegistro,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: ready ? const Color(0xFF2A5098) : _C.border,
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
+            decoration: BoxDecoration(
+              color: ready ? const Color(0xFF1A3A6E) : _C.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: ready ? const Color(0xFF2A5098) : _C.border,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: ready ? const Color(0xFF2255A8) : _C.surface2,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.qr_code_scanner_rounded,
+                    color: ready ? Colors.white : _C.textMuted,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Iniciar registro',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: ready ? _C.textPri : _C.textMuted,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: ready ? const Color(0xFF2255A8) : _C.surface2,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.qr_code_scanner_rounded,
-                color: ready ? Colors.white : _C.textMuted,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Iniciar registro',
-              style: GoogleFonts.dmSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: ready ? _C.textPri : _C.textMuted,
-              ),
-            ),
-          ],
         ),
       ),
     );
