@@ -112,14 +112,16 @@ class AttendanceService {
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      final data = await _supabase
+      // ⚡ Bolt: Use .count() instead of .select() to avoid downloading and parsing rows
+      // just to count them. This prevents payload size bottlenecks as records grow.
+      final count = await _supabase
           .from('registros')
-          .select('fecha_hora')
+          .count(CountOption.exact)
           .eq('usuario_logueado', normalizedUsername)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
-      return List<Map<String, dynamic>>.from(data).length;
+      return count;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
       return 0;
