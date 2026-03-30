@@ -28,7 +28,7 @@ class _BrandLogoState extends State<BrandLogo>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     )..repeat(reverse: true);
-    
+
     _pulseAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -56,8 +56,9 @@ class _BrandLogoState extends State<BrandLogo>
             ),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.accent
-                    .withValues(alpha: 0.16 * _pulseAnim.value),
+                color: AppTheme.accent.withValues(
+                  alpha: 0.16 * _pulseAnim.value,
+                ),
                 blurRadius: 24 * _pulseAnim.value,
                 spreadRadius: 1.5 * _pulseAnim.value,
               ),
@@ -74,11 +75,7 @@ class _BrandLogoState extends State<BrandLogo>
                   color: AppTheme.accent2.withValues(alpha: 0.9),
                 ),
               ),
-              Icon(
-                widget.icon,
-                color: Colors.white,
-                size: widget.size * 0.44,
-              ),
+              Icon(widget.icon, color: Colors.white, size: widget.size * 0.44),
             ],
           ),
         );

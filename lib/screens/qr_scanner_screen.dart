@@ -72,12 +72,14 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             transitionDuration: const Duration(milliseconds: 400),
             pageBuilder: (context, animation, secondaryAnimation) =>
                 CameraCaptureScreen(
-              nombreBase:
-                  code.substring(0, code.length < 13 ? code.length : 13),
-              usuario: widget.usuario,
-              rol: widget.rol,
-              resultMessage: msgOrError,
-            ),
+                  nombreBase: code.substring(
+                    0,
+                    code.length < 13 ? code.length : 13,
+                  ),
+                  usuario: widget.usuario,
+                  rol: widget.rol,
+                  resultMessage: msgOrError,
+                ),
             transitionsBuilder: (context, anim, secondaryAnimation, child) {
               return FadeTransition(opacity: anim, child: child);
             },
@@ -95,8 +97,9 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             ),
             backgroundColor: AppTheme.error,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -131,8 +134,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           ),
 
           // Processing state
-          if (_isProcessing)
-            const ProcessingOverlay(message: 'Registrando...'),
+          if (_isProcessing) const ProcessingOverlay(message: 'Registrando...'),
         ],
       ),
     );

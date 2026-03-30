@@ -74,7 +74,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const DriveConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const DriveConfigScreen(),
+                    ),
                   );
                 },
                 accentColor: const Color(0xFF5B87C5),
@@ -86,7 +88,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SheetsConfigScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const SheetsConfigScreen(),
+                    ),
                   );
                 },
                 accentColor: const Color(0xFF4B8A63),
@@ -98,7 +102,9 @@ class QuickActionsGrid extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const UserManagementScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const UserManagementScreen(),
+                    ),
                   );
                 },
                 accentColor: AppTheme.accent2,
@@ -143,7 +149,8 @@ class QuickActionsGrid extends StatelessWidget {
             color: AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: accentColor?.withValues(alpha: 0.35) ??
+              color:
+                  accentColor?.withValues(alpha: 0.35) ??
                   AppTheme.borderLight.withValues(alpha: 0.8),
             ),
           ),
@@ -154,8 +161,9 @@ class QuickActionsGrid extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: (accentColor ?? AppTheme.accent)
-                      .withValues(alpha: 0.12),
+                  color: (accentColor ?? AppTheme.accent).withValues(
+                    alpha: 0.12,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(

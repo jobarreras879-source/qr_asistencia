@@ -56,7 +56,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              project != null ? 'Proyecto actualizado' : 'Proyecto creado'),
+            project != null ? 'Proyecto actualizado' : 'Proyecto creado',
+          ),
           backgroundColor: AppTheme.success,
         ),
       );
@@ -75,8 +76,11 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.warning_amber_rounded,
-                  color: AppTheme.error, size: 48),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppTheme.error,
+                size: 48,
+              ),
               const SizedBox(height: 16),
               Text(
                 '¿Eliminar Proyecto?',
@@ -107,8 +111,9 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
                     child: ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(ctx);
-                        final error =
-                            await ProjectService.eliminarProyecto(numero);
+                        final error = await ProjectService.eliminarProyecto(
+                          numero,
+                        );
                         if (!mounted) return;
                         if (error == null) {
                           _loadProjects();
@@ -133,7 +138,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
                         backgroundColor: AppTheme.error,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text('Eliminar'),
@@ -160,11 +166,13 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
               Expanded(
                 child: _isLoading
                     ? const Center(
-                        child:
-                            CircularProgressIndicator(color: AppTheme.accent))
+                        child: CircularProgressIndicator(
+                          color: AppTheme.accent,
+                        ),
+                      )
                     : _projects.isEmpty
-                        ? _buildEmptyState()
-                        : _buildProjectList(),
+                    ? _buildEmptyState()
+                    : _buildProjectList(),
               ),
             ],
           ),
@@ -188,7 +196,9 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
         decoration: BoxDecoration(
           gradient: AppTheme.headerGradient,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+          border: Border.all(
+            color: AppTheme.borderLight.withValues(alpha: 0.8),
+          ),
         ),
         child: Row(
           children: [
@@ -201,8 +211,11 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.borderLight),
                 ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 22),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -231,8 +244,10 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
             ),
             IconButton(
               onPressed: _loadProjects,
-              icon: const Icon(Icons.refresh_rounded,
-                  color: AppTheme.textSecondary),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: AppTheme.textSecondary,
+              ),
             ),
           ],
         ),
@@ -245,15 +260,19 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.business_center_outlined,
-              size: 64, color: AppTheme.textMuted),
+          Icon(
+            Icons.business_center_outlined,
+            size: 64,
+            color: AppTheme.textMuted,
+          ),
           const SizedBox(height: 16),
           Text(
             'No hay proyectos',
             style: GoogleFonts.ibmPlexSans(
-                fontSize: 18,
-                color: AppTheme.textSecondary,
-                fontWeight: FontWeight.bold),
+              fontSize: 18,
+              color: AppTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -277,7 +296,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
           animation: _listController,
           builder: (context, _) {
             final animValue = Curves.easeOutCubic.transform(
-                (_listController.value - delay * 0.5).clamp(0.0, 1.0));
+              (_listController.value - delay * 0.5).clamp(0.0, 1.0),
+            );
             return ProjectCard(
               project: project,
               animation: AlwaysStoppedAnimation(animValue),

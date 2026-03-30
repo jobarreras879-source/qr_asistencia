@@ -25,7 +25,9 @@ class _UserDialogState extends State<UserDialog> {
   @override
   void initState() {
     super.initState();
-    _userController = TextEditingController(text: widget.user?['usuario'] ?? '');
+    _userController = TextEditingController(
+      text: widget.user?['usuario'] ?? '',
+    );
     _passController = TextEditingController();
     _selectedRol = widget.user?['rol'] ?? 'USUARIO';
   }
@@ -123,9 +125,9 @@ class _UserDialogState extends State<UserDialog> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildLabel(isEditing
-                  ? 'NUEVA CONTRASEÑA (opcional)'
-                  : 'CONTRASEÑA'),
+              _buildLabel(
+                isEditing ? 'NUEVA CONTRASEÑA (opcional)' : 'CONTRASEÑA',
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: _passController,
@@ -234,8 +236,8 @@ class _UserDialogState extends State<UserDialog> {
                 color: isDisabled
                     ? AppTheme.border.withValues(alpha: 0.5)
                     : isSelected
-                        ? color
-                        : AppTheme.border,
+                    ? color
+                    : AppTheme.border,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -248,8 +250,8 @@ class _UserDialogState extends State<UserDialog> {
                   color: isDisabled
                       ? AppTheme.textMuted
                       : isSelected
-                          ? color
-                          : AppTheme.textMuted,
+                      ? color
+                      : AppTheme.textMuted,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -261,8 +263,8 @@ class _UserDialogState extends State<UserDialog> {
                     color: isDisabled
                         ? AppTheme.textMuted
                         : isSelected
-                            ? color
-                            : AppTheme.textSecondary,
+                        ? color
+                        : AppTheme.textSecondary,
                   ),
                 ),
               ],
