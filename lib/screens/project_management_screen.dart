@@ -51,7 +51,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
       context: context,
       builder: (_) => ProjectDialog(project: project),
     );
-    if (result == true && mounted) {
+    if (!mounted) return;
+    if (result == true) {
       _loadProjects();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

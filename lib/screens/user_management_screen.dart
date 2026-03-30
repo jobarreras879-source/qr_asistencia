@@ -51,7 +51,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       context: context,
       builder: (_) => UserDialog(user: user),
     );
-    if (result == true && mounted) {
+    if (!mounted) return;
+    if (result == true) {
       _loadUsers();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
