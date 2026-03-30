@@ -100,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       hasInternet = result.isNotEmpty && result.first.rawAddress.isNotEmpty;
     } on SocketException {
       hasInternet = false;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error checking internet: $e');
       hasInternet = false;
     }
 
