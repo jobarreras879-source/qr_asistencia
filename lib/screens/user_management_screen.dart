@@ -57,16 +57,20 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.white, size: 18),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(user != null ? 'Usuario actualizado' : 'Usuario creado'),
             ],
           ),
           backgroundColor: AppTheme.success,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -91,8 +95,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   color: AppTheme.error.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_remove_rounded,
-                    color: AppTheme.error, size: 40),
+                child: const Icon(
+                  Icons.person_remove_rounded,
+                  color: AppTheme.error,
+                  size: 40,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -108,7 +115,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 'Se eliminará permanentemente el usuario "${user['usuario']}". Esta acción no se puede deshacer.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
-                    color: AppTheme.textSecondary, fontSize: 14),
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 32),
               Row(
@@ -126,22 +135,29 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                       onPressed: () async {
                         Navigator.pop(ctx);
                         final error = await UserService.eliminarUsuario(
-                            user['id'] as String);
+                          user['id'] as String,
+                        );
                         if (!mounted) return;
                         if (error == null) {
                           _loadUsers();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Row(children: [
-                                Icon(Icons.delete_rounded,
-                                    color: Colors.white, size: 18),
-                                SizedBox(width: 8),
-                                Text('Usuario eliminado'),
-                              ]),
+                              content: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text('Usuario eliminado'),
+                                ],
+                              ),
                               backgroundColor: AppTheme.error,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               margin: const EdgeInsets.all(16),
                             ),
                           );
@@ -159,7 +175,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                         backgroundColor: AppTheme.error,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text('Eliminar'),
@@ -186,10 +203,13 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               Expanded(
                 child: _isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppTheme.accent))
+                        child: CircularProgressIndicator(
+                          color: AppTheme.accent,
+                        ),
+                      )
                     : _users.isEmpty
-                        ? _buildEmptyState()
-                        : _buildUserList(),
+                    ? _buildEmptyState()
+                    : _buildUserList(),
               ),
             ],
           ),
@@ -213,7 +233,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         decoration: BoxDecoration(
           gradient: AppTheme.headerGradient,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+          border: Border.all(
+            color: AppTheme.borderLight.withValues(alpha: 0.8),
+          ),
         ),
         child: Row(
           children: [
@@ -226,8 +248,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.borderLight),
                 ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 22),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -259,7 +284,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               decoration: BoxDecoration(
                 color: AppTheme.accent2.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppTheme.accent2.withValues(alpha: 0.35)),
+                border: Border.all(
+                  color: AppTheme.accent2.withValues(alpha: 0.35),
+                ),
               ),
               child: Text(
                 '${_users.length}',
@@ -273,8 +300,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             const SizedBox(width: 8),
             IconButton(
               onPressed: _loadUsers,
-              icon: const Icon(Icons.refresh_rounded,
-                  color: AppTheme.textSecondary),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: AppTheme.textSecondary,
+              ),
             ),
           ],
         ),
@@ -293,16 +322,20 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               color: AppTheme.surfaceLight.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people_outline_rounded,
-                size: 56, color: AppTheme.textMuted),
+            child: const Icon(
+              Icons.people_outline_rounded,
+              size: 56,
+              color: AppTheme.textMuted,
+            ),
           ),
           const SizedBox(height: 20),
           Text(
             'No hay usuarios',
             style: GoogleFonts.ibmPlexSans(
-                fontSize: 18,
-                color: AppTheme.textSecondary,
-                fontWeight: FontWeight.bold),
+              fontSize: 18,
+              color: AppTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -326,7 +359,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           animation: _listController,
           builder: (context, _) {
             final animValue = Curves.easeOutCubic.transform(
-                (_listController.value - delay * 0.5).clamp(0.0, 1.0));
+              (_listController.value - delay * 0.5).clamp(0.0, 1.0),
+            );
             return UserCard(
               user: user,
               animation: AlwaysStoppedAnimation(animValue),

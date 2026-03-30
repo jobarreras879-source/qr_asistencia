@@ -31,8 +31,11 @@ class HistoryRecordCard extends StatelessWidget {
           const SizedBox(width: 14),
           _buildInfo(color),
           const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward_ios_rounded,
-              color: AppTheme.border, size: 14),
+          const Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: AppTheme.border,
+            size: 14,
+          ),
         ],
       ),
     );
@@ -78,8 +81,7 @@ class HistoryRecordCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),

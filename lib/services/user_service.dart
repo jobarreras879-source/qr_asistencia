@@ -31,12 +31,16 @@ class UserService {
           .select('id, usuario, rol, activo')
           .order('usuario', ascending: true);
 
-      return data.map((e) => <String, dynamic>{
-        'id': e['id'].toString(),
-        'usuario': e['usuario']?.toString() ?? '',
-        'rol': (e['rol'] as String?) ?? 'USUARIO',
-        'activo': e['activo'] == true,
-      }).toList();
+      return data
+          .map(
+            (e) => <String, dynamic>{
+              'id': e['id'].toString(),
+              'usuario': e['usuario']?.toString() ?? '',
+              'rol': (e['rol'] as String?) ?? 'USUARIO',
+              'activo': e['activo'] == true,
+            },
+          )
+          .toList();
     } catch (e, stack) {
       _logError('getUsuarios', e, stack);
       return [];
@@ -45,11 +49,16 @@ class UserService {
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  static Future<String?> crearUsuario(String usuario, String password, String rol) async {
+  static Future<String?> crearUsuario(
+    String usuario,
+    String password,
+    String rol,
+  ) async {
     try {
       final normalizedUsername = PasswordHashService.normalizeUsername(usuario);
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
-      if (password.length < 6) return 'La contraseña debe tener mínimo 6 caracteres.';
+      if (password.length < 6)
+        return 'La contraseña debe tener mínimo 6 caracteres.';
 
       await _supabase.from(_tableName).insert({
         'usuario': normalizedUsername,
@@ -79,8 +88,9 @@ class UserService {
   ) async {
     try {
       final normalizedRole = _normalizeRole(nuevoRol);
-      final normalizedUsername =
-          PasswordHashService.normalizeUsername(nuevoUsuario);
+      final normalizedUsername = PasswordHashService.normalizeUsername(
+        nuevoUsuario,
+      );
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
       if (nuevoPassword != null &&
           nuevoPassword.isNotEmpty &&

@@ -74,20 +74,13 @@ class QRScannerOverlay extends StatelessWidget {
             child: SizedBox(
               width: scanAreaSize,
               height: scanAreaSize,
-              child: CustomPaint(
-                painter: _CornerPainter(),
-              ),
+              child: CustomPaint(painter: _CornerPainter()),
             ),
           ),
         ),
 
         // Top info bar
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: _buildTopBar(context),
-        ),
+        Positioned(top: 0, left: 0, right: 0, child: _buildTopBar(context)),
 
         // Bottom instruction
         Positioned(
@@ -112,10 +105,7 @@ class QRScannerOverlay extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Colors.black.withValues(alpha: 0.8),
-            Colors.transparent,
-          ],
+          colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
         ),
       ),
       child: Row(
@@ -128,8 +118,11 @@ class QRScannerOverlay extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -229,13 +222,16 @@ class _ScanOverlayPainter extends CustomPainter {
 
     final path = Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromCenter(
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
             center: Offset(centerX, centerY),
             width: scanAreaSize,
-            height: scanAreaSize),
-        const Radius.circular(16),
-      ))
+            height: scanAreaSize,
+          ),
+          const Radius.circular(16),
+        ),
+      )
       ..fillType = PathFillType.evenOdd;
 
     canvas.drawPath(path, paint);
@@ -262,8 +258,10 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(0, cornerLength)
         ..lineTo(0, radius)
-        ..arcToPoint(const Offset(radius, 0),
-            radius: const Radius.circular(radius))
+        ..arcToPoint(
+          const Offset(radius, 0),
+          radius: const Radius.circular(radius),
+        )
         ..lineTo(cornerLength, 0),
       paint,
     );
@@ -273,8 +271,10 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(size.width - cornerLength, 0)
         ..lineTo(size.width - radius, 0)
-        ..arcToPoint(Offset(size.width, radius),
-            radius: const Radius.circular(radius))
+        ..arcToPoint(
+          Offset(size.width, radius),
+          radius: const Radius.circular(radius),
+        )
         ..lineTo(size.width, cornerLength),
       paint,
     );
@@ -284,8 +284,11 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(0, size.height - cornerLength)
         ..lineTo(0, size.height - radius)
-        ..arcToPoint(Offset(radius, size.height),
-            radius: const Radius.circular(radius), clockwise: false)
+        ..arcToPoint(
+          Offset(radius, size.height),
+          radius: const Radius.circular(radius),
+          clockwise: false,
+        )
         ..lineTo(cornerLength, size.height),
       paint,
     );
@@ -295,8 +298,11 @@ class _CornerPainter extends CustomPainter {
       Path()
         ..moveTo(size.width - cornerLength, size.height)
         ..lineTo(size.width - radius, size.height)
-        ..arcToPoint(Offset(size.width, size.height - radius),
-            radius: const Radius.circular(radius), clockwise: false)
+        ..arcToPoint(
+          Offset(size.width, size.height - radius),
+          radius: const Radius.circular(radius),
+          clockwise: false,
+        )
         ..lineTo(size.width, size.height - cornerLength),
       paint,
     );

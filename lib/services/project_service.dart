@@ -23,12 +23,16 @@ class ProjectService {
           .select()
           .order('"No."', ascending: true);
 
-      return data.map((e) => <String, dynamic>{
-        'numero': e['No.'].toString(),
-        'nombre': e['NameProyect']?.toString() ?? 'Sin nombre',
-        'cliente': e['Client']?.toString() ?? '',
-        'oc': e['OC']?.toString() ?? '',
-      }).toList();
+      return data
+          .map(
+            (e) => <String, dynamic>{
+              'numero': e['No.'].toString(),
+              'nombre': e['NameProyect']?.toString() ?? 'Sin nombre',
+              'cliente': e['Client']?.toString() ?? '',
+              'oc': e['OC']?.toString() ?? '',
+            },
+          )
+          .toList();
     } catch (e, stack) {
       _logError('getProyectos', e, stack);
       return [];
@@ -37,7 +41,12 @@ class ProjectService {
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  static Future<String?> crearProyecto(String numero, String nombre, String cliente, String oc) async {
+  static Future<String?> crearProyecto(
+    String numero,
+    String nombre,
+    String cliente,
+    String oc,
+  ) async {
     try {
       await _supabase.from('proyecto').insert({
         'No.': numero,
@@ -65,7 +74,7 @@ class ProjectService {
       await _supabase
           .from('proyecto')
           .update({
-            'No.': nuevoNumero, 
+            'No.': nuevoNumero,
             'NameProyect': nuevoNombre,
             'Client': cliente.isEmpty ? null : cliente,
             'OC': oc.isEmpty ? null : oc,

@@ -51,13 +51,7 @@ class UserCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
-      child: Center(
-        child: Icon(
-          _rolIcon(rol),
-          color: color,
-          size: 22,
-        ),
-      ),
+      child: Center(child: Icon(_rolIcon(rol), color: color, size: 22)),
     );
   }
 
@@ -103,14 +97,20 @@ class UserCard extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined,
-              color: AppTheme.textSecondary, size: 20),
+          icon: const Icon(
+            Icons.edit_outlined,
+            color: AppTheme.textSecondary,
+            size: 20,
+          ),
         ),
         if (onDelete != null)
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline_rounded,
-                color: AppTheme.error, size: 20),
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: AppTheme.error,
+              size: 20,
+            ),
           ),
       ],
     );
