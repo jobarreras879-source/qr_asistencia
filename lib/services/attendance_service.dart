@@ -36,6 +36,10 @@ class AttendanceService {
     return sanitized;
   }
 
+  @visibleForTesting
+  static String? sanitizeQrInputForTest(String raw) =>
+      _sanitizeQrInput(raw);
+
   // ─── Registro ────────────────────────────────────────────────────
 
   /// Registra la asistencia de un empleado a partir del código QR.
