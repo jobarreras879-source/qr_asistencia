@@ -48,6 +48,7 @@ app.*.map.json
 client_secret*.json
 *.secret
 .env
+dart_defines.json
 upload-keystore.jks
 key.properties
 sha1.txt

@@ -28,7 +28,10 @@ jobs:
         run: |
           # Note: Exporting IPA requires signing certificates
           # This command builds the app as a runner.app
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            --dart-define=GOOGLE_SERVER_CLIENT_ID=${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
 
       - name: Upload Runner.app
         uses: actions/upload-artifact@v4
