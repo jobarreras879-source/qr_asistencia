@@ -6,10 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ProjectService {
   static final _supabase = Supabase.instance.client;
 
-  static void _logError(String action, Object error, [StackTrace? stack]) {
+  static void _logError(String action, Object error) {
     if (kDebugMode) {
-      debugPrint('❌ ProjectService ERROR [$action]: $error');
-      if (stack != null) debugPrint(stack.toString());
+      debugPrint('ProjectService $action: $error');
     }
   }
 
@@ -23,21 +22,30 @@ class ProjectService {
           .select()
           .order('"No."', ascending: true);
 
-      return data.map((e) => <String, dynamic>{
-        'numero': e['No.'].toString(),
-        'nombre': e['NameProyect']?.toString() ?? 'Sin nombre',
-        'cliente': e['Client']?.toString() ?? '',
-        'oc': e['OC']?.toString() ?? '',
-      }).toList();
-    } catch (e, stack) {
-      _logError('getProyectos', e, stack);
+      return data
+          .map(
+            (e) => <String, dynamic>{
+              'numero': e['No.'].toString(),
+              'nombre': e['NameProyect']?.toString() ?? 'Sin nombre',
+              'cliente': e['Client']?.toString() ?? '',
+              'oc': e['OC']?.toString() ?? '',
+            },
+          )
+          .toList();
+    } catch (e) {
+      _logError('getProyectos', e);
       return [];
     }
   }
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  static Future<String?> crearProyecto(String numero, String nombre, String cliente, String oc) async {
+  static Future<String?> crearProyecto(
+    String numero,
+    String nombre,
+    String cliente,
+    String oc,
+  ) async {
     try {
       await _supabase.from('proyecto').insert({
         'No.': numero,
@@ -46,8 +54,8 @@ class ProjectService {
         'OC': oc.isEmpty ? null : oc,
       });
       return null;
-    } catch (e, stack) {
-      _logError('crearProyecto', e, stack);
+    } catch (e) {
+      _logError('crearProyecto', e);
       return 'No se pudo crear el proyecto. Verifica los datos o tus permisos.';
     }
   }
@@ -65,15 +73,15 @@ class ProjectService {
       await _supabase
           .from('proyecto')
           .update({
-            'No.': nuevoNumero, 
+            'No.': nuevoNumero,
             'NameProyect': nuevoNombre,
             'Client': cliente.isEmpty ? null : cliente,
             'OC': oc.isEmpty ? null : oc,
           })
           .eq('"No."', oldNumero);
       return null;
-    } catch (e, stack) {
-      _logError('editarProyecto', e, stack);
+    } catch (e) {
+      _logError('editarProyecto', e);
       return 'No se pudo actualizar el proyecto. Intenta de nuevo.';
     }
   }
@@ -84,8 +92,8 @@ class ProjectService {
     try {
       await _supabase.from('proyecto').delete().eq('"No."', numero);
       return null;
-    } catch (e, stack) {
-      _logError('eliminarProyecto', e, stack);
+    } catch (e) {
+      _logError('eliminarProyecto', e);
       return 'No se pudo eliminar el proyecto. Intenta de nuevo.';
     }
   }
