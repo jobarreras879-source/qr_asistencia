@@ -140,6 +140,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
           ),
         );
       } else {
+        debugPrint('Error uploading photo');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
