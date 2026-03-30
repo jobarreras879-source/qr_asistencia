@@ -1,0 +1,5 @@
+🎯 **What:** The codebase was using an insecure cryptographic practice for passwords, relying on plain `SHA-256` hashing which is susceptible to rainbow table attacks and fast brute-forcing.
+
+⚠️ **Risk:** If an attacker gains access to the database (either via SQL injection, stolen credentials, or a backup leak), they could quickly crack the passwords of many users using precomputed hashes or fast hashing hardware (GPUs/ASICs), leading to widespread account compromise.
+
+🛡️ **Solution:** Migrated the password hashing logic to use `bcrypt` via the `bcrypt` Dart package. `bcrypt` automatically generates and incorporates a unique salt for each hashed password and employs a computationally expensive key stretching algorithm, making offline brute-force and rainbow table attacks practically unfeasible. I introduced `BCrypt.hashpw(password, BCrypt.gensalt())` to the `hash` method, and `BCrypt.checkpw(password, hashed)` to a new `verify` method, and updated `AuthService` to compare them.

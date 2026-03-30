@@ -7,12 +7,22 @@ void main() {
     expect(PasswordHashService.normalizeUsername('  JPerez  '), 'jperez');
   });
 
-  test('hash is deterministic for the same password', () {
-    final hashA = PasswordHashService.hash('admin123');
-    final hashB = PasswordHashService.hash('admin123');
+  test('hash generates a valid bcrypt string and can be verified', () {
+    final password = 'admin123';
+    final hashA = PasswordHashService.hash(password);
+    final hashB = PasswordHashService.hash(password);
 
-    expect(hashA, hashB);
-    expect(hashA, isNotEmpty);
+    // Bcrypt hashes should be different even for the same password due to salting
+    expect(hashA, isNot(equals(hashB)));
+
+    // But both should be verifiable
+    expect(PasswordHashService.verify(password, hashA), isTrue);
+    expect(PasswordHashService.verify(password, hashB), isTrue);
+  });
+
+  test('verify returns false for incorrect passwords', () {
+    final hash = PasswordHashService.hash('admin123');
+    expect(PasswordHashService.verify('wrong_password', hash), isFalse);
   });
 
   test('formatDate returns DD/MM/YYYY for valid datetime strings', () {
