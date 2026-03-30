@@ -13,17 +13,16 @@ class GoogleDriveService {
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
-      drive.DriveApi.driveReadonlyScope, // Antes era driveFileScope (limitado)
+      drive.DriveApi.driveFileScope,
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
 
   static GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
-  static void _logError(String action, Object error, [StackTrace? stack]) {
+  static void _logError(String action, Object error) {
     if (kDebugMode) {
-      debugPrint('❌ GoogleDriveService ERROR [$action]: $error');
-      if (stack != null) debugPrint(stack.toString());
+      debugPrint('GoogleDriveService $action: $error');
     }
   }
 
@@ -36,21 +35,16 @@ class GoogleDriveService {
     try {
       if (currentUser != null) return currentUser;
       return await _googleSignIn.signIn();
-    } catch (error, stack) {
-      _logError('signIn', error, stack);
+    } catch (error) {
+      _logError('signIn', error);
       if (context != null) {
-        String message = 'No se pudo iniciar sesión con Google.';
-        if (error.toString().contains('network_error')) {
-          message = 'Error de red. Revisa tu conexión a internet.';
-        } else if (error.toString().contains('access_denied')) {
-          message = 'Acceso denegado. Se requieren permisos para continuar.';
-        }
-        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
+          const SnackBar(
+            content: Text(
+              'No se pudo iniciar sesión con Google. Revisa la configuración OAuth y vuelve a intentar.',
+            ),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 8),
+            duration: Duration(seconds: 8),
           ),
         );
       }
@@ -157,8 +151,8 @@ class GoogleDriveService {
       final result = await driveApi.files.create(fileMetadata, uploadMedia: media);
       
       return result.id != null;
-    } catch (error, stack) {
-      _logError('uploadPhoto', error, stack);
+    } catch (error) {
+      _logError('uploadPhoto', error);
       return false;
     }
   }
@@ -204,11 +198,8 @@ class GoogleDriveService {
 
       final driveApi = drive.DriveApi(client);
       
-      // Armar la query. Busca por nombre y archivos de Google Sheets o Excel
-      String q = "(mimeType='application/vnd.google-apps.spreadsheet' or "
-                 "mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or "
-                 "mimeType='application/vnd.ms-excel') and trashed=false";
-                 
+      // Armar la query. Busca por nombre y solo archivos de Google Sheets
+      String q = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
       if (query.isNotEmpty) {
         final safeQuery = _escapeDriveQueryValue(query);
         q += " and name contains '$safeQuery'";
@@ -297,8 +288,8 @@ class GoogleDriveService {
       );
 
       return true;
-    } catch (error, stack) {
-      _logError('appendAttendanceRow', error, stack);
+    } catch (error) {
+      _logError('appendAttendanceRow', error);
       return false;
     }
   }

@@ -10,10 +10,9 @@ class UserService {
   static const _tableName = 'usuarios';
   static const _validRoles = {'ADMIN', 'USUARIO'};
 
-  static void _logError(String action, Object error, [StackTrace? stack]) {
+  static void _logError(String action, Object error) {
     if (kDebugMode) {
-      debugPrint('❌ UserService ERROR [$action]: $error');
-      if (stack != null) debugPrint(stack.toString());
+      debugPrint('UserService $action: $error');
     }
   }
 
@@ -37,8 +36,8 @@ class UserService {
         'rol': (e['rol'] as String?) ?? 'USUARIO',
         'activo': e['activo'] == true,
       }).toList();
-    } catch (e, stack) {
-      _logError('getUsuarios', e, stack);
+    } catch (e) {
+      _logError('getUsuarios', e);
       return [];
     }
   }
@@ -59,13 +58,13 @@ class UserService {
       });
 
       return null;
-    } catch (e, stack) {
-      _logError('crearUsuario', e, stack);
+    } catch (e) {
+      _logError('crearUsuario', e);
       final lower = e.toString().toLowerCase();
       if (lower.contains('duplicate') || lower.contains('unique')) {
         return 'Ese usuario ya existe.';
       }
-      return 'No se pudo crear el usuario. Verifica la tabla usuarios.';
+      return 'No se pudo crear el usuario. Verifica la tabla usuarios_app.';
     }
   }
 
@@ -78,7 +77,6 @@ class UserService {
     String nuevoRol,
   ) async {
     try {
-      final normalizedRole = _normalizeRole(nuevoRol);
       final normalizedUsername =
           PasswordHashService.normalizeUsername(nuevoUsuario);
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
@@ -87,13 +85,10 @@ class UserService {
           nuevoPassword.length < 6) {
         return 'La contraseña debe tener mínimo 6 caracteres.';
       }
-      if (AuthService.currentUserId == id && normalizedRole != 'ADMIN') {
-        return 'No puedes quitarte tu propio rol ADMIN mientras estás dentro.';
-      }
 
       final payload = <String, dynamic>{
         'usuario': normalizedUsername,
-        'rol': normalizedRole,
+        'rol': _normalizeRole(nuevoRol),
       };
 
       if (nuevoPassword != null && nuevoPassword.isNotEmpty) {
@@ -111,8 +106,8 @@ class UserService {
       }
 
       return null;
-    } catch (e, stack) {
-      _logError('editarUsuario', e, stack);
+    } catch (e) {
+      _logError('editarUsuario', e);
       final lower = e.toString().toLowerCase();
       if (lower.contains('duplicate') || lower.contains('unique')) {
         return 'Ese usuario ya existe.';
@@ -132,8 +127,8 @@ class UserService {
       await _supabase.from(_tableName).delete().eq('id', int.parse(id));
       await AuthService.clearLocalSessionIfMatches(id);
       return null;
-    } catch (e, stack) {
-      _logError('eliminarUsuario', e, stack);
+    } catch (e) {
+      _logError('eliminarUsuario', e);
       return 'No se pudo eliminar el usuario.';
     }
   }

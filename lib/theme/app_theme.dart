@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 /// Centralized design system for AVS Ingeniería QR App
 class AppTheme {
   // ─── Colors ───────────────────────────────────────────────
-  static const Color bg = Color(0xFF0F1724);
-  static const Color surface = Color(0xFF162132);
-  static const Color surfaceLight = Color(0xFF1D2B40);
-  static const Color border = Color(0xFF314259);
-  static const Color borderLight = Color(0xFF41546E);
+  static const Color bg = Color(0xFF0A0D1A);
+  static const Color surface = Color(0xFF141828);
+  static const Color surfaceLight = Color(0xFF1C2236);
+  static const Color border = Color(0xFF252D47);
+  static const Color borderLight = Color(0xFF2F3A5C);
 
-  static const Color accent = Color(0xFF2F5D8A);
-  static const Color accentLight = Color(0xFF4D79A3);
-  static const Color accent2 = Color(0xFFC39A5B);
-  static const Color accent2Light = Color(0xFFD9B47A);
+  static const Color accent = Color(0xFF2563EB);
+  static const Color accentLight = Color(0xFF3B82F6);
+  static const Color accent2 = Color(0xFFF5A623);
+  static const Color accent2Light = Color(0xFFFFBF47);
 
   static const Color success = Color(0xFF22C55E);
   static const Color error = Color(0xFFEF4444);
@@ -21,18 +21,18 @@ class AppTheme {
   static const Color accentTeal = Color(0xFF2DD4BF);
 
   static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Color(0xFFA6B3C5);
-  static const Color textMuted = Color(0xFF73839A);
+  static const Color textSecondary = Color(0xFF7A85A3);
+  static const Color textMuted = Color(0xFF4A5578);
 
   // ─── Gradients ────────────────────────────────────────────
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [Color(0xFF2A5278), Color(0xFF3A6B97)],
+    colors: [Color(0xFF2563EB), Color(0xFF7C3AED)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient accent2Gradient = LinearGradient(
-    colors: [Color(0xFFC39A5B), Color(0xFFA87A3C)],
+    colors: [Color(0xFFF5A623), Color(0xFFEF4444)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -44,19 +44,13 @@ class AppTheme {
   );
 
   static const LinearGradient bgGradient = LinearGradient(
-    colors: [Color(0xFF0D1521), Color(0xFF132033), Color(0xFF101A29)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    colors: [Color(0xFF0A0D1A), Color(0xFF111633)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 
   static const LinearGradient glassGradient = LinearGradient(
     colors: [Color(0x20FFFFFF), Color(0x08FFFFFF)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient headerGradient = LinearGradient(
-    colors: [Color(0xFF1A2940), Color(0xFF132033)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -75,27 +69,27 @@ class AppTheme {
 
   // ─── Decorations ──────────────────────────────────────────
   static BoxDecoration get cardDecoration => BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: border.withValues(alpha: 0.78)),
+        color: surface.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       );
 
   static BoxDecoration get glassDecoration => BoxDecoration(
-        color: surfaceLight.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderLight.withValues(alpha: 0.72)),
+        gradient: glassGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
-            blurRadius: 28,
-            offset: const Offset(0, 12),
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       );
@@ -109,7 +103,7 @@ class AppTheme {
   static BoxDecoration get dialogDecoration => BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: borderLight),
+        border: Border.all(color: border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
@@ -126,7 +120,7 @@ class AppTheme {
   }) =>
       InputDecoration(
         filled: true,
-        fillColor: bg.withValues(alpha: 0.34),
+        fillColor: surfaceLight.withValues(alpha: 0.5),
         hintText: hint,
         hintStyle: const TextStyle(color: textMuted, fontSize: 14),
         prefixIcon: prefixIcon != null
@@ -141,11 +135,11 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderLight),
+          borderSide: const BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: accent2, width: 1.5),
+          borderSide: const BorderSide(color: accent, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -165,7 +159,7 @@ class AppTheme {
 
   static ButtonStyle get secondaryButton => OutlinedButton.styleFrom(
         foregroundColor: textPrimary,
-        side: const BorderSide(color: borderLight),
+        side: const BorderSide(color: border),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

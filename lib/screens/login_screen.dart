@@ -5,21 +5,6 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
-class _LoginColors {
-  static const card = Color(0xFF20263A);
-  static const cardBorder = Color(0xFF323952);
-  static const field = Color(0xFF20263A);
-  static const fieldBorder = Color(0xFF2A3350);
-  static const fieldFocus = Color(0xFF2E63F2);
-  static const title = Color(0xFF2E63F2);
-  static const subtitle = Color(0xFF8A90A8);
-  static const textPrimary = Colors.white;
-  static const textSecondary = Color(0xFF969BB2);
-  static const textMuted = Color(0xFF6E7590);
-  static const buttonStart = Color(0xFF2E63F2);
-  static const buttonEnd = Color(0xFF8B3FF1);
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -36,8 +21,10 @@ class _LoginScreenState extends State<LoginScreen>
   bool _obscurePassword = true;
 
   late AnimationController _fadeController;
+  late AnimationController _pulseController;
   late Animation<double> _fadeAnim;
   late Animation<double> _slideAnim;
+  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
@@ -55,6 +42,14 @@ class _LoginScreenState extends State<LoginScreen>
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
     );
 
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
     _fadeController.forward();
     _checkSavedLogin();
   }
@@ -62,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _fadeController.dispose();
+    _pulseController.dispose();
     _usuarioCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
@@ -74,8 +70,10 @@ class _LoginScreenState extends State<LoginScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              HomeScreen(usuario: session['usuario']!, rol: session['rol']!),
+          builder: (_) => HomeScreen(
+            usuario: session['usuario']!,
+            rol: session['rol']!,
+          ),
         ),
       );
     }
@@ -98,17 +96,16 @@ class _LoginScreenState extends State<LoginScreen>
     // Usar Supabase Auth en lugar de consulta directa a tabla usuarios
     final rol = await AuthService.signIn(user, pass);
 
-    if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (rol != null) {
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              HomeScreen(usuario: user, rol: rol),
-          transitionsBuilder: (context, anim, secondaryAnimation, child) {
+          pageBuilder: (_, __, ___) => HomeScreen(usuario: user, rol: rol),
+          transitionsBuilder: (_, anim, __, child) {
             return FadeTransition(
               opacity: anim,
               child: SlideTransition(
@@ -129,356 +126,252 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF090F1E), Color(0xFF101733), Color(0xFF0D1330)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -120,
-              left: -80,
-              child: Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _LoginColors.buttonStart.withValues(alpha: 0.10),
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+        child: SafeArea(
+          child: AnimatedBuilder(
+            animation: _fadeAnim,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _fadeAnim.value,
+                child: Transform.translate(
+                  offset: Offset(0, _slideAnim.value),
+                  child: child,
                 ),
-              ),
-            ),
-            Positioned(
-              top: 90,
-              right: -70,
-              child: Container(
-                width: 220,
-                height: 220,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _LoginColors.buttonEnd.withValues(alpha: 0.08),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: AnimatedBuilder(
-                animation: _fadeAnim,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnim.value,
-                    child: Transform.translate(
-                      offset: Offset(0, _slideAnim.value),
-                      child: child,
-                    ),
-                  );
-                },
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight:
-                          screenHeight -
-                          MediaQuery.of(context).padding.top -
-                          MediaQuery.of(context).padding.bottom,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 40),
-                        _buildHero(),
-                        const SizedBox(height: 32),
-                        _buildLoginCard(),
-                        const SizedBox(height: 24),
-                        _buildFooter(),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+              );
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(flex: 2),
 
-  Widget _buildHero() {
-    return Column(
-      children: [
-        Container(
-          width: 108,
-          height: 108,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [_LoginColors.buttonStart, _LoginColors.buttonEnd],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: _LoginColors.buttonStart.withValues(alpha: 0.34),
-                blurRadius: 40,
-                spreadRadius: 6,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.qr_code_scanner_rounded,
-            size: 52,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 26),
-        Text(
-          'AVS INGENIERIA',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.bebasNeue(
-            fontSize: 50,
-            letterSpacing: 3.2,
-            color: _LoginColors.title,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'CONTROL DE ASISTENCIA',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(
-            fontSize: 12,
-            letterSpacing: 5.2,
-            fontWeight: FontWeight.w500,
-            color: _LoginColors.subtitle,
-          ),
-        ),
-      ],
-    );
-  }
+                    // ─── Logo / Icon ────────────────────────
+                    AnimatedBuilder(
+                      animation: _pulseAnim,
+                      builder: (context, child) {
+                        return Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppTheme.accentGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.accent
+                                    .withValues(alpha: 0.4 * _pulseAnim.value),
+                                blurRadius: 40 * _pulseAnim.value,
+                                spreadRadius: 4 * _pulseAnim.value,
+                              ),
+                              BoxShadow(
+                                color: AppTheme.accent.withValues(alpha: 0.1),
+                                blurRadius: 100,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.qr_code_scanner_rounded,
+                              color: Colors.white, size: 40),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
 
-  Widget _buildLoginCard() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(18, 22, 18, 20),
-      decoration: BoxDecoration(
-        color: _LoginColors.card.withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: _LoginColors.cardBorder.withValues(alpha: 0.92),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildFieldLabel('USUARIO'),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _usuarioCtrl,
-            style: GoogleFonts.dmSans(
-              color: _LoginColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
-            textInputAction: TextInputAction.next,
-            decoration: _buildInputDecoration(
-              hint: 'Tu usuario',
-              prefixIcon: Icons.person_outline_rounded,
-              isFocused: true,
-            ),
-          ),
-          const SizedBox(height: 18),
-          _buildFieldLabel('CONTRASENA'),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passwordCtrl,
-            obscureText: _obscurePassword,
-            style: GoogleFonts.dmSans(
-              color: _LoginColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
-            textInputAction: TextInputAction.done,
-            decoration: _buildInputDecoration(
-              hint: '••••••••',
-              prefixIcon: Icons.lock_outline_rounded,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
-                  color: _LoginColors.textMuted,
-                  size: 22,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
-              ),
-            ),
-            onSubmitted: (_) => _login(),
-          ),
-          if (_errorMessage != null) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppTheme.error.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppTheme.error.withValues(alpha: 0.25),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.error_outline_rounded,
-                    color: AppTheme.error,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _errorMessage!,
+                    // ─── Brand Title ────────────────────────
+                    Text(
+                      'AVS Ingeniería',
+                      style: GoogleFonts.bebasNeue(
+                        fontSize: 36,
+                        letterSpacing: 4,
+                        color: AppTheme.accent,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'CONTROL DE ASISTENCIA',
                       style: GoogleFonts.dmSans(
-                        color: const Color(0xFFFFB4B4),
-                        fontSize: 13,
+                        fontSize: 11,
+                        letterSpacing: 3,
                         fontWeight: FontWeight.w500,
+                        color: AppTheme.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 48),
+
+                    // ─── Glass Card Form ────────────────────
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: AppTheme.glassDecoration,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Usuario label
+                          Text(
+                            'USUARIO',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _usuarioCtrl,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 15),
+                            decoration: AppTheme.inputDecoration(
+                              hint: 'Tu usuario',
+                              prefixIcon: Icons.person_outline_rounded,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Password label
+                          Text(
+                            'CONTRASEÑA',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _passwordCtrl,
+                            obscureText: _obscurePassword,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 15),
+                            decoration: AppTheme.inputDecoration(
+                              hint: '••••••••',
+                              prefixIcon: Icons.lock_outline_rounded,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_rounded
+                                      : Icons.visibility_rounded,
+                                  color: AppTheme.textMuted,
+                                  size: 20,
+                                ),
+                                onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword),
+                              ),
+                            ),
+                            onSubmitted: (_) => _login(),
+                          ),
+
+                          // Error message
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: AppTheme.error.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: AppTheme.error.withValues(alpha: 0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: AppTheme.error, size: 18),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _errorMessage!,
+                                      style: const TextStyle(
+                                          color: AppTheme.error, fontSize: 13),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+
+                          const SizedBox(height: 24),
+
+                          // Login button
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: AppTheme.accentGradient,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.accent.withValues(alpha: 0.3),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _login,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 22,
+                                      width: 22,
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white, strokeWidth: 2.5))
+                                  : Text(
+                                      'Ingresar',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: 22),
-          Container(
-            height: 66,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              gradient: const LinearGradient(
-                colors: [_LoginColors.buttonStart, _LoginColors.buttonEnd],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _LoginColors.buttonEnd.withValues(alpha: 0.24),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.8,
-                      ),
-                    )
-                  : Text(
-                      'Ingresar',
+
+                    const Spacer(flex: 3),
+
+                    // Footer
+                    Text(
+                      'v1.2.0 • AVS Ingeniería',
                       style: GoogleFonts.dmSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 0.8,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textMuted,
+                        letterSpacing: 1,
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Powered by Supabase Security',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 9,
+                        color: AppTheme.textMuted.withValues(alpha: 0.5),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Column(
-      children: [
-        Text(
-          'v1.3.0',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: _LoginColors.textMuted,
-            letterSpacing: 0.6,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFieldLabel(String label) {
-    return Text(
-      label,
-      style: GoogleFonts.dmSans(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 3,
-        color: _LoginColors.textSecondary,
-      ),
-    );
-  }
-
-  InputDecoration _buildInputDecoration({
-    required String hint,
-    required IconData prefixIcon,
-    Widget? suffixIcon,
-    bool isFocused = false,
-  }) {
-    return InputDecoration(
-      filled: true,
-      fillColor: _LoginColors.field,
-      hintText: hint,
-      hintStyle: GoogleFonts.dmSans(
-        color: _LoginColors.textMuted,
-        fontSize: 15,
-        fontWeight: FontWeight.w500,
-      ),
-      prefixIcon: Icon(prefixIcon, color: _LoginColors.textSecondary, size: 24),
-      suffixIcon: suffixIcon,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: const BorderSide(color: _LoginColors.fieldBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: BorderSide(
-          color: isFocused
-              ? _LoginColors.fieldFocus
-              : _LoginColors.fieldBorder.withValues(alpha: 0.7),
-          width: isFocused ? 2.2 : 1.2,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: const BorderSide(
-          color: _LoginColors.fieldFocus,
-          width: 2.2,
         ),
       ),
     );

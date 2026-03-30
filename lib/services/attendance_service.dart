@@ -1,20 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'google_drive_service.dart';
 import 'auth_service.dart';
-import '../utils/date_formatter.dart';
 
 /// Servicio para registro y consulta de asistencia.
 /// Separa el flujo de registros del resto de servicios.
 class AttendanceService {
   static final _supabase = Supabase.instance.client;
-
-  static void _logError(String action, Object error, [StackTrace? stack]) {
-    if (kDebugMode) {
-      debugPrint('❌ AttendanceService ERROR [$action]: $error');
-      if (stack != null) debugPrint(stack.toString());
-    }
-  }
 
   // ─── Sanitización ────────────────────────────────────────────────
 
@@ -68,7 +59,9 @@ class AttendanceService {
       }
 
       final now = DateTime.now();
-      final fechaHoraString = DateFormatter.toStorageString(now);
+      final fechaHoraString =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 
       final filaParaGoogleSheets = {
         'DPI': id,
@@ -87,44 +80,17 @@ class AttendanceService {
         final infoSheets = await GoogleDriveService.getSheetsInfo();
         if (infoSheets != null && infoSheets['id'] != null) {
           await GoogleDriveService.appendAttendanceRow(
-            infoSheets['id'],
-            filaParaGoogleSheets,
-          );
+              infoSheets['id'], filaParaGoogleSheets);
         }
       }
 
       return '✅ $tipo registrado — Proyecto: $proyecto | ID: $id | $nombre';
-    } catch (e, stack) {
-      _logError('registrarAsistencia', e, stack);
+    } catch (_) {
       return 'Ocurrió un error al registrar. Intenta de nuevo.';
     }
   }
 
   // ─── Historial ───────────────────────────────────────────────────
-
-  /// Obtiene la cantidad de registros del día actual asociados al usuario.
-  static Future<int> getTodayCount(String username) async {
-    try {
-      final normalizedUsername = username.trim();
-      if (normalizedUsername.isEmpty) return 0;
-
-      final now = DateTime.now();
-      final startOfDay = DateTime(now.year, now.month, now.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
-
-      final data = await _supabase
-          .from('registros')
-          .select('fecha_hora')
-          .eq('usuario_logueado', normalizedUsername)
-          .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
-          .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
-
-      return List<Map<String, dynamic>>.from(data).length;
-    } catch (e, stack) {
-      _logError('getTodayCount', e, stack);
-      return 0;
-    }
-  }
 
   /// Obtiene los registros asociados al usuario activo de la sesión local.
   static Future<List<Map<String, dynamic>>> getCurrentUserHistory({
@@ -142,8 +108,7 @@ class AttendanceService {
           .limit(limit);
 
       return List<Map<String, dynamic>>.from(data);
-    } catch (e, stack) {
-      _logError('getCurrentUserHistory', e, stack);
+    } catch (_) {
       return [];
     }
   }
