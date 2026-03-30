@@ -330,17 +330,17 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       int successCount = 0;
       int errorCount = 0;
 
-      // 2. Append directly row by row (naïve approach but safe for limited data)
-      for (var reg in data) {
-        final success = await GoogleDriveService.appendAttendanceRow(
+      // 2. Append directly in a single batch call to avoid N+1 issues
+      if (data.isNotEmpty) {
+        final success = await GoogleDriveService.appendAttendanceRows(
           _sheetsInfo!['id'],
-          reg,
+          data,
         );
 
         if (success) {
-          successCount++;
+          successCount = data.length;
         } else {
-          errorCount++;
+          errorCount = data.length;
         }
       }
 
