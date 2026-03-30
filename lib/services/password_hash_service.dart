@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 class PasswordHashService {
   static String normalizeUsername(String username) {
@@ -8,6 +6,10 @@ class PasswordHashService {
   }
 
   static String hash(String password) {
-    return sha256.convert(utf8.encode(password)).toString();
+    return BCrypt.hashpw(password, BCrypt.gensalt());
+  }
+
+  static bool verify(String password, String hashed) {
+    return BCrypt.checkpw(password, hashed);
   }
 }

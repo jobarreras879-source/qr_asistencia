@@ -41,7 +41,6 @@ class AuthService {
     try {
       _lastErrorMessage = null;
       final normalizedUser = PasswordHashService.normalizeUsername(usuario);
-      final passwordHash = PasswordHashService.hash(password);
 
       final data = await _supabase
           .from(_tableName)
@@ -57,7 +56,14 @@ class AuthService {
 
       final storedHash = data['password_hash'] as String?;
       final role = (data['rol'] as String?)?.trim().toUpperCase();
-      if (storedHash == null || storedHash != passwordHash || role == null || role.isEmpty) {
+
+      if (storedHash == null || role == null || role.isEmpty) {
+        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
+        return null;
+      }
+
+      final isPasswordValid = PasswordHashService.verify(password, storedHash);
+      if (!isPasswordValid) {
         _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
