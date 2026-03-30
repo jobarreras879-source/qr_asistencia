@@ -15,13 +15,6 @@ class AuthService {
   static const _keyUsername = 'session_username';
   static const _keyRole = 'session_role';
 
-  static void _logError(String action, Object error, [StackTrace? stack]) {
-    if (kDebugMode) {
-      debugPrint('❌ AuthService ERROR [$action]: $error');
-      if (stack != null) debugPrint(stack.toString());
-    }
-  }
-
   static String? _lastErrorMessage;
   static String? _currentUserId;
   static String? _currentUsername;
@@ -57,7 +50,10 @@ class AuthService {
 
       final storedHash = data['password_hash'] as String?;
       final role = (data['rol'] as String?)?.trim().toUpperCase();
-      if (storedHash == null || storedHash != passwordHash || role == null || role.isEmpty) {
+      if (storedHash == null ||
+          storedHash != passwordHash ||
+          role == null ||
+          role.isEmpty) {
         _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
@@ -69,9 +65,11 @@ class AuthService {
       );
 
       return role;
-    } catch (error, stack) {
+    } catch (error) {
       _lastErrorMessage = error.toString();
-      _logError('signIn', error, stack);
+      if (kDebugMode) {
+        debugPrint('AuthService signIn error: $error');
+      }
       return null;
     }
   }
@@ -87,9 +85,7 @@ class AuthService {
       await _storage.delete(key: _keyUserId);
       await _storage.delete(key: _keyUsername);
       await _storage.delete(key: _keyRole);
-    } catch (e, stack) {
-      _logError('signOut', e, stack);
-    }
+    } catch (_) {}
   }
 
   // ─── Rol ─────────────────────────────────────────────────────────
@@ -99,8 +95,7 @@ class AuthService {
     try {
       final session = await restoreSession();
       return session?['rol'] ?? _defaultRole;
-    } catch (e, stack) {
-      _logError('getCurrentUserRole', e, stack);
+    } catch (_) {
       return _defaultRole;
     }
   }
@@ -110,8 +105,7 @@ class AuthService {
     try {
       final session = await restoreSession();
       return session?['usuario'];
-    } catch (e, stack) {
-      _logError('getCurrentUsername', e, stack);
+    } catch (_) {
       return null;
     }
   }
@@ -122,7 +116,9 @@ class AuthService {
   /// Retorna [usuario, rol] si hay sesión, null si no.
   static Future<Map<String, String>?> restoreSession() async {
     try {
-      if (_currentUserId != null && _currentUsername != null && _currentRole != null) {
+      if (_currentUserId != null &&
+          _currentUsername != null &&
+          _currentRole != null) {
         return {
           'id': _currentUserId!,
           'usuario': _currentUsername!,
@@ -143,8 +139,7 @@ class AuthService {
       _currentRole = rol;
 
       return {'id': userId, 'usuario': usuario, 'rol': rol};
-    } catch (e, stack) {
-      _logError('restoreSession', e, stack);
+    } catch (_) {
       return null;
     }
   }

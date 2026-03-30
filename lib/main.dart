@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           secondary: AppTheme.accent2,
           surface: AppTheme.surface,
         ),
-        textTheme: GoogleFonts.ibmPlexSansTextTheme(ThemeData.dark().textTheme)
+        textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme)
             .apply(
               bodyColor: AppTheme.textPrimary,
               displayColor: AppTheme.textPrimary,
