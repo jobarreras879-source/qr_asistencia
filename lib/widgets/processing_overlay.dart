@@ -90,10 +90,7 @@ class ProcessingOverlay extends StatelessWidget {
     return const SizedBox(
       height: 48,
       width: 48,
-      child: CircularProgressIndicator(
-        color: AppTheme.accent,
-        strokeWidth: 3,
-      ),
+      child: CircularProgressIndicator(color: AppTheme.accent, strokeWidth: 3),
     );
   }
 }

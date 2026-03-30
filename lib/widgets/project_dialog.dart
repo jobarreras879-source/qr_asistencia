@@ -22,9 +22,15 @@ class _ProjectDialogState extends State<ProjectDialog> {
   @override
   void initState() {
     super.initState();
-    _numController = TextEditingController(text: widget.project?['numero'] ?? '');
-    _nameController = TextEditingController(text: widget.project?['nombre'] ?? '');
-    _clientController = TextEditingController(text: widget.project?['cliente'] ?? '');
+    _numController = TextEditingController(
+      text: widget.project?['numero'] ?? '',
+    );
+    _nameController = TextEditingController(
+      text: widget.project?['nombre'] ?? '',
+    );
+    _clientController = TextEditingController(
+      text: widget.project?['cliente'] ?? '',
+    );
     _ocController = TextEditingController(text: widget.project?['oc'] ?? '');
   }
 
