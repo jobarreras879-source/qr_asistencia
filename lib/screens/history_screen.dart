@@ -71,13 +71,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: _isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                            color: AppTheme.accent, strokeWidth: 3),
+                          color: AppTheme.accent,
+                          strokeWidth: 3,
+                        ),
                       )
                     : _errorMessage != null
-                        ? _buildError()
-                        : _registros.isEmpty
-                            ? _buildEmpty()
-                            : _buildList(),
+                    ? _buildError()
+                    : _registros.isEmpty
+                    ? _buildEmpty()
+                    : _buildList(),
               ),
             ],
           ),
@@ -94,7 +96,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         decoration: BoxDecoration(
           gradient: AppTheme.headerGradient,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
+          border: Border.all(
+            color: AppTheme.borderLight.withValues(alpha: 0.8),
+          ),
         ),
         child: Row(
           children: [
@@ -107,8 +111,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.borderLight),
                 ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 22),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -164,8 +171,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.borderLight),
                 ),
-                child: const Icon(Icons.refresh_rounded,
-                    color: AppTheme.textSecondary, size: 20),
+                child: const Icon(
+                  Icons.refresh_rounded,
+                  color: AppTheme.textSecondary,
+                  size: 20,
+                ),
               ),
             ),
           ],

@@ -92,13 +92,19 @@ class ProjectCard extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined,
-              color: AppTheme.textSecondary, size: 20),
+          icon: const Icon(
+            Icons.edit_outlined,
+            color: AppTheme.textSecondary,
+            size: 20,
+          ),
         ),
         IconButton(
           onPressed: onDelete,
-          icon: const Icon(Icons.delete_outline_rounded,
-              color: AppTheme.error, size: 20),
+          icon: const Icon(
+            Icons.delete_outline_rounded,
+            color: AppTheme.error,
+            size: 20,
+          ),
         ),
       ],
     );

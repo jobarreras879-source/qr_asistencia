@@ -62,11 +62,7 @@ class AppTheme {
   );
 
   static const LinearGradient shimmerGradient = LinearGradient(
-    colors: [
-      Color(0xFF141828),
-      Color(0xFF1C2236),
-      Color(0xFF141828),
-    ],
+    colors: [Color(0xFF141828), Color(0xFF1C2236), Color(0xFF141828)],
     stops: [0.1, 0.5, 0.9],
     begin: Alignment(-1.0, -0.3),
     end: Alignment(1.0, 0.3),
@@ -75,110 +71,102 @@ class AppTheme {
 
   // ─── Decorations ──────────────────────────────────────────
   static BoxDecoration get cardDecoration => BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: border.withValues(alpha: 0.78)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      );
+    color: surface,
+    borderRadius: BorderRadius.circular(18),
+    border: Border.all(color: border.withValues(alpha: 0.78)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.18),
+        blurRadius: 22,
+        offset: const Offset(0, 10),
+      ),
+    ],
+  );
 
   static BoxDecoration get glassDecoration => BoxDecoration(
-        color: surfaceLight.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderLight.withValues(alpha: 0.72)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
-            blurRadius: 28,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      );
+    color: surfaceLight.withValues(alpha: 0.94),
+    borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: borderLight.withValues(alpha: 0.72)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.16),
+        blurRadius: 28,
+        offset: const Offset(0, 12),
+      ),
+    ],
+  );
 
   static BoxDecoration get accentGlassDecoration => BoxDecoration(
-        color: accent.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withValues(alpha: 0.2)),
-      );
+    color: accent.withValues(alpha: 0.05),
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: accent.withValues(alpha: 0.2)),
+  );
 
   static BoxDecoration get dialogDecoration => BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 40,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      );
+    color: bg,
+    borderRadius: BorderRadius.circular(24),
+    border: Border.all(color: borderLight),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.5),
+        blurRadius: 40,
+        offset: const Offset(0, 10),
+      ),
+    ],
+  );
 
   static InputDecoration inputDecoration({
     required String hint,
     IconData? prefixIcon,
     Widget? suffixIcon,
-  }) =>
-      InputDecoration(
-        filled: true,
-        fillColor: bg.withValues(alpha: 0.34),
-        hintText: hint,
-        hintStyle: const TextStyle(color: textMuted, fontSize: 14),
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: textSecondary, size: 20)
-            : null,
-        suffixIcon: suffixIcon,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderLight),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: accent2, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: error),
-        ),
-      );
+  }) => InputDecoration(
+    filled: true,
+    fillColor: bg.withValues(alpha: 0.34),
+    hintText: hint,
+    hintStyle: const TextStyle(color: textMuted, fontSize: 14),
+    prefixIcon: prefixIcon != null
+        ? Icon(prefixIcon, color: textSecondary, size: 20)
+        : null,
+    suffixIcon: suffixIcon,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: border),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: borderLight),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: accent2, width: 1.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: error),
+    ),
+  );
 
   static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
-        backgroundColor: accent,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 0,
-      );
+    backgroundColor: accent,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    elevation: 0,
+  );
 
   static ButtonStyle get secondaryButton => OutlinedButton.styleFrom(
-        foregroundColor: textPrimary,
-        side: const BorderSide(color: borderLight),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      );
+    foregroundColor: textPrimary,
+    side: const BorderSide(color: borderLight),
+    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  );
 
   static ButtonStyle get ghostButton => TextButton.styleFrom(
-        foregroundColor: textSecondary,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      );
+    foregroundColor: textSecondary,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  );
 
   // ─── Spacing & Radius ─────────────────────────────────────
   static const double radiusSm = 8;
