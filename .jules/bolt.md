@@ -1,0 +1,3 @@
+## 2024-05-18 - [Supabase Query Optimization]
+**Learning:** In Supabase, using `.select('column').eq(...).then((data) => data.length)` requires downloading all matching rows and parsing them client-side into Dart objects, which causes unnecessary network load and parsing overhead, particularly as the table size grows.
+**Action:** Always prefer `.count(CountOption.exact)` for row count queries when you only need to determine the number of matching rows. In `supabase_flutter` v2+, this method conveniently directly returns a `Future<int>` rather than a `PostgrestResponse`, making it straightforward to swap out.
