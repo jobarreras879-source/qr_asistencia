@@ -275,9 +275,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     if (sheet != null && sheet.spreadsheetId != null) {
       final url = sheet.spreadsheetUrl ?? 'https://docs.google.com/spreadsheets/d/${sheet.spreadsheetId}';
       await GoogleDriveService.setSheetsInfo(sheet.spreadsheetId!, name, url);
+
       final info = await GoogleDriveService.getSheetsInfo();
 
-      if (!mounted) return;
       setState(() {
         _sheetsInfo = info;
         _autoSync = true;
@@ -612,7 +612,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                   'Agrega fila al Excel cada vez que se escanea un QR',
                   style: GoogleFonts.dmSans(color: AppTheme.textSecondary, fontSize: 12),
                 ),
-                activeThumbColor: const Color(0xFF0F9D58),
+                activeColor: const Color(0xFF0F9D58),
                 contentPadding: EdgeInsets.zero,
               ),
 

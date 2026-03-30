@@ -85,7 +85,8 @@ class _SuccessScreenState extends State<SuccessScreen>
         child: SafeArea(
           child: Stack(
             children: [
-              ...List.generate(10, (i) => _buildParticle(i)),
+              // Particles
+              ...List.generate(20, (i) => _buildParticle(i)),
 
               // Content
               Padding(
@@ -144,10 +145,10 @@ class _SuccessScreenState extends State<SuccessScreen>
                             child: Column(
                               children: [
                                 Text(
-                                  'Registro completado',
-                                  style: GoogleFonts.ibmPlexSerif(
-                                    fontSize: 34,
-                                    fontWeight: FontWeight.w600,
+                                  '¡Registro Exitoso!',
+                                  style: GoogleFonts.bebasNeue(
+                                    fontSize: 36,
+                                    letterSpacing: 3,
                                     color: Colors.white,
                                   ),
                                   textAlign: TextAlign.center,
@@ -179,7 +180,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                           Expanded(
                                             child: Text(
                                               widget.message,
-                                              style: GoogleFonts.ibmPlexSans(
+                                              style: GoogleFonts.dmSans(
                                                 fontSize: 13,
                                                 color: AppTheme.textSecondary,
                                                 height: 1.4,
@@ -200,7 +201,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                           const SizedBox(width: 8),
                                           Text(
                                             'Foto guardada correctamente',
-                                            style: GoogleFonts.ibmPlexSans(
+                                            style: GoogleFonts.dmSans(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: AppTheme.success,
@@ -247,7 +248,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                         size: 20),
                                     label: Text(
                                       'Registrar otra asistencia',
-                                      style: GoogleFonts.ibmPlexSans(
+                                      style: GoogleFonts.dmSans(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
                                       ),
