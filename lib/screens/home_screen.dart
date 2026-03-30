@@ -48,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _isLoading = true;
   bool _hasInternet = false;
   List<Map<String, dynamic>> _proyectos = [];
+  Map<String, Map<String, dynamic>> _proyectosMap = {};
   String? _proyectoIdSeleccionado;
   String? _proyectoNombreSeleccionado;
   late String _usuario;
@@ -131,14 +132,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String? proyectoIdSeleccionado = _proyectoIdSeleccionado;
     String? proyectoNombreSeleccionado = _proyectoNombreSeleccionado;
 
-    if (proyectoIdSeleccionado != null) {
-      Map<String, dynamic>? proyectoSeleccionado;
-      for (final proyecto in proys) {
-        if (proyecto['numero']?.toString() == proyectoIdSeleccionado) {
-          proyectoSeleccionado = proyecto;
-          break;
-        }
+    final Map<String, Map<String, dynamic>> newProyectosMap = {};
+    for (final proyecto in proys) {
+      if (proyecto['numero'] != null) {
+        newProyectosMap[proyecto['numero'].toString()] = proyecto;
       }
+    }
+
+    if (proyectoIdSeleccionado != null) {
+      final proyectoSeleccionado = newProyectosMap[proyectoIdSeleccionado];
 
       if (proyectoSeleccionado == null) {
         proyectoIdSeleccionado = null;
@@ -151,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     setState(() {
       _proyectos = proys;
+      _proyectosMap = newProyectosMap;
       _proyectosActivos = proys.length;
       _registrosHoy = registrosHoy;
       _proyectoIdSeleccionado = proyectoIdSeleccionado;
@@ -506,14 +509,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           onChanged: (valor) {
             if (valor == null) return;
 
-            Map<String, dynamic>? proyectoSeleccionado;
-            for (final proyecto in _proyectos) {
-              if (proyecto['numero']?.toString() == valor) {
-                proyectoSeleccionado = proyecto;
-                break;
-              }
-            }
-
+            final proyectoSeleccionado = _proyectosMap[valor];
             if (proyectoSeleccionado == null) return;
             final proyectoNumero = proyectoSeleccionado['numero'];
             final proyectoNombre = proyectoSeleccionado['nombre'];
