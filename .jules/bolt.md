@@ -1,0 +1,3 @@
+## 2024-05-24 - Supabase exact count optimization
+**Learning:** Using `.select()` just to find the number of rows matching a query is inefficient because it requires downloading all matching records to the client and parsing them into Dart structures.
+**Action:** When querying Supabase just to get the number of matching rows, use `.count(CountOption.exact)` instead of `.select()` to avoid downloading all matching records to the client and parsing them into Dart structures. In `supabase_flutter` v2+, the `.count(CountOption.exact)` query builder method directly returns a `Future<int>` representing the record count, instead of returning a `PostgrestResponse` object.
