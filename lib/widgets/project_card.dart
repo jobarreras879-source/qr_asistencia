@@ -24,8 +24,8 @@ class ProjectCard extends StatelessWidget {
         offset: Offset(0, 20 * (1 - animation.value)),
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(18),
-          decoration: AppTheme.cardDecoration,
+          padding: const EdgeInsets.all(16),
+          decoration: AppTheme.elevatedCardDecoration,
           child: Row(
             children: [
               _buildProjectLeading(),
@@ -44,16 +44,15 @@ class ProjectCard extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: AppTheme.accent.withValues(alpha: 0.1),
+        color: AppTheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.2)),
       ),
       child: Center(
         child: Text(
           project['numero'] ?? '?',
-          style: GoogleFonts.ibmPlexSans(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.accent,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: AppTheme.primary,
             fontSize: 16,
           ),
         ),
@@ -68,15 +67,16 @@ class ProjectCard extends StatelessWidget {
         children: [
           Text(
             project['nombre'] ?? 'Sin nombre',
-            style: GoogleFonts.ibmPlexSans(
-              fontWeight: FontWeight.w700,
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
               fontSize: 15,
-              color: Colors.white,
+              color: AppTheme.textPrimary,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             'ID: ${project['numero']}',
-            style: GoogleFonts.ibmPlexSans(
+            style: GoogleFonts.inter(
               fontSize: 12,
               color: AppTheme.textSecondary,
             ),
@@ -92,13 +92,19 @@ class ProjectCard extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined,
-              color: AppTheme.textSecondary, size: 20),
+          icon: const Icon(
+            Icons.edit_outlined,
+            color: AppTheme.textSecondary,
+            size: 20,
+          ),
         ),
         IconButton(
           onPressed: onDelete,
-          icon: const Icon(Icons.delete_outline_rounded,
-              color: AppTheme.error, size: 20),
+          icon: const Icon(
+            Icons.delete_outline_rounded,
+            color: AppTheme.error,
+            size: 20,
+          ),
         ),
       ],
     );

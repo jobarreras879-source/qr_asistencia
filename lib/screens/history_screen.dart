@@ -61,26 +61,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                            color: AppTheme.accent, strokeWidth: 3),
-                      )
-                    : _errorMessage != null
-                        ? _buildError()
-                        : _registros.isEmpty
-                            ? _buildEmpty()
-                            : _buildList(),
-              ),
-            ],
-          ),
+      backgroundColor: AppTheme.bg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
+                  : _errorMessage != null
+                  ? _buildError()
+                  : _registros.isEmpty
+                  ? _buildEmpty()
+                  : _buildList(),
+            ),
+          ],
         ),
       ),
     );
@@ -89,87 +86,81 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: AppTheme.headerGradient,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
-        ),
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.borderLight),
-                ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 22),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Historial de registros',
-                    style: GoogleFonts.ibmPlexSerif(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Consulta trazabilidad reciente de asistencia.',
-                    style: GoogleFonts.ibmPlexSans(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.accent2.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: AppTheme.accent2.withValues(alpha: 0.35),
-                ),
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.border),
               ),
-              child: Text(
-                '${_registros.length}',
-                style: GoogleFonts.ibmPlexSans(
-                  color: AppTheme.accent2Light,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: AppTheme.textPrimary,
+                size: 22,
               ),
             ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: _fetchHistory,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.borderLight),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Historial de Registros',
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
-                child: const Icon(Icons.refresh_rounded,
-                    color: AppTheme.textSecondary, size: 20),
+                const SizedBox(height: 2),
+                Text(
+                  'Consulta tu trazabilidad reciente',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '${_registros.length}',
+              style: GoogleFonts.inter(
+                color: AppTheme.primary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: _fetchHistory,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: const Icon(
+                Icons.refresh_rounded,
+                color: AppTheme.textSecondary,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -180,24 +171,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
         padding: const EdgeInsets.all(32),
         child: Container(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppTheme.error.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.error.withValues(alpha: 0.3)),
-          ),
+          decoration: AppTheme.cardDecoration,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 40),
-              const SizedBox(height: 12),
+              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              const SizedBox(height: 16),
               Text(
                 _errorMessage!,
-                style: GoogleFonts.dmSans(color: AppTheme.error, fontSize: 14),
+                style: GoogleFonts.inter(color: AppTheme.error, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
-              TextButton(
+              const SizedBox(height: 20),
+              OutlinedButton(
                 onPressed: _fetchHistory,
+                style: AppTheme.secondaryButton,
                 child: const Text('Reintentar'),
               ),
             ],
@@ -212,12 +200,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.history_rounded, color: AppTheme.textMuted, size: 64),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.history_rounded,
+              color: AppTheme.textMuted,
+              size: 40,
+            ),
+          ),
           const SizedBox(height: 16),
           Text(
             'Sin registros aún',
-            style: GoogleFonts.ibmPlexSans(
-              color: AppTheme.textSecondary,
+            style: GoogleFonts.inter(
+              color: AppTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -225,8 +225,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 6),
           Text(
             'Los registros aparecerán aquí después de escanear',
-            style: GoogleFonts.ibmPlexSans(
-              color: AppTheme.textMuted,
+            style: GoogleFonts.inter(
+              color: AppTheme.textSecondary,
               fontSize: 13,
             ),
           ),
@@ -236,7 +236,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildList() {
-    // Group records by date
     final Map<String, List<Map<String, dynamic>>> grouped = {};
     for (var reg in _registros) {
       final date = DateFormatter.formatDate(reg['fecha_hora']?.toString());
@@ -247,7 +246,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     return RefreshIndicator(
       onRefresh: _fetchHistory,
-      color: AppTheme.accent,
+      color: AppTheme.primary,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         itemCount: keys.length,
@@ -260,7 +259,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             children: [
               _buildDateHeader(date),
               ...items.map((reg) => HistoryRecordCard(registro: reg)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
             ],
           );
         },
@@ -270,25 +269,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildDateHeader(String date) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
           Container(
             width: 4,
-            height: 14,
+            height: 16,
             decoration: BoxDecoration(
-              color: AppTheme.accent.withValues(alpha: 0.5),
+              color: AppTheme.primary,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Text(
             date.toUpperCase(),
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.5,
-              color: AppTheme.textMuted,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1,
+              color: AppTheme.textSecondary,
             ),
           ),
         ],

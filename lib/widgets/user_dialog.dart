@@ -25,7 +25,9 @@ class _UserDialogState extends State<UserDialog> {
   @override
   void initState() {
     super.initState();
-    _userController = TextEditingController(text: widget.user?['usuario'] ?? '');
+    _userController = TextEditingController(
+      text: widget.user?['usuario'] ?? '',
+    );
     _passController = TextEditingController();
     _selectedRol = widget.user?['rol'] ?? 'USUARIO';
   }
@@ -38,7 +40,9 @@ class _UserDialogState extends State<UserDialog> {
   }
 
   Color _rolColor(String rol) {
-    return rol.toUpperCase() == 'ADMIN' ? AppTheme.accent : AppTheme.accentTeal;
+    return rol.toUpperCase() == 'ADMIN'
+        ? AppTheme.primary
+        : AppTheme.accentTeal;
   }
 
   IconData _rolIcon(String rol) {
@@ -88,6 +92,7 @@ class _UserDialogState extends State<UserDialog> {
         content: Text('Error: $msg'),
         backgroundColor: AppTheme.error,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -99,12 +104,9 @@ class _UserDialogState extends State<UserDialog> {
         widget.user?['id']?.toString() == AuthService.currentUserId;
 
     return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
         padding: const EdgeInsets.all(24),
-        decoration: AppTheme.dialogDecoration,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -116,21 +118,27 @@ class _UserDialogState extends State<UserDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _userController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
                   hint: 'Ej: JPEREZ',
                   prefixIcon: Icons.person_outline_rounded,
                 ),
               ),
               const SizedBox(height: 16),
-              _buildLabel(isEditing
-                  ? 'NUEVA CONTRASEÑA (opcional)'
-                  : 'CONTRASEÑA'),
+              _buildLabel(
+                isEditing ? 'NUEVA CONTRASEÑA (opcional)' : 'CONTRASEÑA',
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: _passController,
                 obscureText: _obscurePassword,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
                   hint: '••••••••',
                   prefixIcon: Icons.lock_outline_rounded,
@@ -152,16 +160,35 @@ class _UserDialogState extends State<UserDialog> {
               const SizedBox(height: 10),
               _buildRoleSelector(isCurrentUser: isCurrentUser),
               if (isCurrentUser) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Tu propio usuario debe conservar el rol ADMIN mientras la sesión esté activa.',
-                  style: GoogleFonts.dmSans(
-                    color: AppTheme.warning,
-                    fontSize: 12,
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warningLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        color: AppTheme.warning,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Tu propio usuario debe conservar el rol ADMIN mientras la sesión esté activa.',
+                          style: GoogleFonts.inter(
+                            color: AppTheme.warning,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               _buildActions(),
             ],
           ),
@@ -174,25 +201,40 @@ class _UserDialogState extends State<UserDialog> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
-            color: AppTheme.accent.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: AppTheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             isEditing ? Icons.edit_rounded : Icons.person_add_alt_1_rounded,
-            color: AppTheme.accent,
-            size: 22,
+            color: AppTheme.primary,
+            size: 24,
           ),
         ),
-        const SizedBox(width: 12),
-        Text(
-          isEditing ? 'Editar Usuario' : 'Nuevo Usuario',
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+        const SizedBox(width: 14),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isEditing ? 'Editar Usuario' : 'Nuevo Usuario',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            Text(
+              isEditing
+                  ? 'Actualiza los datos del usuario'
+                  : 'Crea un nuevo perfil de acceso',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -201,71 +243,74 @@ class _UserDialogState extends State<UserDialog> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: GoogleFonts.dmSans(
+      style: GoogleFonts.inter(
         fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 2,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1,
         color: AppTheme.textSecondary,
       ),
     );
   }
 
   Widget _buildRoleSelector({required bool isCurrentUser}) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Row(
       children: _roles.map((rol) {
         final isSelected = _selectedRol == rol;
         final color = _rolColor(rol);
         final isDisabled = isCurrentUser && rol != 'ADMIN';
-        return GestureDetector(
-          onTap: isDisabled ? null : () => setState(() => _selectedRol = rol),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isDisabled
-                  ? AppTheme.surfaceLight.withValues(alpha: 0.25)
-                  : isSelected
-                  ? color.withValues(alpha: 0.15)
-                  : AppTheme.surfaceLight.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDisabled
-                    ? AppTheme.border.withValues(alpha: 0.5)
-                    : isSelected
-                        ? color
-                        : AppTheme.border,
-                width: isSelected ? 1.5 : 1,
+        return Expanded(
+          child: GestureDetector(
+            onTap: isDisabled ? null : () => setState(() => _selectedRol = rol),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: EdgeInsets.only(
+                right: rol == 'ADMIN' ? 8 : 0,
+                left: rol == 'USUARIO' ? 8 : 0,
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _rolIcon(rol),
-                  size: 16,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: isDisabled
+                    ? AppTheme.surfaceVariant.withValues(alpha: 0.5)
+                    : isSelected
+                    ? color.withValues(alpha: 0.1)
+                    : AppTheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
                   color: isDisabled
-                      ? AppTheme.textMuted
+                      ? AppTheme.border
                       : isSelected
-                          ? color
-                          : AppTheme.textMuted,
+                      ? color
+                      : AppTheme.border,
+                  width: isSelected ? 2 : 1,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  rol,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _rolIcon(rol),
+                    size: 18,
                     color: isDisabled
                         ? AppTheme.textMuted
                         : isSelected
-                            ? color
-                            : AppTheme.textSecondary,
+                        ? color
+                        : AppTheme.textMuted,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    rol,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDisabled
+                          ? AppTheme.textMuted
+                          : isSelected
+                          ? color
+                          : AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -280,7 +325,10 @@ class _UserDialogState extends State<UserDialog> {
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: AppTheme.secondaryButton,
-            child: const Text('Cancelar'),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -297,7 +345,10 @@ class _UserDialogState extends State<UserDialog> {
                       color: Colors.white,
                     ),
                   )
-                : Text(widget.user != null ? 'Guardar' : 'Crear'),
+                : Text(
+                    widget.user != null ? 'Guardar' : 'Crear',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ),
           ),
         ),
       ],

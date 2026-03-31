@@ -27,8 +27,8 @@ class UserCard extends StatelessWidget {
         offset: Offset(0, 20 * (1 - animation.value)),
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(18),
-          decoration: AppTheme.cardDecoration,
+          padding: const EdgeInsets.all(16),
+          decoration: AppTheme.elevatedCardDecoration,
           child: Row(
             children: [
               _buildAvatar(rol, color),
@@ -48,16 +48,9 @@ class UserCard extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Center(
-        child: Icon(
-          _rolIcon(rol),
-          color: color,
-          size: 22,
-        ),
-      ),
+      child: Center(child: Icon(_rolIcon(rol), color: color, size: 22)),
     );
   }
 
@@ -68,26 +61,24 @@ class UserCard extends StatelessWidget {
         children: [
           Text(
             user['usuario'] ?? 'Sin nombre',
-            style: GoogleFonts.ibmPlexSans(
-              fontWeight: FontWeight.w700,
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
               fontSize: 15,
-              color: Colors.white,
+              color: AppTheme.textPrimary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Text(
               rol,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.5,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
                 color: color,
               ),
             ),
@@ -103,14 +94,20 @@ class UserCard extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined,
-              color: AppTheme.textSecondary, size: 20),
+          icon: const Icon(
+            Icons.edit_outlined,
+            color: AppTheme.textSecondary,
+            size: 20,
+          ),
         ),
         if (onDelete != null)
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline_rounded,
-                color: AppTheme.error, size: 20),
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: AppTheme.error,
+              size: 20,
+            ),
           ),
       ],
     );
@@ -119,7 +116,7 @@ class UserCard extends StatelessWidget {
   Color _rolColor(String rol) {
     switch (rol.toUpperCase()) {
       case 'ADMIN':
-        return AppTheme.accent;
+        return AppTheme.primary;
       default:
         return AppTheme.accentTeal;
     }

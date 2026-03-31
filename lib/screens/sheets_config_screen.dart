@@ -46,9 +46,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     final info = await GoogleDriveService.getSheetsInfo();
     final autoSync = await GoogleDriveService.isAutoSyncEnabled();
     final account = await GoogleDriveService.signInSilently();
-    
+
     if (!mounted) return;
-    
+
     setState(() {
       _currentRole = currentRole;
       _sheetsInfo = info;
@@ -61,7 +61,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   Future<void> _signIn() async {
     setState(() => _isLoading = true);
     final account = await GoogleDriveService.signIn(context: context);
-    
+
     if (!mounted) return;
     setState(() {
       _account = account;
@@ -72,7 +72,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   Future<void> _signOut() async {
     await GoogleDriveService.signOut();
     await GoogleDriveService.clearSheetsInfo();
-    
+
     if (!mounted) return;
     setState(() {
       _account = null;
@@ -82,12 +82,13 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   }
 
   Future<void> _createSpreadsheet() async {
-    final createController = TextEditingController(text: 'Asistencia AVS Ingeniería');
+    final createController = TextEditingController(
+      text: 'Asistencia AVS Ingeniería',
+    );
     final searchController = TextEditingController();
-    bool isSearching = true; // Empieza buscando automáticamente
+    bool isSearching = true;
     List<Map<String, String>> searchResults = [];
 
-    // Llamamos a la búsqueda inicial antes o justo al abrir el diálogo
     GoogleDriveService.searchSpreadsheets('').then((results) {
       searchResults = results;
       isSearching = false;
@@ -98,144 +99,100 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateBuilder) {
-            return AlertDialog(
-              backgroundColor: AppTheme.surface,
-              contentPadding: EdgeInsets.zero,
-              content: DefaultTabController(
-                length: 2,
-                child: SizedBox(
-                  width: double.maxFinite,
-                  height: 480,
-                  child: Column(
-                    children: [
-                      Container(
-                        color: Colors.black26,
-                        child: const TabBar(
-                          indicatorColor: AppTheme.accent,
-                          labelColor: Colors.white,
-                          unselectedLabelColor: Colors.white54,
-                          tabs: [
-                            Tab(text: 'Crear Nueva'),
-                            Tab(text: 'Buscar en Drive'),
-                          ],
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: SizedBox(
+                width: double.maxFinite,
+                height: 480,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceVariant,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20),
                         ),
                       ),
-                      Expanded(
-                        child: TabBarView(
+                      child: Row(
+                        children: [
+                          Text(
+                            'Configurar Google Sheets',
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Pestaña Crear
-                            Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Crear Hoja de Cálculo',
-                                    style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TextField(
-                                    controller: createController,
-                                    style: const TextStyle(color: Colors.white),
-                                    decoration: AppTheme.inputDecoration(
-                                      hint: 'Nombre del archivo',
-                                      prefixIcon: Icons.table_chart_rounded,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _doCreateSpreadsheet(createController.text.trim());
-                                    },
-                                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F9D58)),
-                                    child: const Text('Crear', style: TextStyle(color: Colors.white)),
-                                  ),
-                                ],
+                            Text(
+                              'Nombre de la hoja',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textSecondary,
                               ),
                             ),
-                            // Pestaña Buscar
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: searchController,
-                                          style: const TextStyle(color: Colors.white),
-                                          decoration: AppTheme.inputDecoration(
-                                            hint: 'Buscar hoja...',
-                                            prefixIcon: Icons.search,
-                                          ),
-                                          onSubmitted: (val) async {
-                                            setStateBuilder(() => isSearching = true);
-                                            final results = await GoogleDriveService.searchSpreadsheets(val);
-                                            setStateBuilder(() {
-                                              searchResults = results;
-                                              isSearching = false;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.search, color: AppTheme.accent),
-                                        onPressed: () async {
-                                          setStateBuilder(() => isSearching = true);
-                                          final results = await GoogleDriveService.searchSpreadsheets(searchController.text);
-                                          setStateBuilder(() {
-                                            searchResults = results;
-                                            isSearching = false;
-                                          });
-                                        },
-                                      )
-                                    ],
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: createController,
+                              style: GoogleFonts.inter(
+                                color: AppTheme.textPrimary,
+                              ),
+                              decoration: AppTheme.inputDecoration(
+                                hint: 'Ej: Asistencia 2024',
+                                prefixIcon: Icons.table_chart_rounded,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _doCreateSpreadsheet(
+                                    createController.text.trim(),
+                                  );
+                                },
+                                icon: const Icon(Icons.add_rounded, size: 20),
+                                label: Text(
+                                  'Crear Hoja',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  const SizedBox(height: 16),
-                                  Expanded(
-                                    child: StatefulBuilder(
-                                      builder: (context, setInnerState) {
-                                        // Refrescar automáticamente cuando isSearching cambie por el Future externo
-                                        if (isSearching) {
-                                          Future.delayed(const Duration(milliseconds: 500), () {
-                                            if (mounted) setInnerState(() {});
-                                          });
-                                          return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
-                                        }
-
-                                        return searchResults.isEmpty
-                                            ? const Center(
-                                                child: Text(
-                                                    'No se encontraron hojas de cálculo en tu Google Drive.\nUsa el buscador o crea una nueva.',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(color: Colors.grey)))
-                                            : ListView.builder(
-                                                itemCount: searchResults.length,
-                                                itemBuilder: (context, index) {
-                                                  final file = searchResults[index];
-                                                  return ListTile(
-                                                    leading: const Icon(Icons.table_chart, color: Color(0xFF0F9D58)),
-                                                    title: Text(file['name'] ?? 'Sin nombre',
-                                                        style: const TextStyle(color: Colors.white)),
-                                                    onTap: () {
-                                                      Navigator.pop(context);
-                                                      _doLinkSpreadsheet(file['id']!, file['name']!, file['link']!);
-                                                    },
-                                                  );
-                                                },
-                                              );
-                                      },
-                                    ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.success,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
                                   ),
-                                ],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -257,7 +214,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Hoja existente vinculada exitosamente'),
+        content: Text('Hoja vinculada exitosamente'),
         backgroundColor: AppTheme.success,
         behavior: SnackBarBehavior.floating,
       ),
@@ -269,11 +226,13 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
     setState(() => _isCreating = true);
     final sheet = await GoogleDriveService.createSpreadsheet(name);
-    
+
     if (!mounted) return;
 
     if (sheet != null && sheet.spreadsheetId != null) {
-      final url = sheet.spreadsheetUrl ?? 'https://docs.google.com/spreadsheets/d/${sheet.spreadsheetId}';
+      final url =
+          sheet.spreadsheetUrl ??
+          'https://docs.google.com/spreadsheets/d/${sheet.spreadsheetId}';
       await GoogleDriveService.setSheetsInfo(sheet.spreadsheetId!, name, url);
       final info = await GoogleDriveService.getSheetsInfo();
 
@@ -306,11 +265,12 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   Future<void> _syncHistory() async {
     if (_sheetsInfo == null) return;
 
-    // Solo ADMIN puede exportar todo el historial
     if (_currentRole.toUpperCase() != 'ADMIN') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Solo los administradores pueden exportar el historial completo.'),
+          content: Text(
+            'Solo los administradores pueden exportar el historial completo.',
+          ),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -321,7 +281,6 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     setState(() => _isSyncing = true);
 
     try {
-      // 1. Fetch ALL records from Supabase
       final data = await Supabase.instance.client
           .from('registros')
           .select()
@@ -330,7 +289,6 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       int successCount = 0;
       int errorCount = 0;
 
-      // 2. Append directly row by row (naïve approach but safe for limited data)
       for (var reg in data) {
         final success = await GoogleDriveService.appendAttendanceRow(
           _sheetsInfo!['id'],
@@ -349,7 +307,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Sincronización finalizada: $successCount exitosos, $errorCount errores.'),
+          content: Text(
+            'Sincronización: $successCount exitosos, $errorCount errores.',
+          ),
           backgroundColor: errorCount > 0 ? AppTheme.warning : AppTheme.success,
           behavior: SnackBarBehavior.floating,
         ),
@@ -359,7 +319,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       setState(() => _isSyncing = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No se pudo completar la exportación. Intenta de nuevo.'),
+          content: Text('No se pudo completar la exportación.'),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -371,25 +331,70 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Google Sheets (Historial)',
-          style: GoogleFonts.dmSans(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
+                  : _buildBody(),
+            ),
+          ],
         ),
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.accent))
-        : _buildBody(),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: AppTheme.textPrimary,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Google Sheets (Historial)',
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Sincroniza registros con Excel',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -401,20 +406,32 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.lock_outline_rounded, color: AppTheme.warning, size: 56),
-              const SizedBox(height: 16),
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppTheme.warningLight,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.lock_outline_rounded,
+                  color: AppTheme.warning,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Acceso restringido',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.inter(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 'Solo los administradores pueden vincular o exportar Google Sheets.',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.inter(
                   fontSize: 14,
                   color: AppTheme.textSecondary,
                 ),
@@ -433,35 +450,59 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.table_chart_rounded, size: 80, color: Colors.grey.withValues(alpha: 0.5)),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppTheme.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.table_chart_rounded,
+                  size: 40,
+                  color: AppTheme.success,
+                ),
+              ),
               const SizedBox(height: 24),
               Text(
                 'Conecta tu cuenta de Google',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.inter(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
-                'Los registros de asistencia se sincronizarán en una hoja de Google Sheets en la cuenta que conectes.',
-                style: GoogleFonts.dmSans(
+                'Los registros de asistencia se sincronizarán en Google Sheets.',
+                style: GoogleFonts.inter(
                   fontSize: 14,
                   color: AppTheme.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: _signIn,
-                icon: const Icon(Icons.g_mobiledata_rounded, size: 32, color: Colors.white),
-                label: const Text('Iniciar con Google', style: TextStyle(color: Colors.white, fontSize: 16)),
+                icon: const Icon(Icons.g_mobiledata_rounded, size: 24),
+                label: Text(
+                  'Iniciar con Google',
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4285F4),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],
@@ -471,34 +512,44 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     }
 
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // --- Account Info Header ---
           Container(
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.all(20),
-            decoration: AppTheme.cardDecoration,
+            padding: const EdgeInsets.all(16),
+            decoration: AppTheme.elevatedCardDecoration,
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: _account!.photoUrl != null ? NetworkImage(_account!.photoUrl!) : null,
-                  backgroundColor: AppTheme.accent.withValues(alpha: 0.2),
-                  child: _account!.photoUrl == null ? const Icon(Icons.person, color: AppTheme.accent) : null,
+                  backgroundImage: _account!.photoUrl != null
+                      ? NetworkImage(_account!.photoUrl!)
+                      : null,
+                  backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
+                  child: _account!.photoUrl == null
+                      ? const Icon(Icons.person, color: AppTheme.primary)
+                      : null,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _account!.displayName ?? 'Usuario de Google',
-                        style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         _account!.email,
-                        style: GoogleFonts.dmSans(color: AppTheme.textSecondary, fontSize: 13),
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -512,179 +563,198 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
               ],
             ),
           ),
-
-          const SizedBox(height: 12),
-
-          // --- Spreadsheet Management ---
+          const SizedBox(height: 20),
           if (_sheetsInfo == null)
             _buildNoSheetView()
           else
             _buildActiveSheetView(),
+          const SizedBox(height: 32),
         ],
       ),
     );
   }
 
   Widget _buildNoSheetView() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.elevatedCardDecoration,
       child: Column(
         children: [
-          Icon(Icons.file_copy_rounded, size: 60, color: AppTheme.textMuted.withValues(alpha: 0.5)),
+          Icon(Icons.file_copy_rounded, size: 48, color: AppTheme.textMuted),
           const SizedBox(height: 16),
           Text(
-            'Sin hoja de cálculo vinculada',
-            style: GoogleFonts.dmSans(
-              color: AppTheme.textSecondary,
+            'Sin hoja vinculada',
+            style: GoogleFonts.inter(
+              color: AppTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Para exportar la asistencia, necesitas crear o elegir una hoja de Excel/Sheets en tu cuenta de Google.',
-            style: GoogleFonts.dmSans(color: AppTheme.textMuted, fontSize: 13),
+            'Crea o vincula una hoja de cálculo para sincronizar la asistencia.',
+            style: GoogleFonts.inter(
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+            ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           _isCreating
-            ? const CircularProgressIndicator(color: Color(0xFF0F9D58))
-            : ElevatedButton.icon(
-                onPressed: _createSpreadsheet,
-                icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.white),
-                label: const Text('Crear Nueva Hoja', style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F9D58), // Google Sheets Green
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
+              ? const CircularProgressIndicator(color: AppTheme.success)
+              : ElevatedButton.icon(
+                  onPressed: _createSpreadsheet,
+                  icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
+                  label: Text(
+                    'Crear Nueva Hoja',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.success,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-              ),
         ],
       ),
     );
   }
 
   Widget _buildActiveSheetView() {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F9D58).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF0F9D58).withValues(alpha: 0.3)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.success.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.success.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.table_chart_rounded, color: Color(0xFF0F9D58), size: 28),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppTheme.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.table_chart_rounded,
+                  color: AppTheme.success,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hoja vinculada',
+                      style: GoogleFonts.inter(
+                        color: AppTheme.success,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
                       _sheetsInfo!['name'],
-                      style: GoogleFonts.dmSans(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.inter(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              // Auto-sync Toggle
-              SwitchListTile(
-                value: _autoSync,
-                onChanged: (val) async {
-                  await GoogleDriveService.setAutoSync(val);
-                  setState(() => _autoSync = val);
-                },
-                title: Text(
-                  'Sincronización Automática',
-                  style: GoogleFonts.dmSans(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  ],
                 ),
-                subtitle: Text(
-                  'Agrega fila al Excel cada vez que se escanea un QR',
-                  style: GoogleFonts.dmSans(color: AppTheme.textSecondary, fontSize: 12),
-                ),
-                activeThumbColor: const Color(0xFF0F9D58),
-                contentPadding: EdgeInsets.zero,
-              ),
-
-              const Divider(color: AppTheme.borderLight, height: 32),
-
-              // Sincronizar Historial Manualmente
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Exportar registros actuales',
-                          style: GoogleFonts.dmSans(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          'Envía el historial que ya existe en la nube.',
-                          style: GoogleFonts.dmSans(color: AppTheme.textSecondary, fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _isSyncing
-                    ? const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Color(0xFF0F9D58), strokeWidth: 2)),
-                      )
-                    : ElevatedButton.icon(
-                        onPressed: _syncHistory,
-                        icon: const Icon(Icons.sync_rounded, color: Colors.white, size: 16),
-                        label: const Text('Sincronizar', style: TextStyle(color: Colors.white, fontSize: 12)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0F9D58),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          elevation: 0,
-                        ),
-                      ),
-                ],
               ),
             ],
           ),
-        ),
-
-        const SizedBox(height: 24),
-        TextButton.icon(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                backgroundColor: AppTheme.surface,
-                title: const Text('¿Desvincular hoja?', style: TextStyle(color: Colors.white)),
-                content: const Text('Esto no borrará el archivo de Google Drive, solo dejará de sincronizar aquí.', style: TextStyle(color: AppTheme.textSecondary)),
-                actions: [
-                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-                  TextButton(
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await GoogleDriveService.clearSheetsInfo();
-                      setState(() => _sheetsInfo = null);
-                    },
-                    child: const Text('Desvincular', style: TextStyle(color: AppTheme.error)),
-                  )
-                ],
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sincronización Automática',
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Agrega fila al Excel cada vez que se escanea',
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _autoSync,
+                  onChanged: (val) async {
+                    await GoogleDriveService.setAutoSync(val);
+                    setState(() => _autoSync = val);
+                  },
+                  activeColor: AppTheme.success,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isSyncing ? null : _syncHistory,
+                  icon: _isSyncing
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.sync_rounded, size: 18),
+                  label: Text(
+                    _isSyncing ? 'Sincronizando...' : 'Exportar historial',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.success,
+                    side: const BorderSide(color: AppTheme.success),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-            );
-          },
-          icon: const Icon(Icons.link_off_rounded, color: AppTheme.error, size: 18),
-          label: const Text('Desvincular Excel actual', style: TextStyle(color: AppTheme.error)),
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

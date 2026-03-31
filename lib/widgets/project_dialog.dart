@@ -22,9 +22,15 @@ class _ProjectDialogState extends State<ProjectDialog> {
   @override
   void initState() {
     super.initState();
-    _numController = TextEditingController(text: widget.project?['numero'] ?? '');
-    _nameController = TextEditingController(text: widget.project?['nombre'] ?? '');
-    _clientController = TextEditingController(text: widget.project?['cliente'] ?? '');
+    _numController = TextEditingController(
+      text: widget.project?['numero'] ?? '',
+    );
+    _nameController = TextEditingController(
+      text: widget.project?['nombre'] ?? '',
+    );
+    _clientController = TextEditingController(
+      text: widget.project?['cliente'] ?? '',
+    );
     _ocController = TextEditingController(text: widget.project?['oc'] ?? '');
   }
 
@@ -75,6 +81,7 @@ class _ProjectDialogState extends State<ProjectDialog> {
         content: Text('Error: $msg'),
         backgroundColor: AppTheme.error,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -84,12 +91,9 @@ class _ProjectDialogState extends State<ProjectDialog> {
     final isEditing = widget.project != null;
 
     return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
         padding: const EdgeInsets.all(24),
-        decoration: AppTheme.dialogDecoration,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -101,7 +105,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _numController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
                   hint: 'Ej: 105',
                   prefixIcon: Icons.numbers_rounded,
@@ -112,7 +119,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _nameController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
                   hint: 'Nombre descriptivo',
                   prefixIcon: Icons.badge_rounded,
@@ -123,9 +133,12 @@ class _ProjectDialogState extends State<ProjectDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _clientController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
-                  hint: 'Ej: PepsiCo',
+                  hint: 'Ej: Empresa XYZ',
                   prefixIcon: Icons.business_center_rounded,
                 ),
               ),
@@ -134,7 +147,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _ocController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                ),
                 decoration: AppTheme.inputDecoration(
                   hint: 'Ej: M411',
                   prefixIcon: Icons.receipt_long_rounded,
@@ -152,19 +168,41 @@ class _ProjectDialogState extends State<ProjectDialog> {
   Widget _buildHeader(bool isEditing) {
     return Row(
       children: [
-        Icon(
-          isEditing ? Icons.edit_rounded : Icons.add_business_rounded,
-          color: AppTheme.accent,
-          size: 24,
-        ),
-        const SizedBox(width: 12),
-        Text(
-          isEditing ? 'Editar Proyecto' : 'Nuevo Proyecto',
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppTheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
+          child: Icon(
+            isEditing ? Icons.edit_rounded : Icons.add_business_rounded,
+            color: AppTheme.primary,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isEditing ? 'Editar Proyecto' : 'Nuevo Proyecto',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            Text(
+              isEditing
+                  ? 'Actualiza los datos del proyecto'
+                  : 'Crea un nuevo frente de trabajo',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -173,10 +211,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: GoogleFonts.dmSans(
+      style: GoogleFonts.inter(
         fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 2,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1,
         color: AppTheme.textSecondary,
       ),
     );
@@ -189,7 +227,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: AppTheme.secondaryButton,
-            child: const Text('Cancelar'),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -206,7 +247,10 @@ class _ProjectDialogState extends State<ProjectDialog> {
                       color: Colors.white,
                     ),
                   )
-                : Text(widget.project != null ? 'Guardar' : 'Crear'),
+                : Text(
+                    widget.project != null ? 'Guardar' : 'Crear',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ),
           ),
         ),
       ],

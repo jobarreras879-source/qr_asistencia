@@ -25,20 +25,42 @@ class MyApp extends StatelessWidget {
       title: 'Qr Asistencia',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         scaffoldBackgroundColor: AppTheme.bg,
-        colorScheme: ColorScheme.dark(
-          primary: AppTheme.accent,
+        colorScheme: ColorScheme.light(
+          primary: AppTheme.primary,
           secondary: AppTheme.accent2,
           surface: AppTheme.surface,
+          error: AppTheme.error,
         ),
-        textTheme: GoogleFonts.ibmPlexSansTextTheme(ThemeData.dark().textTheme)
+        textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme)
             .apply(
               bodyColor: AppTheme.textPrimary,
               displayColor: AppTheme.textPrimary,
             ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: AppTheme.primaryButton,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppTheme.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppTheme.surfaceVariant,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppTheme.border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppTheme.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+          ),
         ),
       ),
       home: const LoginScreen(),

@@ -199,14 +199,14 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
                 height: 48,
                 width: 48,
                 child: CircularProgressIndicator(
-                  color: AppTheme.accent,
+                  color: AppTheme.primary,
                   strokeWidth: 3,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Iniciando cámara...',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.inter(
                   color: AppTheme.textSecondary,
                   fontSize: 14,
                 ),
@@ -285,7 +285,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -301,15 +301,15 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
             children: [
               Text(
                 'Tomar Fotografía',
-                style: GoogleFonts.bebasNeue(
-                  fontSize: 22,
-                  letterSpacing: 2,
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
               ),
               Text(
                 'Evidencia de asistencia',
-                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white54),
+                style: GoogleFonts.inter(fontSize: 12, color: Colors.white70),
               ),
             ],
           ),
@@ -337,7 +337,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
               border: Border.all(color: Colors.white, width: 4),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.accent.withValues(alpha: 0.3),
+                  color: AppTheme.primary.withValues(alpha: 0.4),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -376,7 +376,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: 0.12),
+          color: Colors.white.withValues(alpha: 0.15),
           border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
         ),
         child: Icon(icon, color: Colors.white, size: size * 0.45),

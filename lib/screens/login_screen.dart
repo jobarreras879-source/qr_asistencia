@@ -5,21 +5,6 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
-class _LoginColors {
-  static const card = Color(0xFF20263A);
-  static const cardBorder = Color(0xFF323952);
-  static const field = Color(0xFF20263A);
-  static const fieldBorder = Color(0xFF2A3350);
-  static const fieldFocus = Color(0xFF2E63F2);
-  static const title = Color(0xFF2E63F2);
-  static const subtitle = Color(0xFF8A90A8);
-  static const textPrimary = Colors.white;
-  static const textSecondary = Color(0xFF969BB2);
-  static const textMuted = Color(0xFF6E7590);
-  static const buttonStart = Color(0xFF2E63F2);
-  static const buttonEnd = Color(0xFF8B3FF1);
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -28,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final _usuarioCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _isLoading = false;
@@ -56,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
 
     _fadeController.forward();
+
     _checkSavedLogin();
   }
 
@@ -67,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  /// Restaura sesión activa desde Supabase Auth (no desde almacenamiento local).
   Future<void> _checkSavedLogin() async {
     final session = await AuthService.restoreSession();
     if (session != null && mounted) {
@@ -95,7 +80,6 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = null;
     });
 
-    // Usar Supabase Auth en lugar de consulta directa a tabla usuarios
     final rol = await AuthService.signIn(user, pass);
 
     if (!mounted) return;
@@ -123,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       );
     } else {
-      setState(() => _errorMessage = 'Usuario o contraseña incorrectos.');
+      setState(() => _errorMessage = AuthService.getFriendlyLastError());
     }
   }
 
@@ -132,78 +116,42 @@ class _LoginScreenState extends State<LoginScreen>
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF090F1E), Color(0xFF101733), Color(0xFF0D1330)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      backgroundColor: AppTheme.bg,
+      body: SafeArea(
+        child: AnimatedBuilder(
+          animation: _fadeAnim,
+          builder: (context, child) {
+            return Opacity(
+              opacity: _fadeAnim.value,
+              child: Transform.translate(
+                offset: Offset(0, _slideAnim.value),
+                child: child,
+              ),
+            );
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight:
+                    screenHeight -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 60),
+                  _buildHero(),
+                  const SizedBox(height: 48),
+                  _buildLoginCard(),
+                  const SizedBox(height: 24),
+                  _buildFooter(),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -120,
-              left: -80,
-              child: Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _LoginColors.buttonStart.withValues(alpha: 0.10),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 90,
-              right: -70,
-              child: Container(
-                width: 220,
-                height: 220,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _LoginColors.buttonEnd.withValues(alpha: 0.08),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: AnimatedBuilder(
-                animation: _fadeAnim,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnim.value,
-                    child: Transform.translate(
-                      offset: Offset(0, _slideAnim.value),
-                      child: child,
-                    ),
-                  );
-                },
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight:
-                          screenHeight -
-                          MediaQuery.of(context).padding.top -
-                          MediaQuery.of(context).padding.bottom,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 40),
-                        _buildHero(),
-                        const SizedBox(height: 32),
-                        _buildLoginCard(),
-                        const SizedBox(height: 24),
-                        _buildFooter(),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -213,48 +161,55 @@ class _LoginScreenState extends State<LoginScreen>
     return Column(
       children: [
         Container(
-          width: 108,
-          height: 108,
+          width: 160,
+          height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [_LoginColors.buttonStart, _LoginColors.buttonEnd],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: _LoginColors.buttonStart.withValues(alpha: 0.34),
-                blurRadius: 40,
-                spreadRadius: 6,
+                color: AppTheme.primary.withValues(alpha: 0.15),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: const Icon(
-            Icons.qr_code_scanner_rounded,
-            size: 52,
-            color: Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A56DB),
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.apartment, color: Colors.white, size: 36),
+                    const SizedBox(width: 12),
+                    Text(
+                      'AVS',
+                      style: GoogleFonts.inter(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 26),
+        const SizedBox(height: 24),
         Text(
-          'AVS INGENIERIA',
+          'Control de Asistencia',
           textAlign: TextAlign.center,
-          style: GoogleFonts.bebasNeue(
-            fontSize: 50,
-            letterSpacing: 3.2,
-            color: _LoginColors.title,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'CONTROL DE ASISTENCIA',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(
-            fontSize: 12,
-            letterSpacing: 5.2,
-            fontWeight: FontWeight.w500,
-            color: _LoginColors.subtitle,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textSecondary,
+            letterSpacing: 0.5,
           ),
         ),
       ],
@@ -263,53 +218,48 @@ class _LoginScreenState extends State<LoginScreen>
 
   Widget _buildLoginCard() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 22, 18, 20),
-      decoration: BoxDecoration(
-        color: _LoginColors.card.withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: _LoginColors.cardBorder.withValues(alpha: 0.92),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.elevatedCardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Text(
+            'Iniciar Sesión',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Ingresa tus credenciales para continuar',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 24),
           _buildFieldLabel('USUARIO'),
           const SizedBox(height: 8),
           TextField(
             controller: _usuarioCtrl,
-            style: GoogleFonts.dmSans(
-              color: _LoginColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GoogleFonts.inter(color: AppTheme.textPrimary, fontSize: 15),
             textInputAction: TextInputAction.next,
-            decoration: _buildInputDecoration(
+            decoration: AppTheme.inputDecoration(
               hint: 'Tu usuario',
               prefixIcon: Icons.person_outline_rounded,
-              isFocused: true,
             ),
           ),
-          const SizedBox(height: 18),
-          _buildFieldLabel('CONTRASENA'),
+          const SizedBox(height: 20),
+          _buildFieldLabel('CONTRASEÑA'),
           const SizedBox(height: 8),
           TextField(
             controller: _passwordCtrl,
             obscureText: _obscurePassword,
-            style: GoogleFonts.dmSans(
-              color: _LoginColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GoogleFonts.inter(color: AppTheme.textPrimary, fontSize: 15),
             textInputAction: TextInputAction.done,
-            decoration: _buildInputDecoration(
+            decoration: AppTheme.inputDecoration(
               hint: '••••••••',
               prefixIcon: Icons.lock_outline_rounded,
               suffixIcon: IconButton(
@@ -317,8 +267,8 @@ class _LoginScreenState extends State<LoginScreen>
                   _obscurePassword
                       ? Icons.visibility_off_rounded
                       : Icons.visibility_rounded,
-                  color: _LoginColors.textMuted,
-                  size: 22,
+                  color: AppTheme.textMuted,
+                  size: 20,
                 ),
                 onPressed: () {
                   setState(() {
@@ -334,10 +284,10 @@ class _LoginScreenState extends State<LoginScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: AppTheme.error.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(16),
+                color: AppTheme.errorLight,
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.error.withValues(alpha: 0.25),
+                  color: AppTheme.error.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -351,8 +301,8 @@ class _LoginScreenState extends State<LoginScreen>
                   Expanded(
                     child: Text(
                       _errorMessage!,
-                      style: GoogleFonts.dmSans(
-                        color: const Color(0xFFFFB4B4),
+                      style: GoogleFonts.inter(
+                        color: AppTheme.error,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -362,49 +312,27 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
           ],
-          const SizedBox(height: 22),
-          Container(
-            height: 66,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              gradient: const LinearGradient(
-                colors: [_LoginColors.buttonStart, _LoginColors.buttonEnd],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _LoginColors.buttonEnd.withValues(alpha: 0.24),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 52,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-              ),
+              style: AppTheme.primaryButton,
               child: _isLoading
                   ? const SizedBox(
                       height: 24,
                       width: 24,
                       child: CircularProgressIndicator(
                         color: Colors.white,
-                        strokeWidth: 2.8,
+                        strokeWidth: 2.5,
                       ),
                     )
                   : Text(
-                      'Ingresar',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                      'Iniciar Sesión',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        letterSpacing: 0.8,
                       ),
                     ),
             ),
@@ -420,11 +348,10 @@ class _LoginScreenState extends State<LoginScreen>
         Text(
           'v1.3.0',
           textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: _LoginColors.textMuted,
-            letterSpacing: 0.6,
+            color: AppTheme.textMuted,
           ),
         ),
       ],
@@ -434,52 +361,11 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: GoogleFonts.dmSans(
+      style: GoogleFonts.inter(
         fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 3,
-        color: _LoginColors.textSecondary,
-      ),
-    );
-  }
-
-  InputDecoration _buildInputDecoration({
-    required String hint,
-    required IconData prefixIcon,
-    Widget? suffixIcon,
-    bool isFocused = false,
-  }) {
-    return InputDecoration(
-      filled: true,
-      fillColor: _LoginColors.field,
-      hintText: hint,
-      hintStyle: GoogleFonts.dmSans(
-        color: _LoginColors.textMuted,
-        fontSize: 15,
-        fontWeight: FontWeight.w500,
-      ),
-      prefixIcon: Icon(prefixIcon, color: _LoginColors.textSecondary, size: 24),
-      suffixIcon: suffixIcon,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: const BorderSide(color: _LoginColors.fieldBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: BorderSide(
-          color: isFocused
-              ? _LoginColors.fieldFocus
-              : _LoginColors.fieldBorder.withValues(alpha: 0.7),
-          width: isFocused ? 2.2 : 1.2,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(22),
-        borderSide: const BorderSide(
-          color: _LoginColors.fieldFocus,
-          width: 2.2,
-        ),
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.5,
+        color: AppTheme.textSecondary,
       ),
     );
   }

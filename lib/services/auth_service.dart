@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/app_config.dart';
 import 'password_hash_service.dart';
 
 /// Servicio de autenticación centralizado usando Supabase Auth.
@@ -43,22 +44,32 @@ class AuthService {
       final normalizedUser = PasswordHashService.normalizeUsername(usuario);
       final passwordHash = PasswordHashService.hash(password);
 
-      final data = await _supabase
+      final dataList = await _supabase
           .from(_tableName)
           .select('id, usuario, password_hash, rol, activo')
-          .eq('usuario', normalizedUser)
-          .eq('activo', true)
-          .maybeSingle();
+          .eq('usuario', normalizedUser);
 
-      if (data == null) {
-        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
+      if (dataList.isEmpty) {
+        _lastErrorMessage =
+            'Sin registros. Usr: $normalizedUser. URL activa: ${AppConfig.supabaseUrl}';
+        return null;
+      }
+
+      final data = dataList.first;
+
+      if (data['activo'] != true) {
+        _lastErrorMessage = 'El usuario está inactivo.';
         return null;
       }
 
       final storedHash = data['password_hash'] as String?;
       final role = (data['rol'] as String?)?.trim().toUpperCase();
-      if (storedHash == null || storedHash != passwordHash || role == null || role.isEmpty) {
-        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
+      if (storedHash == null ||
+          storedHash != passwordHash ||
+          role == null ||
+          role.isEmpty) {
+        _lastErrorMessage =
+            'Usuario o contraseña incorrectos. (HashDB: ${storedHash?.substring(0, 5)}, HashTyped: ${passwordHash.substring(0, 5)}, Rol: $role)';
         return null;
       }
 
@@ -122,7 +133,9 @@ class AuthService {
   /// Retorna [usuario, rol] si hay sesión, null si no.
   static Future<Map<String, String>?> restoreSession() async {
     try {
-      if (_currentUserId != null && _currentUsername != null && _currentRole != null) {
+      if (_currentUserId != null &&
+          _currentUsername != null &&
+          _currentRole != null) {
         return {
           'id': _currentUserId!,
           'usuario': _currentUsername!,
@@ -157,7 +170,7 @@ class AuthService {
       return 'No se pudo iniciar sesión. Intenta de nuevo.';
     }
     if (lower.contains('incorrectos')) {
-      return 'Credenciales inválidas. Verifica el usuario/correo y la contraseña.';
+      return raw; // Return raw diagnostic info for debugging
     }
     if (lower.contains('database')) {
       return 'Hubo un problema interno con la autenticación o la tabla de usuarios.';

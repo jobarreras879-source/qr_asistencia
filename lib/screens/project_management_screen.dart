@@ -57,8 +57,13 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              project != null ? 'Proyecto actualizado' : 'Proyecto creado'),
+            project != null ? 'Proyecto actualizado' : 'Proyecto creado',
+          ),
           backgroundColor: AppTheme.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -67,33 +72,45 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
   void _confirmDelete(String numero) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.transparent,
-        contentPadding: EdgeInsets.zero,
-        content: Container(
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          decoration: AppTheme.dialogDecoration,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.warning_amber_rounded,
-                  color: AppTheme.error, size: 48),
-              const SizedBox(height: 16),
-              Text(
-                '¿Eliminar Proyecto?',
-                style: GoogleFonts.dmSans(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppTheme.errorLight,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: AppTheme.error,
+                  size: 32,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 20),
+              Text(
+                '¿Eliminar Proyecto?',
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 10),
               Text(
                 'Esta acción no se puede deshacer. Se eliminará el proyecto $numero.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(color: AppTheme.textSecondary),
+                style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -108,15 +125,20 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
                     child: ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(ctx);
-                        final error =
-                            await ProjectService.eliminarProyecto(numero);
+                        final error = await ProjectService.eliminarProyecto(
+                          numero,
+                        );
                         if (!mounted) return;
                         if (error == null) {
                           _loadProjects();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Proyecto eliminado'),
+                            SnackBar(
+                              content: const Text('Proyecto eliminado'),
                               backgroundColor: AppTheme.error,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           );
                         } else {
@@ -134,7 +156,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
                         backgroundColor: AppTheme.error,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text('Eliminar'),
@@ -152,31 +175,33 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: _isLoading
-                    ? const Center(
-                        child:
-                            CircularProgressIndicator(color: AppTheme.accent))
-                    : _projects.isEmpty
-                        ? _buildEmptyState()
-                        : _buildProjectList(),
-              ),
-            ],
-          ),
+      backgroundColor: AppTheme.bg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
+                  : _projects.isEmpty
+                  ? _buildEmptyState()
+                  : _buildProjectList(),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openDialog(),
-        label: const Text('Nuevo Proyecto'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
         icon: const Icon(Icons.add_rounded),
-        backgroundColor: AppTheme.accent,
-        elevation: 8,
+        label: Text(
+          'Nuevo Proyecto',
+          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+        ),
       ),
     );
   }
@@ -184,59 +209,65 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: AppTheme.headerGradient,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.borderLight.withValues(alpha: 0.8)),
-        ),
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.borderLight),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: AppTheme.textPrimary,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Gestión de Proyectos',
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 22),
+                const SizedBox(height: 2),
+                Text(
+                  'Administra catálogo y frentes de trabajo',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: _loadProjects,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: const Icon(
+                Icons.refresh_rounded,
+                color: AppTheme.textSecondary,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Gestion de proyectos',
-                    style: GoogleFonts.ibmPlexSerif(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Administra catalogos y frentes de trabajo.',
-                    style: GoogleFonts.ibmPlexSans(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: _loadProjects,
-              icon: const Icon(Icons.refresh_rounded,
-                  color: AppTheme.textSecondary),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -246,20 +277,32 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.business_center_outlined,
-              size: 64, color: AppTheme.textMuted),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.business_center_outlined,
+              size: 40,
+              color: AppTheme.textMuted,
+            ),
+          ),
           const SizedBox(height: 16),
           Text(
             'No hay proyectos',
-            style: GoogleFonts.ibmPlexSans(
-                fontSize: 18,
-                color: AppTheme.textSecondary,
-                fontWeight: FontWeight.bold),
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Comienza creando uno nuevo',
-            style: GoogleFonts.ibmPlexSans(color: AppTheme.textMuted),
+            style: GoogleFonts.inter(color: AppTheme.textSecondary),
           ),
         ],
       ),
@@ -278,7 +321,8 @@ class _ProjectManagementScreenState extends State<ProjectManagementScreen>
           animation: _listController,
           builder: (context, _) {
             final animValue = Curves.easeOutCubic.transform(
-                (_listController.value - delay * 0.5).clamp(0.0, 1.0));
+              (_listController.value - delay * 0.5).clamp(0.0, 1.0),
+            );
             return ProjectCard(
               project: project,
               animation: AlwaysStoppedAnimation(animValue),

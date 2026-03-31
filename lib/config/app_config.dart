@@ -3,16 +3,17 @@
 class AppConfig {
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: '',
+    defaultValue: 'https://qwncrihpfckmuablqroa.supabase.co',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: '',
+    defaultValue: 'sb_publishable_vqFcmjd5oRX_4DpSYcWLVA_SZ0fEv2a',
   );
 
   static const String googleServerClientId = String.fromEnvironment(
     'GOOGLE_SERVER_CLIENT_ID',
-    defaultValue: '',
+    defaultValue:
+        '251002473484-dqdqeard4s68dbme5669g26ao7fv9g0l.apps.googleusercontent.com',
   );
 }
