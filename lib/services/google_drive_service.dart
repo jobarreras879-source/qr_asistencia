@@ -333,35 +333,49 @@ class GoogleDriveService {
 
   // ============== PREFERENCIAS COMPARTIDAS ==============
 
+  // ⚡ Bolt Optimization: Cache SharedPreferences instance statically
+  // Impact: Eliminates repeated asynchronous plugin channel overhead
+  // across multiple get/set operations during the application lifecycle.
+  static SharedPreferences? _prefs;
+  static bool _prefsLoaded = false;
+
+  static Future<SharedPreferences> _ensurePrefsLoaded() async {
+    if (!_prefsLoaded || _prefs == null) {
+      _prefs = await SharedPreferences.getInstance();
+      _prefsLoaded = true;
+    }
+    return _prefs!;
+  }
+
   static Future<String?> getDriveFolderId() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     return prefs.getString('drive_folder_id');
   }
 
   static Future<void> setDriveFolder(String id, String name) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     await prefs.setString('drive_folder_id', id);
     await prefs.setString('drive_folder_name', name);
   }
 
   static Future<void> clearDriveFolder() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     await prefs.remove('drive_folder_id');
     await prefs.remove('drive_folder_name');
   }
 
   static Future<String?> getDriveFolderName() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     return prefs.getString('drive_folder_name');
   }
 
   static Future<String?> getSheetsId() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     return prefs.getString('sheets_spreadsheet_id');
   }
 
   static Future<void> setSheetsInfo(String id, String name, String url) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     await prefs.setString('sheets_spreadsheet_id', id);
     await prefs.setString('sheets_spreadsheet_name', name);
     await prefs.setString('sheets_spreadsheet_url', url);
@@ -372,7 +386,7 @@ class GoogleDriveService {
   }
 
   static Future<void> clearSheetsInfo() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     await prefs.remove('sheets_spreadsheet_id');
     await prefs.remove('sheets_spreadsheet_name');
     await prefs.remove('sheets_spreadsheet_url');
@@ -380,7 +394,7 @@ class GoogleDriveService {
   }
 
   static Future<Map<String, dynamic>?> getSheetsInfo() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     final id = prefs.getString('sheets_spreadsheet_id');
     if (id == null) return null;
 
@@ -394,12 +408,12 @@ class GoogleDriveService {
   }
 
   static Future<void> setAutoSync(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     await prefs.setBool('sheets_auto_sync', value);
   }
 
   static Future<bool> isAutoSyncEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefsLoaded();
     return prefs.getBool('sheets_auto_sync') ?? false;
   }
 }
