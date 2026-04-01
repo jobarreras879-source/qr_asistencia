@@ -1,16 +1,41 @@
-# qr_asistencia
+# QR Asistencia AVS
 
-A new Flutter project.
+Aplicacion Flutter para control de asistencia con escaneo QR, historial operativo
+y sincronizacion opcional con Google Drive y Google Sheets.
 
-## Getting Started
+## Release estable
 
-This project is a starting point for a Flutter application.
+Este repositorio queda marcado como la base estable final de AVS.
 
-A few resources to get you started if this is your first Flutter project:
+- Version funcional: `1.3.0`
+- Build de release: `4`
+- Estado: `Estable`
+- Hito: `Rediseño final AVS`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Stack principal
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- Supabase
+- Google Sign-In
+- Google Drive API
+- Google Sheets API
+
+## APK release
+
+El APK firmado de Android se genera con:
+
+```bash
+flutter build apk --release
+```
+
+Salida esperada:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+## Nota de continuidad
+
+Esta base queda reservada para AVS. A partir de este punto, la version general
+para venta a multiples clientes debe continuar sobre una nueva base de datos y,
+si lo deseas, sobre una nueva rama o repositorio derivado de este estado.
