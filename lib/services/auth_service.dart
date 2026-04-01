@@ -61,7 +61,7 @@ class AuthService {
       final companyList = await _supabase
           .from(_companiesTableName)
           .select('id, codigo, nombre, activa')
-          .eq('codigo', normalizedCompanyCode)
+          .ilike('codigo', normalizedCompanyCode)
           .limit(1);
 
       if (companyList.isEmpty) {
