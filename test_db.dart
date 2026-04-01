@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,10 +22,10 @@ void main() async {
     headers: {'apikey': anonKey, 'Authorization': 'Bearer $anonKey'},
   );
 
-  print('HTTP Status: ${response.statusCode}');
-  print('Response Body: ${response.body}');
+  stdout.writeln('HTTP Status: ${response.statusCode}');
+  stdout.writeln('Response Body: ${response.body}');
 
-  final typedPassword = 'admin1';
+  final typedPassword = 'admin123';
   final hash = sha256.convert(utf8.encode(typedPassword)).toString();
-  print('Typed Hash: $hash');
+  stdout.writeln('Typed Hash: $hash');
 }

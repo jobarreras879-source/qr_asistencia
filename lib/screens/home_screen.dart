@@ -35,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _proyectoSeleccionado;
   late String _usuario;
   late String _rol;
+  String _empresaNombre = '';
+  String _empresaCodigo = '';
 
   int _registrosHoy = 0;
   int _proyectosActivos = 0;
@@ -135,6 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _usuario = session['usuario']!;
       _rol = session['rol']!;
+      _empresaNombre = session['empresaNombre'] ?? '';
+      _empresaCodigo = session['empresaCodigo'] ?? '';
     });
 
     return true;
@@ -251,6 +255,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 6),
+                      if (_empresaNombre.isNotEmpty)
+                        Text(
+                          _empresaCodigo.isEmpty
+                              ? _empresaNombre
+                              : '$_empresaNombre · ${_empresaCodigo.toUpperCase()}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.82),
+                          ),
+                        ),
+                      if (_empresaNombre.isNotEmpty) const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,

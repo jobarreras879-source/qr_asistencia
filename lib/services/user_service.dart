@@ -8,7 +8,7 @@ import 'password_hash_service.dart';
 class UserService {
   static final _supabase = Supabase.instance.client;
   static const _tableName = 'usuarios';
-  static const _validRoles = {'ADMIN', 'USUARIO'};
+  static const _validRoles = {'ADMIN', 'SUPERVISOR', 'USUARIO'};
 
   static void _logError(String action, Object error, [StackTrace? stack]) {
     if (kDebugMode) {
@@ -22,13 +22,25 @@ class UserService {
     return _validRoles.contains(normalized) ? normalized : 'USUARIO';
   }
 
+  static Future<int?> _getEmpresaId() async {
+    final empresaId = await AuthService.getCurrentCompanyId();
+    if (empresaId == null || empresaId.isEmpty) {
+      return null;
+    }
+    return int.tryParse(empresaId);
+  }
+
   // ─── Lectura ─────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> getUsuarios() async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) return [];
+
       final data = await _supabase
           .from(_tableName)
-          .select('id, usuario, rol, activo')
+          .select('id, usuario, nombre, rol, activo')
+          .eq('empresa_id', empresaId)
           .order('usuario', ascending: true);
 
       return data
@@ -36,6 +48,7 @@ class UserService {
             (e) => <String, dynamic>{
               'id': e['id'].toString(),
               'usuario': e['usuario']?.toString() ?? '',
+              'nombre': e['nombre']?.toString() ?? '',
               'rol': (e['rol'] as String?) ?? 'USUARIO',
               'activo': e['activo'] == true,
             },
@@ -55,14 +68,22 @@ class UserService {
     String rol,
   ) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) {
+        return 'No se encontró la empresa activa de la sesión.';
+      }
+
       final normalizedUsername = PasswordHashService.normalizeUsername(usuario);
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
-      if (password.length < 6)
+      if (password.length < 6) {
         return 'La contraseña debe tener mínimo 6 caracteres.';
+      }
 
       await _supabase.from(_tableName).insert({
+        'empresa_id': empresaId,
         'usuario': normalizedUsername,
         'password_hash': PasswordHashService.hash(password),
+        'nombre': normalizedUsername.toUpperCase(),
         'rol': _normalizeRole(rol),
         'activo': true,
       });
@@ -87,6 +108,11 @@ class UserService {
     String nuevoRol,
   ) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) {
+        return 'No se encontró la empresa activa de la sesión.';
+      }
+
       final normalizedRole = _normalizeRole(nuevoRol);
       final normalizedUsername = PasswordHashService.normalizeUsername(
         nuevoUsuario,
@@ -103,6 +129,7 @@ class UserService {
 
       final payload = <String, dynamic>{
         'usuario': normalizedUsername,
+        'nombre': normalizedUsername.toUpperCase(),
         'rol': normalizedRole,
       };
 
@@ -110,7 +137,11 @@ class UserService {
         payload['password_hash'] = PasswordHashService.hash(nuevoPassword);
       }
 
-      await _supabase.from(_tableName).update(payload).eq('id', int.parse(id));
+      await _supabase
+          .from(_tableName)
+          .update(payload)
+          .eq('empresa_id', empresaId)
+          .eq('id', int.parse(id));
 
       if (AuthService.currentUserId == id) {
         await AuthService.refreshLocalSession(
@@ -135,11 +166,20 @@ class UserService {
 
   static Future<String?> eliminarUsuario(String id) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) {
+        return 'No se encontró la empresa activa de la sesión.';
+      }
+
       if (AuthService.currentUserId == id) {
         return 'No puedes eliminar tu propio usuario mientras estás dentro.';
       }
 
-      await _supabase.from(_tableName).delete().eq('id', int.parse(id));
+      await _supabase
+          .from(_tableName)
+          .delete()
+          .eq('empresa_id', empresaId)
+          .eq('id', int.parse(id));
       await AuthService.clearLocalSessionIfMatches(id);
       return null;
     } catch (e, stack) {

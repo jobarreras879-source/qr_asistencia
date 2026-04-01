@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'google_drive_service.dart';
 import 'auth_service.dart';
 import '../utils/date_formatter.dart';
@@ -14,6 +15,14 @@ class AttendanceService {
       debugPrint('❌ AttendanceService ERROR [$action]: $error');
       if (stack != null) debugPrint(stack.toString());
     }
+  }
+
+  static Future<int?> _getEmpresaId() async {
+    final empresaId = await AuthService.getCurrentCompanyId();
+    if (empresaId == null || empresaId.isEmpty) {
+      return null;
+    }
+    return int.tryParse(empresaId);
   }
 
   // ─── Sanitización ────────────────────────────────────────────────
@@ -47,6 +56,11 @@ class AttendanceService {
     String tipo,
   ) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) {
+        return '⚠️ No se encontró la empresa activa de la sesión.';
+      }
+
       final datosLimpios = _sanitizeQrInput(qr.trim());
       if (datosLimpios == null) {
         return '⚠️ Código QR inválido o demasiado largo.';
@@ -69,8 +83,26 @@ class AttendanceService {
 
       final now = DateTime.now();
       final fechaHoraString = DateFormatter.toStorageString(now);
+      int? proyectoId;
+
+      try {
+        final proyectoData = await _supabase
+            .from('proyecto')
+            .select('id')
+            .eq('empresa_id', empresaId)
+            .eq('"No."', proyecto)
+            .limit(1);
+
+        if (proyectoData.isNotEmpty) {
+          proyectoId = proyectoData.first['id'] as int?;
+        }
+      } catch (_) {
+        proyectoId = null;
+      }
 
       final filaParaGoogleSheets = {
+        'empresa_id': empresaId,
+        ...?proyectoId == null ? null : {'proyecto_id': proyectoId},
         'DPI': id,
         'nombre': nombre,
         'proyecto': proyecto,
@@ -105,6 +137,9 @@ class AttendanceService {
   /// Obtiene la cantidad de registros del día actual asociados al usuario.
   static Future<int> getTodayCount(String username) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) return 0;
+
       final normalizedUsername = username.trim();
       if (normalizedUsername.isEmpty) return 0;
 
@@ -115,6 +150,7 @@ class AttendanceService {
       final data = await _supabase
           .from('registros')
           .select('fecha_hora')
+          .eq('empresa_id', empresaId)
           .eq('usuario_logueado', normalizedUsername)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
@@ -131,12 +167,16 @@ class AttendanceService {
     int limit = 50,
   }) async {
     try {
+      final empresaId = await _getEmpresaId();
+      if (empresaId == null) return [];
+
       final username = await AuthService.getCurrentUsername();
       if (username == null || username.isEmpty) return [];
 
       final data = await _supabase
           .from('registros')
           .select()
+          .eq('empresa_id', empresaId)
           .eq('usuario_logueado', username)
           .order('fecha_hora', ascending: false)
           .limit(limit);

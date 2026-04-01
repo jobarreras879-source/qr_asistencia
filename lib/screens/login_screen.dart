@@ -27,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen>
   static const _shadowColor = Color(0x14191C1E);
 
   final _usuarioCtrl = TextEditingController();
+  final _empresaCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
   bool _isLoading = false;
@@ -61,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen>
   void dispose() {
     _fadeController.dispose();
     _usuarioCtrl.dispose();
+    _empresaCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
   }
@@ -79,11 +81,14 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _login() async {
+    final empresa = _empresaCtrl.text.trim();
     final user = _usuarioCtrl.text.trim();
     final pass = _passwordCtrl.text;
 
-    if (user.isEmpty || pass.isEmpty) {
-      setState(() => _errorMessage = 'Completa usuario y contraseña.');
+    if (empresa.isEmpty || user.isEmpty || pass.isEmpty) {
+      setState(
+        () => _errorMessage = 'Completa código de empresa, usuario y contraseña.',
+      );
       return;
     }
 
@@ -92,18 +97,23 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = null;
     });
 
-    final rol = await AuthService.signIn(user, pass);
+    final rol = await AuthService.signIn(empresa, user, pass);
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (rol != null) {
+      final session = await AuthService.restoreSession();
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
           pageBuilder: (context, animation, secondaryAnimation) =>
-              HomeScreen(usuario: user, rol: rol),
+              HomeScreen(
+                usuario: session?['usuario'] ?? user,
+                rol: session?['rol'] ?? rol,
+              ),
           transitionsBuilder: (context, anim, secondaryAnimation, child) {
             return FadeTransition(
               opacity: anim,
@@ -246,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'AVS INGENIERIA',
+                  'QR ASISTENCIA',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.manrope(
                     fontSize: 31,
@@ -257,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Sistema de Asistencia QR',
+                  'Control de asistencia multiempresa',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontSize: 16,
@@ -308,6 +318,16 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
           const SizedBox(height: 34),
+          _buildFieldLabel('Código de empresa'),
+          const SizedBox(height: 12),
+          _buildInput(
+            controller: _empresaCtrl,
+            hint: 'Ej: P401',
+            obscureText: false,
+            textInputAction: TextInputAction.next,
+            prefixIcon: Icons.business_rounded,
+          ),
+          const SizedBox(height: 24),
           _buildFieldLabel('Usuario'),
           const SizedBox(height: 12),
           _buildInput(
