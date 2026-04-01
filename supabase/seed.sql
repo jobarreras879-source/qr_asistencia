@@ -1,0 +1,3 @@
+-- Seed intencionalmente vacio.
+-- La base general arranca sin datos de demo para que cada cliente
+-- pueda inicializarse con su propia empresa y usuarios.
