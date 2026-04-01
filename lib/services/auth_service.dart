@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../config/app_config.dart';
 import 'password_hash_service.dart';
 
 /// Servicio de autenticación centralizado usando Supabase Auth.
@@ -111,8 +110,7 @@ class AuthService {
           .eq('usuario', normalizedUser);
 
       if (dataList.isEmpty) {
-        _lastErrorMessage =
-            'Sin registros. Empresa: $companyCode. Usuario: $normalizedUser. URL activa: ${AppConfig.supabaseUrl}';
+        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
 
@@ -129,8 +127,7 @@ class AuthService {
           storedHash != passwordHash ||
           role == null ||
           role.isEmpty) {
-        _lastErrorMessage =
-            'Usuario o contraseña incorrectos. (HashDB: ${storedHash?.substring(0, 5)}, HashTyped: ${passwordHash.substring(0, 5)}, Rol: $role)';
+        _lastErrorMessage = 'Usuario o contraseña incorrectos.';
         return null;
       }
 
@@ -143,10 +140,16 @@ class AuthService {
         companyName: companyName?.isNotEmpty == true ? companyName! : 'Empresa',
       );
 
-      await _supabase
-          .from(_usersTableName)
-          .update({'ultimo_acceso_at': DateTime.now().toUtc().toIso8601String()})
-          .eq('id', int.parse(data['id'].toString()));
+      try {
+        await _supabase
+            .from(_usersTableName)
+            .update({
+              'ultimo_acceso_at': DateTime.now().toUtc().toIso8601String(),
+            })
+            .eq('id', int.parse(data['id'].toString()));
+      } catch (error, stack) {
+        _logError('updateLastAccess', error, stack);
+      }
 
       return role;
     } catch (error, stack) {
@@ -298,14 +301,31 @@ class AuthService {
     if (lower.isEmpty) {
       return 'No se pudo iniciar sesión. Intenta de nuevo.';
     }
-    if (lower.contains('incorrectos')) {
-      return raw; // Return raw diagnostic info for debugging
+    if (lower.contains('no existe una empresa')) {
+      return 'No encontramos una empresa con ese código. Verifícalo e intenta de nuevo.';
     }
-    if (lower.contains('database')) {
-      return 'Hubo un problema interno con la autenticación o la tabla de usuarios.';
+    if (lower.contains('suscripción')) {
+      return raw;
+    }
+    if (lower.contains('inactivo')) {
+      return raw;
+    }
+    if (lower.contains('incorrectos')) {
+      return 'Usuario o contraseña incorrectos.';
+    }
+    if (lower.contains('failed host lookup') ||
+        lower.contains('socketexception') ||
+        lower.contains('network') ||
+        lower.contains('timeout')) {
+      return 'No se pudo conectar al servidor. Revisa tu internet e intenta de nuevo.';
+    }
+    if (lower.contains('database') ||
+        lower.contains('postgrestexception') ||
+        lower.contains('schema cache')) {
+      return 'Hubo un problema al validar el acceso. Intenta de nuevo en unos minutos.';
     }
 
-    return 'No se pudo iniciar sesión: $raw';
+    return 'No se pudo iniciar sesión. Verifica tus datos e inténtalo nuevamente.';
   }
 
   static Future<void> refreshLocalSession({

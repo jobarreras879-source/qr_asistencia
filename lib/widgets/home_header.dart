@@ -27,7 +27,7 @@ class HomeHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'AVS Ingenieria',
+            'QR Asistencia',
             style: GoogleFonts.ibmPlexSerif(
               fontSize: 28,
               fontWeight: FontWeight.w600,

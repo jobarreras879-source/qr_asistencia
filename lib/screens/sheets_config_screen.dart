@@ -83,16 +83,8 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
 
   Future<void> _createSpreadsheet() async {
     final createController = TextEditingController(
-      text: 'Asistencia AVS Ingeniería',
+      text: 'Asistencia QR',
     );
-    final searchController = TextEditingController();
-    bool isSearching = true;
-    List<Map<String, String>> searchResults = [];
-
-    GoogleDriveService.searchSpreadsheets('').then((results) {
-      searchResults = results;
-      isSearching = false;
-    });
 
     await showDialog(
       context: context,
@@ -199,25 +191,6 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           },
         );
       },
-    );
-  }
-
-  Future<void> _doLinkSpreadsheet(String id, String name, String url) async {
-    setState(() => _isCreating = true);
-    await GoogleDriveService.setSheetsInfo(id, name, url);
-    final info = await GoogleDriveService.getSheetsInfo();
-    if (!mounted) return;
-    setState(() {
-      _sheetsInfo = info;
-      _autoSync = true;
-      _isCreating = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Hoja vinculada exitosamente'),
-        backgroundColor: AppTheme.success,
-        behavior: SnackBarBehavior.floating,
-      ),
     );
   }
 
@@ -716,7 +689,8 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                     await GoogleDriveService.setAutoSync(val);
                     setState(() => _autoSync = val);
                   },
-                  activeColor: AppTheme.success,
+                  activeThumbColor: AppTheme.success,
+                  activeTrackColor: AppTheme.success.withValues(alpha: 0.35),
                 ),
               ],
             ),

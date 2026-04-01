@@ -15,8 +15,6 @@ class ProjectDialog extends StatefulWidget {
 class _ProjectDialogState extends State<ProjectDialog> {
   late TextEditingController _numController;
   late TextEditingController _nameController;
-  late TextEditingController _clientController;
-  late TextEditingController _ocController;
   bool _isSaving = false;
 
   @override
@@ -28,26 +26,18 @@ class _ProjectDialogState extends State<ProjectDialog> {
     _nameController = TextEditingController(
       text: widget.project?['nombre'] ?? '',
     );
-    _clientController = TextEditingController(
-      text: widget.project?['cliente'] ?? '',
-    );
-    _ocController = TextEditingController(text: widget.project?['oc'] ?? '');
   }
 
   @override
   void dispose() {
     _numController.dispose();
     _nameController.dispose();
-    _clientController.dispose();
-    _ocController.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     final num = _numController.text.trim();
     final name = _nameController.text.trim();
-    final cliente = _clientController.text.trim();
-    final oc = _ocController.text.trim();
 
     if (num.isEmpty || name.isEmpty) return;
 
@@ -58,11 +48,9 @@ class _ProjectDialogState extends State<ProjectDialog> {
         widget.project!['numero'],
         num,
         name,
-        cliente,
-        oc,
       );
     } else {
-      error = await ProjectService.crearProyecto(num, name, cliente, oc);
+      error = await ProjectService.crearProyecto(num, name);
     }
 
     if (!mounted) return;
@@ -126,34 +114,6 @@ class _ProjectDialogState extends State<ProjectDialog> {
                 decoration: AppTheme.inputDecoration(
                   hint: 'Nombre descriptivo',
                   prefixIcon: Icons.badge_rounded,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildLabel('CLIENTE (Opcional)'),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _clientController,
-                style: GoogleFonts.inter(
-                  color: AppTheme.textPrimary,
-                  fontSize: 15,
-                ),
-                decoration: AppTheme.inputDecoration(
-                  hint: 'Ej: Empresa XYZ',
-                  prefixIcon: Icons.business_center_rounded,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildLabel('ORDEN DE COMPRA / OC (Opcional)'),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _ocController,
-                style: GoogleFonts.inter(
-                  color: AppTheme.textPrimary,
-                  fontSize: 15,
-                ),
-                decoration: AppTheme.inputDecoration(
-                  hint: 'Ej: M411',
-                  prefixIcon: Icons.receipt_long_rounded,
                 ),
               ),
               const SizedBox(height: 32),

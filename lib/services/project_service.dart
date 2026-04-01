@@ -34,6 +34,7 @@ class ProjectService {
           .from('proyecto')
           .select()
           .eq('empresa_id', empresaId)
+          .eq('activo', true)
           .order('"No."', ascending: true);
 
       return data
@@ -42,8 +43,8 @@ class ProjectService {
               'id': e['id'].toString(),
               'numero': e['No.'].toString(),
               'nombre': e['NameProyect']?.toString() ?? 'Sin nombre',
-              'cliente': e['Client']?.toString() ?? '',
-              'oc': e['OC']?.toString() ?? '',
+              'cliente': '',
+              'oc': '',
             },
           )
           .toList();
@@ -55,12 +56,7 @@ class ProjectService {
 
   // ─── Creación ────────────────────────────────────────────────────
 
-  static Future<String?> crearProyecto(
-    String numero,
-    String nombre,
-    String cliente,
-    String oc,
-  ) async {
+  static Future<String?> crearProyecto(String numero, String nombre) async {
     try {
       final empresaId = await _getEmpresaId();
       if (empresaId == null) {
@@ -71,8 +67,6 @@ class ProjectService {
         'empresa_id': empresaId,
         'No.': numero,
         'NameProyect': nombre,
-        'Client': cliente.isEmpty ? null : cliente,
-        'OC': oc.isEmpty ? null : oc,
       });
       return null;
     } catch (e, stack) {
@@ -87,8 +81,6 @@ class ProjectService {
     String oldNumero,
     String nuevoNumero,
     String nuevoNombre,
-    String cliente,
-    String oc,
   ) async {
     try {
       final empresaId = await _getEmpresaId();
@@ -101,8 +93,6 @@ class ProjectService {
           .update({
             'No.': nuevoNumero,
             'NameProyect': nuevoNombre,
-            'Client': cliente.isEmpty ? null : cliente,
-            'OC': oc.isEmpty ? null : oc,
           })
           .eq('empresa_id', empresaId)
           .eq('"No."', oldNumero);

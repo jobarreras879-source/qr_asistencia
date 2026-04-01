@@ -473,7 +473,7 @@ class _LoginScreenState extends State<LoginScreen>
               _showInfoDialog(
                 title: 'Recuperar contraseña',
                 message:
-                    'Por ahora la recuperación automática no está habilitada. Contacta a soporte técnico para restablecer tu acceso.',
+                    'Por ahora la recuperación automática no está habilitada. Contacta al administrador de tu empresa para restablecer tu acceso.',
               );
             },
             style: TextButton.styleFrom(
@@ -496,7 +496,7 @@ class _LoginScreenState extends State<LoginScreen>
               _showInfoDialog(
                 title: 'Soporte técnico',
                 message:
-                    'Comunícate con el administrador o con el equipo de soporte para obtener ayuda con tu cuenta.',
+                    'Comunícate con el administrador de tu empresa o con el equipo que te entregó la app para obtener ayuda con tu cuenta.',
               );
             },
             style: TextButton.styleFrom(
