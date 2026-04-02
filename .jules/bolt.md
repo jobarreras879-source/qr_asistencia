@@ -1,0 +1,3 @@
+## 2024-05-24 - [Avoid full table downloads for record counts]
+**Learning:** Calling `.select()` on Supabase queries just to get the length (`List<Map<String, dynamic>>.from(data).length;`) requires serializing and downloading the full payload to the client, leading to memory and CPU overhead in Dart. For count queries, Supabase's v2+ Flutter package provides a direct `Future<int>` return via `.count(CountOption.exact)` which skips payload parsing and downloading entirely.
+**Action:** When evaluating database count logic or pagination totals in Flutter Supabase clients, always prefer `.count(CountOption.exact)` instead of requesting records and measuring list lengths locally.
