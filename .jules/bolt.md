@@ -1,0 +1,3 @@
+## 2025-01-20 - [Supabase Query Optimization]
+**Learning:** In `supabase_flutter` v2+, using `.count(CountOption.exact)` natively returns a `Future<int>` instead of returning a PostgrestResponse object containing the count. It skips fetching any data payload over the network.
+**Action:** When you only need the number of matching records, always use `.count(CountOption.exact)` instead of `.select()` and computing the length of the result list, to avoid downloading unnecessary payload and parsing it.
