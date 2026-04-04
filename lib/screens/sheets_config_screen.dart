@@ -286,21 +286,11 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           .select()
           .order('fecha_hora', ascending: true);
 
-      int successCount = 0;
-      int errorCount = 0;
-
-      for (var reg in data) {
-        final success = await GoogleDriveService.appendAttendanceRow(
-          _sheetsInfo!['id'],
-          reg,
-        );
-
-        if (success) {
-          successCount++;
-        } else {
-          errorCount++;
-        }
-      }
+      // Batch sync to Google Sheets
+      final success = await GoogleDriveService.appendAttendanceRows(
+        _sheetsInfo!['id'],
+        List<Map<String, dynamic>>.from(data),
+      );
 
       if (!mounted) return;
       setState(() => _isSyncing = false);
@@ -308,9 +298,11 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Sincronización: $successCount exitosos, $errorCount errores.',
+            success
+              ? 'Sincronización de ${data.length} registros exitosa.'
+              : 'Error al sincronizar los registros.',
           ),
-          backgroundColor: errorCount > 0 ? AppTheme.warning : AppTheme.success,
+          backgroundColor: success ? AppTheme.success : AppTheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );

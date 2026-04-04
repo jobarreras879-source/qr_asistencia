@@ -279,6 +279,58 @@ class GoogleDriveService {
   }
 
   /// Agrega una fila de asistencia
+  /// Agrega multiples filas de asistencia en una sola llamada (Batch insert)
+  static Future<bool> appendAttendanceRows(
+    String spreadsheetId,
+    List<Map<String, dynamic>> rowsData,
+  ) async {
+    try {
+      final account = await signInSilently() ?? await signIn();
+      if (account == null) return false;
+
+      final client = await _googleSignIn.authenticatedClient();
+      if (client == null) return false;
+
+      final sheetsApi = sheets.SheetsApi(client);
+
+      final List<List<Object>> values = rowsData.map((rowData) {
+        final dpi = rowData['DPI'] ?? '';
+        final nombre = rowData['nombre'] ?? '';
+        final proyecto = rowData['proyecto'] ?? '';
+        final tipo = rowData['tipo'] ?? '';
+        final fechaHora = rowData['fecha_hora'] ?? '';
+        final usuario = rowData['usuario_logueado'] ?? '';
+
+        String fecha = '';
+        String hora = '';
+        if (fechaHora.toString().contains(' ')) {
+          final parts = fechaHora.toString().split(' ');
+          fecha = parts[0];
+          hora = parts[1];
+        } else {
+          fecha = fechaHora.toString();
+        }
+
+        return <Object>[dpi, nombre, proyecto, fecha, hora, usuario, tipo];
+      }).toList();
+
+      final valueRange = sheets.ValueRange()..values = values;
+
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        'A1:G', // Rango para buscar la última fila escrita
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+      );
+
+      return true;
+    } catch (error, stack) {
+      _logError('appendAttendanceRows', error, stack);
+      return false;
+    }
+  }
+
   static Future<bool> appendAttendanceRow(
     String spreadsheetId,
     Map<String, dynamic> rowData,
