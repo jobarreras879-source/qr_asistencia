@@ -103,6 +103,7 @@ class AttendanceService {
   // ─── Historial ───────────────────────────────────────────────────
 
   /// Obtiene la cantidad de registros del día actual asociados al usuario.
+  /// ⚡ Bolt: Uses exact count fetching instead of downloading all rows to reduce network payload and memory parsing.
   static Future<int> getTodayCount(String username) async {
     try {
       final normalizedUsername = username.trim();
@@ -112,14 +113,14 @@ class AttendanceService {
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      final data = await _supabase
+      final response = await _supabase
           .from('registros')
-          .select('fecha_hora')
+          .count(CountOption.exact)
           .eq('usuario_logueado', normalizedUsername)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
-      return List<Map<String, dynamic>>.from(data).length;
+      return response;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
       return 0;
