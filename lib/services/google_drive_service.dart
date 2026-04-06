@@ -13,7 +13,7 @@ class GoogleDriveService {
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
-      drive.DriveApi.driveReadonlyScope, // Antes era driveFileScope (limitado)
+      drive.DriveApi.driveFileScope, // Scope necesario para subir fotos y crear archivos
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
