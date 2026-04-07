@@ -108,16 +108,23 @@ class AttendanceService {
       final normalizedUsername = username.trim();
       if (normalizedUsername.isEmpty) return 0;
 
+      final role = await AuthService.getCurrentUserRole();
+
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      final data = await _supabase
+      var query = _supabase
           .from('registros')
           .select('fecha_hora')
-          .eq('usuario_logueado', normalizedUsername)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
+
+      if (role != 'ADMIN') {
+        query = query.eq('usuario_logueado', normalizedUsername);
+      }
+
+      final data = await query;
 
       return List<Map<String, dynamic>>.from(data).length;
     } catch (e, stack) {
@@ -134,12 +141,17 @@ class AttendanceService {
       final username = await AuthService.getCurrentUsername();
       if (username == null || username.isEmpty) return [];
 
-      final data = await _supabase
+      final role = await AuthService.getCurrentUserRole();
+
+      var query = _supabase
           .from('registros')
-          .select()
-          .eq('usuario_logueado', username)
-          .order('fecha_hora', ascending: false)
-          .limit(limit);
+          .select();
+
+      if (role != 'ADMIN') {
+        query = query.eq('usuario_logueado', username);
+      }
+
+      final data = await query.order('fecha_hora', ascending: false).limit(limit);
 
       return List<Map<String, dynamic>>.from(data);
     } catch (e, stack) {

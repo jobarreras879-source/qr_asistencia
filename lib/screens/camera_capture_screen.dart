@@ -140,13 +140,18 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
           ),
         );
       } else {
+        setState(() => _isUploading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
               children: [
                 Icon(Icons.error_outline, color: Colors.white, size: 20),
                 SizedBox(width: 10),
-                Text('Error al subir la fotografía'),
+                Expanded(
+                  child: Text(
+                    'No se pudo subir la fotografía. Verifica tu conexión a internet o inicia sesión con Google.',
+                  ),
+                ),
               ],
             ),
             backgroundColor: AppTheme.error,
@@ -157,7 +162,6 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
-        setState(() => _isUploading = false);
       }
     } catch (_) {
       if (!mounted) return;

@@ -6,6 +6,7 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_config.dart';
 
 class GoogleDriveService {
@@ -13,7 +14,8 @@ class GoogleDriveService {
     clientId: AppConfig.googleServerClientId,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
-      drive.DriveApi.driveFileScope, // Scope necesario para subir fotos y crear archivos
+      drive.DriveApi.driveFileScope,
+      drive.DriveApi.driveMetadataReadonlyScope, // Necesario para buscar archivos existentes
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
@@ -92,8 +94,11 @@ class GoogleDriveService {
       final fileList = await driveApi.files.list(
         q: "mimeType='application/vnd.google-apps.folder' and trashed=false",
         spaces: 'drive',
+        pageSize: 1000,
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
         $fields: 'files(id, name, createdTime)',
-        orderBy: 'createdTime desc',
+        orderBy: 'name asc',
       );
 
       return fileList.files ?? [];
@@ -228,8 +233,11 @@ class GoogleDriveService {
       final fileList = await driveApi.files.list(
         q: q,
         spaces: 'drive',
+        pageSize: 1000,
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
         $fields: 'files(id, name, createdTime, webViewLink)',
-        orderBy: 'createdTime desc',
+        orderBy: 'name asc', // Cambiado a orden alfabético para facilitar la búsqueda visual
       );
 
       if (fileList.files == null) return [];
@@ -331,31 +339,124 @@ class GoogleDriveService {
     }
   }
 
-  // ============== PREFERENCIAS COMPARTIDAS ==============
+  // ============== PREFERENCIAS Y CONFIGURACIÓN GLOBAL ==============
+
+  static final _supabase = Supabase.instance.client;
+
+  /// Método auxiliar interno para garantizar que exista la fila 1 en configuracion_global
+  static Future<void> _ensureGlobalConfigExists() async {
+    try {
+      final data = await _supabase
+          .from('configuracion_global')
+          .select()
+          .eq('id', 1)
+          .maybeSingle();
+      if (data == null) {
+        await _supabase.from('configuracion_global').insert({'id': 1});
+      }
+    } catch (_) {}
+  }
 
   static Future<String?> getDriveFolderId() async {
+    try {
+      final result = await _supabase
+          .from('configuracion_global')
+          .select('drive_folder_id')
+          .eq('id', 1)
+          .maybeSingle();
+      if (result != null && result['drive_folder_id'] != null) {
+        final id = result['drive_folder_id'].toString();
+        if (id.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('drive_folder_id', id);
+          return id;
+        }
+      }
+    } catch (e) {
+      _logError('getDriveFolderId_Supabase', e);
+    }
+    // Fallback a caché local
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('drive_folder_id');
   }
 
   static Future<void> setDriveFolder(String id, String name) async {
+    // Almacenar localmente por inmediatez
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('drive_folder_id', id);
     await prefs.setString('drive_folder_name', name);
+
+    // Almacenar globalmente
+    try {
+      await _ensureGlobalConfigExists();
+      await _supabase.from('configuracion_global').update({
+        'drive_folder_id': id,
+        'drive_folder_name': name,
+      }).eq('id', 1);
+    } catch (e) {
+      _logError('setDriveFolder_Supabase', e);
+    }
   }
 
-  static Future<void> clearDriveFolder() async {
+  static Future<void> clearDriveFolder({bool global = false}) async {
+    // Borramos localmente
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('drive_folder_id');
     await prefs.remove('drive_folder_name');
+
+    // Borramos globalmente si se solicita (por un admin)
+    if (global) {
+      try {
+        await _supabase.from('configuracion_global').update({
+          'drive_folder_id': null,
+          'drive_folder_name': null,
+        }).eq('id', 1);
+      } catch (e) {
+        _logError('clearDriveFolder_Supabase', e);
+      }
+    }
   }
 
   static Future<String?> getDriveFolderName() async {
+    try {
+      final result = await _supabase
+          .from('configuracion_global')
+          .select('drive_folder_name')
+          .eq('id', 1)
+          .maybeSingle();
+      if (result != null && result['drive_folder_name'] != null) {
+        final name = result['drive_folder_name'].toString();
+        if (name.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('drive_folder_name', name);
+          return name;
+        }
+      }
+    } catch (e) {
+      _logError('getDriveFolderName_Supabase', e);
+    }
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('drive_folder_name');
   }
 
   static Future<String?> getSheetsId() async {
+    try {
+      final result = await _supabase
+          .from('configuracion_global')
+          .select('sheets_spreadsheet_id')
+          .eq('id', 1)
+          .maybeSingle();
+      if (result != null && result['sheets_spreadsheet_id'] != null) {
+        final id = result['sheets_spreadsheet_id'].toString();
+        if (id.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('sheets_spreadsheet_id', id);
+          return id;
+        }
+      }
+    } catch (e) {
+      _logError('getSheetsId_Supabase', e);
+    }
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('sheets_spreadsheet_id');
   }
@@ -365,29 +466,80 @@ class GoogleDriveService {
     await prefs.setString('sheets_spreadsheet_id', id);
     await prefs.setString('sheets_spreadsheet_name', name);
     await prefs.setString('sheets_spreadsheet_url', url);
-    await prefs.setBool(
-      'sheets_auto_sync',
-      true,
-    ); // Auto-sync on by default when linked
+    await prefs.setBool('sheets_auto_sync', true); // Auto-sync on by default when linked
+
+    try {
+      await _ensureGlobalConfigExists();
+      await _supabase.from('configuracion_global').update({
+        'sheets_spreadsheet_id': id,
+        'sheets_spreadsheet_name': name,
+        'sheets_spreadsheet_url': url,
+        'sheets_auto_sync': true,
+      }).eq('id', 1);
+    } catch (e) {
+      _logError('setSheetsInfo_Supabase', e);
+    }
   }
 
-  static Future<void> clearSheetsInfo() async {
+  static Future<void> clearSheetsInfo({bool global = false}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('sheets_spreadsheet_id');
     await prefs.remove('sheets_spreadsheet_name');
     await prefs.remove('sheets_spreadsheet_url');
     await prefs.remove('sheets_auto_sync');
+
+    if (global) {
+      try {
+        await _supabase.from('configuracion_global').update({
+          'sheets_spreadsheet_id': null,
+          'sheets_spreadsheet_name': null,
+          'sheets_spreadsheet_url': null,
+          'sheets_auto_sync': false,
+        }).eq('id', 1);
+      } catch (e) {
+        _logError('clearSheetsInfo_Supabase', e);
+      }
+    }
   }
 
   static Future<Map<String, dynamic>?> getSheetsInfo() async {
+    try {
+      final result = await _supabase
+          .from('configuracion_global')
+          .select()
+          .eq('id', 1)
+          .maybeSingle();
+      if (result != null && result['sheets_spreadsheet_id'] != null) {
+        final id = result['sheets_spreadsheet_id'].toString();
+        if (id.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('sheets_spreadsheet_id', id);
+          await prefs.setString('sheets_spreadsheet_name', result['sheets_spreadsheet_name']?.toString() ?? 'Hoja');
+          await prefs.setString('sheets_spreadsheet_url', result['sheets_spreadsheet_url']?.toString() ?? '');
+          
+          final syncDb = result['sheets_auto_sync'];
+          final autoSync = syncDb != null ? (syncDb as bool) : false;
+          await prefs.setBool('sheets_auto_sync', autoSync);
+          
+          return {
+            'id': id,
+            'name': result['sheets_spreadsheet_name']?.toString() ?? 'Hoja de Asistencia',
+            'url': result['sheets_spreadsheet_url']?.toString() ?? '',
+            'autoSync': autoSync,
+          };
+        }
+      }
+    } catch (e) {
+      _logError('getSheetsInfo_Supabase', e);
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('sheets_spreadsheet_id');
-    if (id == null) return null;
+    if (id == null || id.isEmpty) return null;
 
     return {
       'id': id,
-      'name':
-          prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
+      'name': prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
       'url': prefs.getString('sheets_spreadsheet_url') ?? '',
       'autoSync': prefs.getBool('sheets_auto_sync') ?? false,
     };
@@ -396,9 +548,33 @@ class GoogleDriveService {
   static Future<void> setAutoSync(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('sheets_auto_sync', value);
+
+    try {
+      await _ensureGlobalConfigExists();
+      await _supabase.from('configuracion_global').update({
+        'sheets_auto_sync': value,
+      }).eq('id', 1);
+    } catch (e) {
+      _logError('setAutoSync_Supabase', e);
+    }
   }
 
   static Future<bool> isAutoSyncEnabled() async {
+    try {
+      final result = await _supabase
+          .from('configuracion_global')
+          .select('sheets_auto_sync')
+          .eq('id', 1)
+          .maybeSingle();
+      if (result != null && result['sheets_auto_sync'] != null) {
+        final syncMode = result['sheets_auto_sync'] as bool;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('sheets_auto_sync', syncMode);
+        return syncMode;
+      }
+    } catch (e) {
+      _logError('isAutoSyncEnabled_Supabase', e);
+    }
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sheets_auto_sync') ?? false;
   }

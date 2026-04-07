@@ -89,110 +89,214 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
     bool isSearching = true;
     List<Map<String, String>> searchResults = [];
 
-    GoogleDriveService.searchSpreadsheets('').then((results) {
-      searchResults = results;
-      isSearching = false;
-    });
-
     await showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateBuilder) {
+            // Load initial search results if not loaded
+            if (isSearching && searchResults.isEmpty && searchController.text.isEmpty) {
+              GoogleDriveService.searchSpreadsheets('').then((results) {
+                if (context.mounted) {
+                  setStateBuilder(() {
+                    searchResults = results;
+                    isSearching = false;
+                  });
+                }
+              });
+            }
+
             return Dialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
               child: SizedBox(
                 width: double.maxFinite,
-                height: 480,
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceVariant,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(20),
+                height: 520, // Increased height to accommodate the search list
+                child: DefaultTabController(
+                  length: 2,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceVariant,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Google Sheets',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textPrimary,
+                                  ),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
+                            ),
+                            const TabBar(
+                              indicatorColor: AppTheme.success,
+                              labelColor: AppTheme.success,
+                              unselectedLabelColor: AppTheme.textSecondary,
+                              tabs: [
+                                Tab(text: 'Vincular Existente'),
+                                Tab(text: 'Crear Nueva'),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Configurar Google Sheets',
-                            style: GoogleFonts.inter(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      Expanded(
+                        child: TabBarView(
                           children: [
-                            Text(
-                              'Nombre de la hoja',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.textSecondary,
+                            // Tab 1: Buscar y Vincular
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: searchController,
+                                    style: GoogleFonts.inter(
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                    onChanged: (value) async {
+                                      setStateBuilder(() => isSearching = true);
+                                      final results = await GoogleDriveService
+                                          .searchSpreadsheets(value);
+                                      if (context.mounted) {
+                                        setStateBuilder(() {
+                                          searchResults = results;
+                                          isSearching = false;
+                                        });
+                                      }
+                                    },
+                                    decoration: AppTheme.inputDecoration(
+                                      hint: 'Buscar en Drive...',
+                                      prefixIcon: Icons.search_rounded,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Expanded(
+                                    child: isSearching
+                                        ? const Center(
+                                            child: CircularProgressIndicator(
+                                              color: AppTheme.success,
+                                            ),
+                                          )
+                                        : searchResults.isEmpty
+                                            ? Center(
+                                                child: Text(
+                                                  'No se encontraron hojas de cálculo',
+                                                  style: GoogleFonts.inter(
+                                                    color: AppTheme.textSecondary,
+                                                  ),
+                                                ),
+                                              )
+                                            : ListView.builder(
+                                                itemCount: searchResults.length,
+                                                itemBuilder: (context, index) {
+                                                  final sheet = searchResults[index];
+                                                  return ListTile(
+                                                    leading: const Icon(
+                                                      Icons.table_chart_rounded,
+                                                      color: AppTheme.success,
+                                                    ),
+                                                    title: Text(
+                                                      sheet['name'] ?? '',
+                                                      style: GoogleFonts.inter(
+                                                        color: AppTheme.textPrimary,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      _doLinkSpreadsheet(
+                                                        sheet['id']!,
+                                                        sheet['name']!,
+                                                        sheet['link']!,
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: createController,
-                              style: GoogleFonts.inter(
-                                color: AppTheme.textPrimary,
-                              ),
-                              decoration: AppTheme.inputDecoration(
-                                hint: 'Ej: Asistencia 2024',
-                                prefixIcon: Icons.table_chart_rounded,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  _doCreateSpreadsheet(
-                                    createController.text.trim(),
-                                  );
-                                },
-                                icon: const Icon(Icons.add_rounded, size: 20),
-                                label: Text(
-                                  'Crear Hoja',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
+                            // Tab 2: Crear Nueva
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Nombre de la hoja',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textSecondary,
+                                    ),
                                   ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.success,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
+                                  const SizedBox(height: 8),
+                                  TextField(
+                                    controller: createController,
+                                    style: GoogleFonts.inter(
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                    decoration: AppTheme.inputDecoration(
+                                      hint: 'Ej: Asistencia 2024',
+                                      prefixIcon: Icons.add_box_rounded,
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  const Spacer(),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _doCreateSpreadsheet(
+                                          createController.text.trim(),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.check_rounded, size: 20),
+                                      label: Text(
+                                        'Crear y Vincular',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.success,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -753,8 +857,64 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton.icon(
+              onPressed: _confirmUnlink,
+              icon: const Icon(Icons.link_off_rounded,
+                  color: AppTheme.error, size: 18),
+              label: Text(
+                'Desvincular Hoja Globalmente',
+                style: GoogleFonts.inter(
+                  color: AppTheme.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _confirmUnlink() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Desvincular hoja?'),
+        content: const Text(
+          'Esta acción eliminará la vinculación de esta hoja de cálculo para TODOS los usuarios de la empresa. Deberás vincular una nueva si deseas seguir sincronizando.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
+            child: const Text('Desvincular'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await GoogleDriveService.clearSheetsInfo(global: true);
+      await _initSheets();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Hoja desvinculada globalmente'),
+            backgroundColor: AppTheme.info,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 }

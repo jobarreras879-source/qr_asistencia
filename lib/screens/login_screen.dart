@@ -428,7 +428,7 @@ class _LoginScreenState extends State<LoginScreen>
           ),
           const SizedBox(height: 22),
           Text(
-            'V1.3.0',
+            'V1.4.0',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 13,

@@ -97,6 +97,14 @@ class HistoryRecordCard extends StatelessWidget {
             style: GoogleFonts.inter(color: AppTheme.textMuted, fontSize: 12),
             overflow: TextOverflow.ellipsis,
           ),
+          if (registro['usuario_logueado'] != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              'Registrado por: ${registro['usuario_logueado']}',
+              style: GoogleFonts.inter(color: AppTheme.textMuted, fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ],
       ),
     );

@@ -413,6 +413,11 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                     ],
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.link_off_rounded, color: AppTheme.error),
+                  onPressed: _confirmUnlinkDrive,
+                  tooltip: 'Desvincular globalmente',
+                ),
               ],
             ),
           ),
@@ -531,5 +536,41 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
         ),
       ],
     );
+  }
+  Future<void> _confirmUnlinkDrive() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Desvincular carpeta?'),
+        content: const Text(
+          'Esta acción eliminará la vinculación de esta carpeta de fotos para TODOS los usuarios de la empresa. Deberás vincular una nueva si deseas seguir guardando fotos.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
+            child: const Text('Desvincular'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await GoogleDriveService.clearDriveFolder(global: true);
+      await _initDrive();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Carpeta desvinculada globalmente'),
+            backgroundColor: AppTheme.info,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 }
