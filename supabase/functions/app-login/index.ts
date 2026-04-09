@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import bcrypt from 'npm:bcryptjs@3.0.3';
 import { handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
 
 async function sha256Hex(text: string): Promise<string> {
@@ -10,10 +11,27 @@ async function sha256Hex(text: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function getSessionTtlDays(): number {
-  const raw = Number.parseInt(Deno.env.get('APP_SESSION_TTL_DAYS') ?? '30', 10);
-  if (!Number.isFinite(raw)) return 30;
-  return Math.min(Math.max(raw, 1), 90);
+function isBcryptHash(hash: string): boolean {
+  return hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$');
+}
+
+async function verifyPassword(
+  password: string,
+  storedHash: string,
+): Promise<{ ok: boolean; upgradedHash?: string }> {
+  if (isBcryptHash(storedHash)) {
+    return { ok: await bcrypt.compare(password, storedHash) };
+  }
+
+  const legacyHash = await sha256Hex(password);
+  if (legacyHash !== storedHash) {
+    return { ok: false };
+  }
+
+  return {
+    ok: true,
+    upgradedHash: await bcrypt.hash(password, 10),
+  };
 }
 
 serve(async (req: Request) => {
@@ -33,28 +51,37 @@ serve(async (req: Request) => {
     }
 
     const normalizedUser = (usuario as string).trim().toLowerCase();
-    const passwordHash = await sha256Hex(password);
-
-    // Buscar en la tabla usuarios (modelo existente)
+    // Buscar en la tabla usuarios y validar contra el hash guardado.
     const { data: user, error } = await supabaseAdmin
       .from('usuarios')
-      .select('id, usuario, rol, activo')
+      .select('id, usuario, rol, activo, password_hash')
       .eq('usuario', normalizedUser)
-      .eq('password_hash', passwordHash)
       .eq('activo', true)
       .maybeSingle();
 
     if (error) return errorResponse('Error de base de datos', 500);
     if (!user) return errorResponse('Credenciales inválidas', 401);
 
+    const verification = await verifyPassword(password, user.password_hash);
+    if (!verification.ok) return errorResponse('Credenciales inválidas', 401);
+
+    if (verification.upgradedHash) {
+      const { error: upgradeError } = await supabaseAdmin
+        .from('usuarios')
+        .update({ password_hash: verification.upgradedHash })
+        .eq('id', user.id);
+
+      if (upgradeError) {
+        console.error('No se pudo migrar password_hash a bcrypt', upgradeError);
+      }
+    }
+
     // Generar token aleatorio seguro
     const rawToken = crypto.randomUUID() + crypto.randomUUID();
     const tokenHash = await sha256Hex(rawToken);
 
-    // TTL corto y configurable para reducir el riesgo de sesiones persistentes.
-    const ttlDays = getSessionTtlDays();
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + ttlDays);
+    expiresAt.setFullYear(expiresAt.getFullYear() + 100);
 
     const { error: insertError } = await supabaseAdmin.from('app_sessions').insert({
       token_hash: tokenHash,

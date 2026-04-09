@@ -33,7 +33,7 @@ alter table public.usuarios disable row level security;
 insert into public.usuarios (usuario, password_hash, rol, activo)
 values (
   'admin',
-  encode(digest('admin123', 'sha256'), 'hex'),
+  crypt('admin123', gen_salt('bf', 10)),
   'ADMIN',
   true
 )

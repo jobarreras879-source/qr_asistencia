@@ -57,12 +57,14 @@ class UserService {
     try {
       final normalizedUsername = PasswordHashService.normalizeUsername(usuario);
       if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
-      if (password.length < 6)
+      if (password.length < 6) {
         return 'La contraseña debe tener mínimo 6 caracteres.';
+      }
 
       await _supabase.from(_tableName).insert({
         'usuario': normalizedUsername,
-        'password_hash': PasswordHashService.hash(password),
+        // La base aplica bcrypt antes de persistir el valor.
+        'password_hash': password,
         'rol': _normalizeRole(rol),
         'activo': true,
       });
@@ -107,7 +109,8 @@ class UserService {
       };
 
       if (nuevoPassword != null && nuevoPassword.isNotEmpty) {
-        payload['password_hash'] = PasswordHashService.hash(nuevoPassword);
+        // La base aplica bcrypt antes de persistir el valor.
+        payload['password_hash'] = nuevoPassword;
       }
 
       await _supabase.from(_tableName).update(payload).eq('id', int.parse(id));

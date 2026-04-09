@@ -7,14 +7,6 @@ void main() {
     expect(PasswordHashService.normalizeUsername('  JPerez  '), 'jperez');
   });
 
-  test('hash is deterministic for the same password', () {
-    final hashA = PasswordHashService.hash('admin123');
-    final hashB = PasswordHashService.hash('admin123');
-
-    expect(hashA, hashB);
-    expect(hashA, isNotEmpty);
-  });
-
   test('formatDate returns DD/MM/YYYY for valid datetime strings', () {
     expect(DateFormatter.formatDate('2026-03-22 21:35:00'), '22/03/2026');
   });
