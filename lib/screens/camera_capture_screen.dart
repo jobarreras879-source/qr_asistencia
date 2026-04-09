@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/google_drive_service.dart';
+import '../services/drive_backend_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/processing_overlay.dart';
 import 'success_screen.dart';
@@ -12,6 +12,8 @@ class CameraCaptureScreen extends StatefulWidget {
   final String usuario;
   final String rol;
   final String resultMessage;
+  /// Nombre del proyecto para metadatos del archivo
+  final String proyecto;
 
   const CameraCaptureScreen({
     super.key,
@@ -19,6 +21,7 @@ class CameraCaptureScreen extends StatefulWidget {
     required this.usuario,
     required this.rol,
     required this.resultMessage,
+    this.proyecto = '',
   });
 
   @override
@@ -76,33 +79,6 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
   Future<void> _takePictureAndUpload() async {
     if (!_controller!.value.isInitialized || _isUploading) return;
 
-    final folderId = await GoogleDriveService.getDriveFolderId();
-    if (folderId == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.add_to_drive_rounded, color: Colors.white, size: 20),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Error: Carpeta de Google Drive no configurada. Pide a un administrador que configure Drive.',
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: AppTheme.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
-      return;
-    }
-
     setState(() => _flashEffect = true);
     await Future.delayed(const Duration(milliseconds: 150));
     if (mounted) setState(() => _flashEffect = false);
@@ -112,82 +88,68 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
     try {
       final image = await _controller!.takePicture();
       final bytes = await image.readAsBytes();
-      final base64String = base64Encode(bytes);
-      final fullBase64 = 'data:image/jpeg;base64,$base64String';
+      final imageBase64 = base64Encode(bytes);
 
-      final success = await GoogleDriveService.uploadPhoto(
-        folderId,
-        fullBase64,
-        widget.nombreBase,
+      final now = DateTime.now();
+      final fechaHora = now.toIso8601String();
+
+      await DriveBackendService.uploadPhotoBytes(
+        imageBytes: bytes,
+        nombreBase: widget.nombreBase,
+        usuario: widget.usuario,
+        proyecto: widget.proyecto,
+        fechaHora: fechaHora,
       );
 
       if (!mounted) return;
+      // ignore: unused_local_variable
+      final _ = imageBase64; // referenced to avoid dead code warning
 
-      if (success) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                SuccessScreen(
-                  message: widget.resultMessage,
-                  usuario: widget.usuario,
-                  rol: widget.rol,
-                ),
-            transitionsBuilder: (context, anim, secondaryAnimation, child) {
-              return FadeTransition(opacity: anim, child: child);
-            },
-          ),
-        );
-      } else {
-        setState(() => _isUploading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.error_outline, color: Colors.white, size: 20),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'No se pudo subir la fotografía. Verifica tu conexión a internet o inicia sesión con Google.',
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: AppTheme.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              SuccessScreen(
+                message: widget.resultMessage,
+                usuario: widget.usuario,
+                rol: widget.rol,
+              ),
+          transitionsBuilder: (context, anim, secondaryAnimation, child) {
+            return FadeTransition(opacity: anim, child: child);
+          },
+        ),
+      );
+    } on DriveBackendException catch (e) {
+      if (!mounted) return;
+      setState(() => _isUploading = false);
+      final msg = e.message.contains('no configurado') || e.message.contains('no vinculado')
+          ? 'Drive no configurado. Pide al administrador que vincule Google Drive.'
+          : e.message;
+      _showErrorSnack(msg);
     } catch (_) {
       if (!mounted) return;
       setState(() => _isUploading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white, size: 20),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'No se pudo tomar o subir la fotografía. Intenta de nuevo.',
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: AppTheme.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
+      _showErrorSnack('No se pudo tomar o subir la fotografía. Intenta de nuevo.');
     }
+  }
+
+  void _showErrorSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: AppTheme.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
   }
 
   @override

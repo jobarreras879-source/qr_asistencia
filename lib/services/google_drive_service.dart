@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,13 +8,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_config.dart';
 
+/// Maneja Google Sheets y la autenticación Google necesaria para ello.
+///
+/// ⚠️  Google Drive (carpeta + fotos) ya NO se gestiona aquí.
+///     Toda la lógica de Drive vive en [DriveBackendService] vía Edge Functions,
+///     usando las credenciales del admin almacenadas en el backend.
 class GoogleDriveService {
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: AppConfig.googleServerClientId,
+    clientId: kIsWeb ? AppConfig.googleServerClientId : null,
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
       drive.DriveApi.driveFileScope,
-      drive.DriveApi.driveMetadataReadonlyScope, // Necesario para buscar archivos existentes
+      drive.DriveApi.driveMetadataReadonlyScope,
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
@@ -33,7 +37,7 @@ class GoogleDriveService {
     return value.replaceAll("'", "\\'");
   }
 
-  /// Inicia sesión con Google
+  /// Inicia sesión con Google (para Sheets).
   static Future<GoogleSignInAccount?> signIn({BuildContext? context}) async {
     try {
       if (currentUser != null) return currentUser;
@@ -47,7 +51,6 @@ class GoogleDriveService {
         } else if (error.toString().contains('access_denied')) {
           message = 'Acceso denegado. Se requieren permisos para continuar.';
         }
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -60,7 +63,7 @@ class GoogleDriveService {
     }
   }
 
-  /// Cierra sesión de Google
+  /// Cierra sesión de Google.
   static Future<void> signOut() async {
     try {
       await _googleSignIn.disconnect();
@@ -69,7 +72,7 @@ class GoogleDriveService {
     }
   }
 
-  /// Verifica si hay una sesión activa sin forzar el login visual
+  /// Silently checks for an active Google session (for Sheets background sync).
   static Future<GoogleSignInAccount?> signInSilently() async {
     try {
       return await _googleSignIn.signInSilently();
@@ -79,106 +82,9 @@ class GoogleDriveService {
     }
   }
 
-  // ============== MÉTODOS DE GOOGLE DRIVE ==============
-
-  /// Lista las carpetas en el Drive del usuario
-  static Future<List<drive.File>> listFolders() async {
-    try {
-      final account = await signIn();
-      if (account == null) return [];
-
-      final client = await _googleSignIn.authenticatedClient();
-      if (client == null) return [];
-
-      final driveApi = drive.DriveApi(client);
-      final fileList = await driveApi.files.list(
-        q: "mimeType='application/vnd.google-apps.folder' and trashed=false",
-        spaces: 'drive',
-        pageSize: 1000,
-        supportsAllDrives: true,
-        includeItemsFromAllDrives: true,
-        $fields: 'files(id, name, createdTime)',
-        orderBy: 'name asc',
-      );
-
-      return fileList.files ?? [];
-    } catch (error) {
-      _logError('listFolders', error);
-      return [];
-    }
-  }
-
-  /// Crea una nueva carpeta en Drive
-  static Future<drive.File?> createFolder(String folderName) async {
-    try {
-      final account = await signIn();
-      if (account == null) return null;
-
-      final client = await _googleSignIn.authenticatedClient();
-      if (client == null) return null;
-
-      final driveApi = drive.DriveApi(client);
-
-      final folder = drive.File()
-        ..name = folderName
-        ..mimeType = 'application/vnd.google-apps.folder';
-
-      return await driveApi.files.create(folder);
-    } catch (error) {
-      _logError('createFolder', error);
-      return null;
-    }
-  }
-
-  /// Sube un archivo a una carpeta específica en Drive
-  static Future<bool> uploadPhoto(
-    String folderId,
-    String base64Img,
-    String nombreArchivo,
-  ) async {
-    try {
-      final account = await signInSilently() ?? await signIn();
-      if (account == null) return false;
-
-      final client = await _googleSignIn.authenticatedClient();
-      if (client == null) return false;
-
-      final driveApi = drive.DriveApi(client);
-
-      // Clean base64 string
-      String base64Data = base64Img;
-      if (base64Img.startsWith('data:image')) {
-        base64Data = base64Img.split(',')[1];
-      }
-      final bytes = base64Decode(base64Data);
-
-      final safeName = nombreArchivo.replaceAll(RegExp(r'[/\\?%*:|"<> ]'), '');
-      final now = DateTime.now();
-      final dateString =
-          "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}";
-      final fileName = '${safeName}_$dateString.jpg';
-
-      final fileMetadata = drive.File()
-        ..name = fileName
-        ..parents = [folderId];
-
-      final media = drive.Media(Stream.value(bytes), bytes.length);
-
-      final result = await driveApi.files.create(
-        fileMetadata,
-        uploadMedia: media,
-      );
-
-      return result.id != null;
-    } catch (error, stack) {
-      _logError('uploadPhoto', error, stack);
-      return false;
-    }
-  }
-
   // ============== MÉTODOS DE GOOGLE SHEETS ==============
 
-  /// Crea una hoja de cálculo nueva con los encabezados
+  /// Crea una hoja de cálculo nueva con los encabezados.
   static Future<sheets.Spreadsheet?> createSpreadsheet(String title) async {
     try {
       final account = await signIn();
@@ -194,7 +100,6 @@ class GoogleDriveService {
 
       final result = await sheetsApi.spreadsheets.create(sheet);
 
-      // Agregar encabezados
       if (result.spreadsheetId != null) {
         await _addHeaders(sheetsApi, result.spreadsheetId!);
       }
@@ -206,7 +111,7 @@ class GoogleDriveService {
     }
   }
 
-  /// Busca hojas de cálculo existentes en el Drive del usuario
+  /// Busca hojas de cálculo existentes en el Drive del usuario (para Sheets config).
   static Future<List<Map<String, String>>> searchSpreadsheets(
     String query,
   ) async {
@@ -219,7 +124,6 @@ class GoogleDriveService {
 
       final driveApi = drive.DriveApi(client);
 
-      // Armar la query. Busca por nombre y archivos de Google Sheets o Excel
       String q =
           "(mimeType='application/vnd.google-apps.spreadsheet' or "
           "mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or "
@@ -237,7 +141,7 @@ class GoogleDriveService {
         supportsAllDrives: true,
         includeItemsFromAllDrives: true,
         $fields: 'files(id, name, createdTime, webViewLink)',
-        orderBy: 'name asc', // Cambiado a orden alfabético para facilitar la búsqueda visual
+        orderBy: 'name asc',
       );
 
       if (fileList.files == null) return [];
@@ -278,7 +182,7 @@ class GoogleDriveService {
       await sheetsApi.spreadsheets.values.update(
         valueRange,
         spreadsheetId,
-        'A1:G1', // Primera fila
+        'A1:G1',
         valueInputOption: 'USER_ENTERED',
       );
     } catch (error) {
@@ -286,13 +190,12 @@ class GoogleDriveService {
     }
   }
 
-  /// Agrega una fila de asistencia
+  /// Agrega una fila de asistencia a Sheets.
   static Future<bool> appendAttendanceRow(
     String spreadsheetId,
     Map<String, dynamic> rowData,
   ) async {
     try {
-      // Intentar modo silencioso primero para operaciones background
       final account = await signInSilently() ?? await signIn();
       if (account == null) return false;
 
@@ -308,7 +211,6 @@ class GoogleDriveService {
       final fechaHora = rowData['fecha_hora'] ?? '';
       final usuario = rowData['usuario_logueado'] ?? '';
 
-      // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
       String fecha = '';
       String hora = '';
       if (fechaHora.contains(' ')) {
@@ -327,7 +229,7 @@ class GoogleDriveService {
       await sheetsApi.spreadsheets.values.append(
         valueRange,
         spreadsheetId,
-        'A1:G', // Rango para buscar la última fila escrita
+        'A1:G',
         valueInputOption: 'USER_ENTERED',
         insertDataOption: 'INSERT_ROWS',
       );
@@ -339,11 +241,10 @@ class GoogleDriveService {
     }
   }
 
-  // ============== PREFERENCIAS Y CONFIGURACIÓN GLOBAL ==============
+  // ============== PREFERENCIAS Y CONFIGURACIÓN GLOBAL (SHEETS) ==============
 
   static final _supabase = Supabase.instance.client;
 
-  /// Método auxiliar interno para garantizar que exista la fila 1 en configuracion_global
   static Future<void> _ensureGlobalConfigExists() async {
     try {
       final data = await _supabase
@@ -355,88 +256,6 @@ class GoogleDriveService {
         await _supabase.from('configuracion_global').insert({'id': 1});
       }
     } catch (_) {}
-  }
-
-  static Future<String?> getDriveFolderId() async {
-    try {
-      final result = await _supabase
-          .from('configuracion_global')
-          .select('drive_folder_id')
-          .eq('id', 1)
-          .maybeSingle();
-      if (result != null && result['drive_folder_id'] != null) {
-        final id = result['drive_folder_id'].toString();
-        if (id.isNotEmpty) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('drive_folder_id', id);
-          return id;
-        }
-      }
-    } catch (e) {
-      _logError('getDriveFolderId_Supabase', e);
-    }
-    // Fallback a caché local
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('drive_folder_id');
-  }
-
-  static Future<void> setDriveFolder(String id, String name) async {
-    // Almacenar localmente por inmediatez
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('drive_folder_id', id);
-    await prefs.setString('drive_folder_name', name);
-
-    // Almacenar globalmente
-    try {
-      await _ensureGlobalConfigExists();
-      await _supabase.from('configuracion_global').update({
-        'drive_folder_id': id,
-        'drive_folder_name': name,
-      }).eq('id', 1);
-    } catch (e) {
-      _logError('setDriveFolder_Supabase', e);
-    }
-  }
-
-  static Future<void> clearDriveFolder({bool global = false}) async {
-    // Borramos localmente
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('drive_folder_id');
-    await prefs.remove('drive_folder_name');
-
-    // Borramos globalmente si se solicita (por un admin)
-    if (global) {
-      try {
-        await _supabase.from('configuracion_global').update({
-          'drive_folder_id': null,
-          'drive_folder_name': null,
-        }).eq('id', 1);
-      } catch (e) {
-        _logError('clearDriveFolder_Supabase', e);
-      }
-    }
-  }
-
-  static Future<String?> getDriveFolderName() async {
-    try {
-      final result = await _supabase
-          .from('configuracion_global')
-          .select('drive_folder_name')
-          .eq('id', 1)
-          .maybeSingle();
-      if (result != null && result['drive_folder_name'] != null) {
-        final name = result['drive_folder_name'].toString();
-        if (name.isNotEmpty) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('drive_folder_name', name);
-          return name;
-        }
-      }
-    } catch (e) {
-      _logError('getDriveFolderName_Supabase', e);
-    }
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('drive_folder_name');
   }
 
   static Future<String?> getSheetsId() async {
@@ -466,7 +285,7 @@ class GoogleDriveService {
     await prefs.setString('sheets_spreadsheet_id', id);
     await prefs.setString('sheets_spreadsheet_name', name);
     await prefs.setString('sheets_spreadsheet_url', url);
-    await prefs.setBool('sheets_auto_sync', true); // Auto-sync on by default when linked
+    await prefs.setBool('sheets_auto_sync', true);
 
     try {
       await _ensureGlobalConfigExists();
@@ -514,16 +333,24 @@ class GoogleDriveService {
         if (id.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('sheets_spreadsheet_id', id);
-          await prefs.setString('sheets_spreadsheet_name', result['sheets_spreadsheet_name']?.toString() ?? 'Hoja');
-          await prefs.setString('sheets_spreadsheet_url', result['sheets_spreadsheet_url']?.toString() ?? '');
-          
+          await prefs.setString(
+            'sheets_spreadsheet_name',
+            result['sheets_spreadsheet_name']?.toString() ?? 'Hoja',
+          );
+          await prefs.setString(
+            'sheets_spreadsheet_url',
+            result['sheets_spreadsheet_url']?.toString() ?? '',
+          );
+
           final syncDb = result['sheets_auto_sync'];
           final autoSync = syncDb != null ? (syncDb as bool) : false;
           await prefs.setBool('sheets_auto_sync', autoSync);
-          
+
           return {
             'id': id,
-            'name': result['sheets_spreadsheet_name']?.toString() ?? 'Hoja de Asistencia',
+            'name':
+                result['sheets_spreadsheet_name']?.toString() ??
+                'Hoja de Asistencia',
             'url': result['sheets_spreadsheet_url']?.toString() ?? '',
             'autoSync': autoSync,
           };

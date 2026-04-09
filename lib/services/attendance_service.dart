@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'google_drive_service.dart';
 import 'auth_service.dart';
 import '../utils/date_formatter.dart';
+import '../utils/perf_diagnostics.dart';
 
 /// Servicio para registro y consulta de asistencia.
 /// Separa el flujo de registros del resto de servicios.
@@ -104,11 +105,21 @@ class AttendanceService {
 
   /// Obtiene la cantidad de registros del día actual asociados al usuario.
   static Future<int> getTodayCount(String username) async {
+    final trace = PerfDiagnostics.startTrace(
+      'attendance_service.getTodayCount',
+      context: {'usuario': username},
+    );
     try {
       final normalizedUsername = username.trim();
-      if (normalizedUsername.isEmpty) return 0;
+      if (normalizedUsername.isEmpty) {
+        trace.finish(data: {'count': 0, 'reason': 'empty_username'});
+        return 0;
+      }
 
-      final role = await AuthService.getCurrentUserRole();
+      final role = await trace.measureAsync(
+        'AuthService.getCurrentUserRole',
+        AuthService.getCurrentUserRole,
+      );
 
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
@@ -116,7 +127,7 @@ class AttendanceService {
 
       var query = _supabase
           .from('registros')
-          .select('fecha_hora')
+          .count(CountOption.exact)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
@@ -124,11 +135,15 @@ class AttendanceService {
         query = query.eq('usuario_logueado', normalizedUsername);
       }
 
-      final data = await query;
-
-      return List<Map<String, dynamic>>.from(data).length;
+      final count = await trace.measureAsync(
+        'supabase_count_registros',
+        () async => await query,
+      );
+      trace.finish(data: {'count': count, 'role': role});
+      return count;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
+      trace.finish(data: {'count': 0, 'error': e.toString()});
       return 0;
     }
   }

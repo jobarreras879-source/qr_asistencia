@@ -399,9 +399,73 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 enabled = true
 verify_jwt = true
 import_map = "./functions/admin-manage-user/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
 entrypoint = "./functions/admin-manage-user/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/admin-manage-user/*.html" ]
+
+# ─── App Auth Functions ───────────────────────────────────────────────────────
+# verify_jwt = false porque usan tokens propios de app_sessions (no Supabase JWT)
+
+[functions.app-login]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/app-login/index.ts"
+
+[functions.app-logout]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/app-logout/index.ts"
+
+# ─── Drive Admin Functions ────────────────────────────────────────────────────
+
+[functions.drive-admin-status]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-status/index.ts"
+
+[functions.drive-admin-link]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-link/index.ts"
+
+[functions.drive-admin-list-folders]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-list-folders/index.ts"
+
+[functions.drive-admin-create-folder]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-create-folder/index.ts"
+
+[functions.drive-admin-set-folder]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-set-folder/index.ts"
+
+[functions.drive-admin-unlink]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-admin-unlink/index.ts"
+
+[functions.drive-photo-upload]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/drive-photo-upload/index.ts"
+
+# ─── In-app Campaign Functions ───────────────────────────────────────────────
+
+[functions.app-campaigns-list]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/app-campaigns-list/index.ts"
+
+[functions.app-campaigns-ack]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/app-campaigns-ack/index.ts"
+
+# ─── Security Functions ──────────────────────────────────────────────────────
+
+[functions.security-audit-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/security-audit-webhook/index.ts"

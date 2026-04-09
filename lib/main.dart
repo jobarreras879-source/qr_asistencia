@@ -4,23 +4,52 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/app_config.dart';
 import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
+import 'utils/perf_diagnostics.dart';
 
 void main() async {
+  final bootstrapTrace = PerfDiagnostics.startTrace('app_bootstrap');
+  bootstrapTrace.mark('main_entered');
   WidgetsFlutterBinding.ensureInitialized();
+  bootstrapTrace.mark('bindings_ready');
 
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseAnonKey,
+  await bootstrapTrace.measureAsync('supabase_initialize', () async {
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
+    );
+  });
+
+  bootstrapTrace.mark(
+    'run_app',
+    data: {'sinceAppStartMs': PerfDiagnostics.appStart.elapsedMilliseconds},
   );
-
   runApp(const MyApp());
+  bootstrapTrace.finish();
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static bool _loggedFirstBuild = false;
+
   @override
   Widget build(BuildContext context) {
+    if (!_loggedFirstBuild) {
+      _loggedFirstBuild = true;
+      PerfDiagnostics.log(
+        'app_bootstrap',
+        'material_app_built',
+        data: {'sinceAppStartMs': PerfDiagnostics.appStart.elapsedMilliseconds},
+      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        PerfDiagnostics.log(
+          'app_bootstrap',
+          'first_frame',
+          data: {'sinceAppStartMs': PerfDiagnostics.appStart.elapsedMilliseconds},
+        );
+      });
+    }
+
     return MaterialApp(
       title: 'Qr Asistencia',
       debugShowCheckedModeBanner: false,
