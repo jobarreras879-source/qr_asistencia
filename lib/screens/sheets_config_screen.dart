@@ -393,16 +393,16 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       int successCount = 0;
       int errorCount = 0;
 
-      for (var reg in data) {
-        final success = await GoogleDriveService.appendAttendanceRow(
+      if (data.isNotEmpty) {
+        final success = await GoogleDriveService.batchAppendAttendanceRows(
           _sheetsInfo!['id'],
-          reg,
+          List<Map<String, dynamic>>.from(data),
         );
 
         if (success) {
-          successCount++;
+          successCount = data.length;
         } else {
-          errorCount++;
+          errorCount = data.length;
         }
       }
 
@@ -418,7 +418,8 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Sync Error: $e');
       if (!mounted) return;
       setState(() => _isSyncing = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -820,7 +821,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                     await GoogleDriveService.setAutoSync(val);
                     setState(() => _autoSync = val);
                   },
-                  activeColor: AppTheme.success,
+                  activeThumbColor: AppTheme.success,
                 ),
               ],
             ),
