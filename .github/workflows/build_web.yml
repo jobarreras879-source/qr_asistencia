@@ -35,6 +35,11 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
             --dart-define=GOOGLE_SERVER_CLIENT_ID=${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
 
+      - name: Copy public legal pages
+        run: |
+          mkdir -p build/web/web_legales
+          cp -R web_legales/. build/web/web_legales/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
