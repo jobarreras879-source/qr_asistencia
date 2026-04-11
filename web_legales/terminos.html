@@ -4,228 +4,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY">
-    <meta name="description" content="Términos del Servicio de QR Asistencia para usuarios y procesos de verificación de Google Cloud.">
+    <meta name="description" content="Términos del Servicio públicos de QR Asistencia para usuarios y procesos de verificación de Google Cloud.">
     <title>Términos del Servicio | QR Asistencia</title>
-    <style>
-        :root {
-            --bg: #f3efe8;
-            --paper: rgba(255, 252, 247, 0.96);
-            --text: #1f1a16;
-            --muted: #5f554c;
-            --line: rgba(61, 47, 35, 0.12);
-            --accent: #7e4d23;
-            --accent-soft: rgba(126, 77, 35, 0.08);
-            --shadow: 0 28px 70px rgba(58, 40, 25, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top left, rgba(126, 77, 35, 0.12), transparent 25%),
-                linear-gradient(180deg, #faf5ee 0%, var(--bg) 100%);
-        }
-
-        main {
-            width: min(960px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 32px 0 48px;
-        }
-
-        .card {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 28px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .hero {
-            padding: 34px 34px 28px;
-            border-bottom: 1px solid var(--line);
-            background:
-                linear-gradient(135deg, rgba(126, 77, 35, 0.08), transparent 55%),
-                rgba(255, 252, 247, 0.98);
-        }
-
-        .eyebrow {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            font-size: 0.82rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        h1,
-        h2 {
-            margin: 0;
-            line-height: 1.1;
-        }
-
-        h1 {
-            margin-top: 16px;
-            font-size: clamp(2.2rem, 4vw, 3.8rem);
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            margin-bottom: 14px;
-        }
-
-        p,
-        li {
-            color: var(--muted);
-            font-size: 1.03rem;
-            line-height: 1.78;
-        }
-
-        .hero p {
-            max-width: 760px;
-            margin-top: 16px;
-        }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        nav a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 10px 34px 34px;
-        }
-
-        section {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--line);
-        }
-
-        section:last-child {
-            border-bottom: 0;
-        }
-
-        ul {
-            margin: 14px 0 0;
-            padding-left: 22px;
-        }
-
-        .footer {
-            margin-top: 18px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.94rem;
-        }
-
-        @media (max-width: 720px) {
-            .hero,
-            .content {
-                padding-left: 22px;
-                padding-right: 22px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./legal.css">
 </head>
 <body>
-    <main>
-        <article class="card">
-            <header class="hero">
-                <span class="eyebrow">QR Asistencia · Legal</span>
-                <h1>Términos del Servicio</h1>
-                <p>Estos términos regulan el acceso y uso de QR Asistencia. Al utilizar la aplicación, el usuario acepta estas condiciones en la medida permitida por la ley aplicable.</p>
-                <nav aria-label="Navegación legal">
-                    <a href="./index.html">Inicio legal</a>
-                    <a href="./privacidad.html">Política de privacidad</a>
-                </nav>
-            </header>
+    <main class="legal-shell">
+        <header class="legal-topbar fade-rise">
+            <a class="brand" href="./index.html">
+                <span class="brand-mark">QR</span>
+                <span class="brand-copy">
+                    <span class="brand-title">QR Asistencia</span>
+                    <span class="brand-subtitle">Centro legal público</span>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Navegación principal">
+                <a href="./index.html">Inicio</a>
+                <a href="./privacidad.html">Privacidad</a>
+                <a class="active" href="./terminos.html">Términos</a>
+            </nav>
+        </header>
 
-            <div class="content">
-                <section>
-                    <h2>1. Objeto del servicio</h2>
-                    <p>QR Asistencia es una herramienta digital para registrar asistencia mediante el escaneo de códigos QR y la sincronización de registros con sistemas autorizados por la organización responsable, incluida la integración con Google Sheets API.</p>
+        <section class="doc-hero fade-rise delay-1">
+            <div class="doc-hero-grid">
+                <div class="doc-hero-main">
+                    <span class="kicker">QR Asistencia · Documento legal</span>
+                    <h1>Términos del Servicio</h1>
+                    <p class="lede">Estos términos regulan el acceso y uso de QR Asistencia. Su objetivo es dejar claras las reglas operativas del servicio, las obligaciones del usuario y el alcance general de la plataforma publicada.</p>
+                    <div class="doc-actions">
+                        <a class="btn btn-primary" href="./privacidad.html">Ver política de privacidad</a>
+                        <a class="btn btn-secondary" href="mailto:jobarreras879@gmail.com">Solicitar contacto</a>
+                    </div>
+                </div>
+
+                <aside class="doc-meta-grid">
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Servicio</span>
+                        <strong>Registro de asistencia mediante QR</strong>
+                    </article>
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Dirigido a</span>
+                        <strong>Usuarios autorizados por la organización administradora</strong>
+                    </article>
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Actualización</span>
+                        <strong>11 de abril de 2026</strong>
+                    </article>
+                </aside>
+            </div>
+        </section>
+
+        <div class="doc-layout">
+            <aside class="sidebar-card fade-rise delay-2">
+                <div>
+                    <h3>Resumen rápido</h3>
+                    <ul class="sidebar-list" style="margin-top: 16px;">
+                        <li>
+                            <strong>Uso permitido</strong>
+                            Registro legítimo de asistencia para fines internos.
+                        </li>
+                        <li>
+                            <strong>Servicios vinculados</strong>
+                            Google, Supabase y la infraestructura operativa necesaria.
+                        </li>
+                        <li>
+                            <strong>Restricciones</strong>
+                            No se permite fraude, manipulación o acceso no autorizado.
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Secciones</h3>
+                    <ul class="toc-list" style="margin-top: 16px;">
+                        <li><a href="#objeto">1. Objeto del servicio</a></li>
+                        <li><a href="#usuarios">2. Usuarios autorizados</a></li>
+                        <li><a href="#obligaciones">3. Obligaciones</a></li>
+                        <li><a href="#integraciones">4. Integraciones</a></li>
+                        <li><a href="#disponibilidad">5. Disponibilidad</a></li>
+                        <li><a href="#restricciones">6. Restricciones</a></li>
+                        <li><a href="#propiedad">7. Propiedad intelectual</a></li>
+                        <li><a href="#responsabilidad">8. Limitación de responsabilidad</a></li>
+                        <li><a href="#suspension">9. Suspensión</a></li>
+                        <li><a href="#cambios">10. Cambios</a></li>
+                        <li><a href="#contacto">11. Contacto</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <article class="doc-content">
+                <section class="section-card fade-rise delay-2" id="objeto">
+                    <span class="section-number">1. Objeto del servicio</span>
+                    <h2>Qué ofrece QR Asistencia</h2>
+                    <p>QR Asistencia es una herramienta digital para registrar asistencia mediante escaneo de códigos QR y sincronización con sistemas autorizados por la organización responsable, incluida la integración con Google Sheets API.</p>
                 </section>
 
-                <section>
-                    <h2>2. Usuarios autorizados</h2>
-                    <p>El servicio está dirigido exclusivamente a usuarios autorizados por la entidad u organización que administra QR Asistencia. El acceso puede estar restringido a empleados, contratistas o personal previamente habilitado.</p>
+                <section class="section-card fade-rise delay-3" id="usuarios">
+                    <span class="section-number">2. Usuarios autorizados</span>
+                    <h2>Acceso limitado a personal habilitado</h2>
+                    <p>El servicio está dirigido exclusivamente a usuarios autorizados por la entidad u organización que administra QR Asistencia. El acceso puede restringirse a empleados, contratistas o personal previamente habilitado.</p>
                 </section>
 
-                <section>
-                    <h2>3. Obligaciones del usuario</h2>
+                <section class="section-card fade-rise delay-4" id="obligaciones">
+                    <span class="section-number">3. Obligaciones del usuario</span>
+                    <h2>Uso honesto y protección del acceso</h2>
                     <ul>
                         <li>Usar la aplicación de forma veraz, legítima y conforme al propósito de registro de asistencia.</li>
-                        <li>Proteger sus credenciales y no compartir su acceso con terceros no autorizados.</li>
-                        <li>No manipular registros, flujos de autenticación, integraciones o datos del sistema.</li>
+                        <li>Proteger sus credenciales y no compartir el acceso con terceros no autorizados.</li>
+                        <li>No manipular registros, integraciones, flujos de autenticación ni datos del sistema.</li>
                         <li>No utilizar la aplicación para fines distintos a los permitidos por la organización responsable.</li>
                     </ul>
                 </section>
 
-                <section>
-                    <h2>4. Integraciones de terceros</h2>
-                    <p>La aplicación puede utilizar servicios de terceros como Google y Supabase para autenticación, almacenamiento y sincronización de datos. El uso de dichos servicios también puede estar sujeto a los términos y políticas propios de esos proveedores.</p>
+                <section class="section-card" id="integraciones">
+                    <span class="section-number">4. Integraciones de terceros</span>
+                    <h2>Dependencias necesarias para operar</h2>
+                    <p>La aplicación puede utilizar servicios de terceros como Google y Supabase para autenticación, almacenamiento y sincronización. El uso de dichos servicios puede estar sujeto además a los términos y políticas propias de esos proveedores.</p>
                 </section>
 
-                <section>
-                    <h2>5. Disponibilidad del servicio</h2>
-                    <p>Se realizan esfuerzos razonables para mantener la disponibilidad de QR Asistencia, pero no se garantiza operación ininterrumpida. Pueden ocurrir interrupciones por mantenimiento, fallas técnicas, conectividad, cambios de proveedores externos o situaciones fuera de control razonable.</p>
+                <section class="section-card" id="disponibilidad">
+                    <span class="section-number">5. Disponibilidad del servicio</span>
+                    <h2>Operación razonable, no continua garantizada</h2>
+                    <p>Se realizan esfuerzos razonables para mantener la disponibilidad de QR Asistencia, pero no se garantiza una operación ininterrumpida. Pueden ocurrir interrupciones por mantenimiento, fallas técnicas, conectividad, cambios de proveedores externos o situaciones fuera de control razonable.</p>
                 </section>
 
-                <section>
-                    <h2>6. Restricciones</h2>
+                <section class="section-card" id="restricciones">
+                    <span class="section-number">6. Restricciones</span>
+                    <h2>Límites de uso y seguridad</h2>
                     <ul>
                         <li>No está permitido intentar acceder a datos, hojas de cálculo o configuraciones no autorizadas.</li>
-                        <li>No está permitido usar la aplicación para actividades fraudulentas, suplantación o alteración de registros.</li>
+                        <li>No está permitido usar la aplicación para fraude, suplantación o alteración de registros.</li>
                         <li>No está permitido descompilar, interferir o comprometer la seguridad del servicio salvo lo expresamente permitido por la ley.</li>
                     </ul>
                 </section>
 
-                <section>
-                    <h2>7. Propiedad intelectual</h2>
+                <section class="section-card" id="propiedad">
+                    <span class="section-number">7. Propiedad intelectual</span>
+                    <h2>Titularidad del software y su documentación</h2>
                     <p>El software, diseño, documentación y elementos asociados a QR Asistencia pertenecen a sus respectivos titulares. El uso de la aplicación no transfiere derechos de propiedad intelectual al usuario.</p>
                 </section>
 
-                <section>
-                    <h2>8. Limitación de responsabilidad</h2>
-                    <p>En la máxima medida permitida por la ley, AVS Ingeniería no será responsable por daños indirectos, incidentales, especiales o consecuentes derivados del uso o imposibilidad de uso del servicio, particularmente cuando dependan de fallos en servicios de terceros, dispositivos del usuario o conectividad externa.</p>
+                <section class="section-card" id="responsabilidad">
+                    <span class="section-number">8. Limitación de responsabilidad</span>
+                    <h2>Alcance razonable de responsabilidad</h2>
+                    <p>En la máxima medida permitida por la ley, AVS Ingeniería no será responsable por daños indirectos, incidentales, especiales o consecuentes derivados del uso o imposibilidad de uso del servicio, especialmente cuando dependan de fallos en servicios de terceros, dispositivos del usuario o conectividad externa.</p>
+                    <div class="callout">
+                        <strong>Importante:</strong> la operación del servicio puede depender de autenticación, conectividad, disponibilidad de APIs y servicios externos que no están completamente bajo control directo del operador.
+                    </div>
                 </section>
 
-                <section>
-                    <h2>9. Suspensión o cancelación</h2>
+                <section class="section-card" id="suspension">
+                    <span class="section-number">9. Suspensión o cancelación</span>
+                    <h2>Acciones ante uso indebido o necesidad operativa</h2>
                     <p>El acceso podrá ser suspendido o cancelado si existe uso indebido, incumplimiento de estos términos, requerimiento interno de la organización administradora o necesidad técnica u operativa.</p>
                 </section>
 
-                <section>
-                    <h2>10. Cambios a los términos</h2>
-                    <p>Estos términos pueden actualizarse para reflejar cambios técnicos, operativos o normativos. La versión publicada en esta página será la versión vigente desde su fecha de actualización.</p>
+                <section class="section-card" id="cambios">
+                    <span class="section-number">10. Cambios a los términos</span>
+                    <h2>Versión vigente en esta URL</h2>
+                    <p>Estos términos pueden actualizarse para reflejar cambios técnicos, operativos o normativos. La versión publicada en esta página será la versión vigente para revisión pública.</p>
                 </section>
 
-                <section>
-                    <h2>11. Contacto</h2>
-                    <p>Para consultas relacionadas con estos términos o con el funcionamiento del servicio, puede escribir a <a href="mailto:jobarreras879@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">jobarreras879@gmail.com</a>.</p>
+                <section class="section-card" id="contacto">
+                    <span class="section-number">11. Contacto</span>
+                    <h2>Canal directo para consultas</h2>
+                    <p>Para consultas relacionadas con estos términos o con el funcionamiento del servicio, puede escribir a <a href="mailto:jobarreras879@gmail.com" style="color: var(--accent-strong); font-weight: 700; text-decoration: none;">jobarreras879@gmail.com</a>.</p>
                 </section>
-            </div>
-        </article>
-
-        <div class="footer">
-            Ultima actualización: 11 de abril de 2026
+            </article>
         </div>
+
+        <footer class="legal-footer">
+            <span>Términos públicos de QR Asistencia</span>
+            <a href="./privacidad.html">Ir a política de privacidad</a>
+        </footer>
     </main>
 </body>
 </html>

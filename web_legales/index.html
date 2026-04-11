@@ -4,304 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY">
-    <meta name="description" content="Documentos legales y descripción pública de QR Asistencia para Google Cloud y usuarios de la aplicación.">
-    <title>QR Asistencia | Información Legal</title>
-    <style>
-        :root {
-            --bg: #f4efe7;
-            --surface: rgba(255, 252, 247, 0.92);
-            --surface-strong: #fffaf2;
-            --text: #1e1a16;
-            --muted: #65584f;
-            --line: rgba(61, 47, 35, 0.12);
-            --accent: #99663a;
-            --accent-deep: #6f431f;
-            --shadow: 0 24px 70px rgba(58, 40, 25, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top left, rgba(184, 135, 90, 0.2), transparent 28%),
-                radial-gradient(circle at right center, rgba(111, 67, 31, 0.12), transparent 26%),
-                linear-gradient(180deg, #f8f2ea 0%, var(--bg) 100%);
-            min-height: 100vh;
-        }
-
-        .shell {
-            width: min(1100px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 40px 0 56px;
-        }
-
-        .hero,
-        .panel {
-            background: var(--surface);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--line);
-            box-shadow: var(--shadow);
-        }
-
-        .hero {
-            border-radius: 28px;
-            padding: 40px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: 18px;
-            border: 1px solid rgba(153, 102, 58, 0.15);
-            border-radius: 20px;
-            pointer-events: none;
-        }
-
-        .eyebrow {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 999px;
-            border: 1px solid rgba(153, 102, 58, 0.25);
-            color: var(--accent-deep);
-            font-size: 0.82rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            background: rgba(255, 250, 242, 0.88);
-        }
-
-        h1,
-        h2,
-        h3 {
-            font-weight: 600;
-            margin: 0;
-            line-height: 1.05;
-        }
-
-        h1 {
-            margin-top: 18px;
-            font-size: clamp(2.4rem, 5vw, 4.5rem);
-            max-width: 11ch;
-        }
-
-        p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.75;
-            font-size: 1.03rem;
-        }
-
-        .hero-copy {
-            max-width: 720px;
-            display: grid;
-            gap: 18px;
-        }
-
-        .link-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 14px;
-        }
-
-        .cta,
-        .link-card a {
-            text-decoration: none;
-        }
-
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            padding: 0 20px;
-            border-radius: 999px;
-            border: 1px solid transparent;
-            font-weight: 600;
-            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-        }
-
-        .cta:hover,
-        .cta:focus-visible,
-        .link-card:hover,
-        .link-card:focus-within {
-            transform: translateY(-2px);
-        }
-
-        .cta.primary {
-            background: var(--accent-deep);
-            color: #fff9f1;
-        }
-
-        .cta.secondary {
-            background: rgba(255, 250, 242, 0.82);
-            color: var(--accent-deep);
-            border-color: rgba(153, 102, 58, 0.26);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 18px;
-            margin-top: 18px;
-        }
-
-        .panel {
-            border-radius: 24px;
-            padding: 28px;
-        }
-
-        .panel h2 {
-            font-size: 1.55rem;
-            margin-bottom: 14px;
-        }
-
-        .intro {
-            grid-column: span 7;
-        }
-
-        .meta {
-            grid-column: span 5;
-            background: var(--surface-strong);
-        }
-
-        .docs {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .link-card {
-            display: grid;
-            gap: 14px;
-            border-radius: 22px;
-            padding: 26px;
-            background: rgba(255, 250, 242, 0.92);
-            border: 1px solid var(--line);
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .link-card strong {
-            font-size: 1.28rem;
-            color: var(--text);
-        }
-
-        .link-card span {
-            color: var(--accent-deep);
-            font-weight: 600;
-        }
-
-        .meta-list {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            display: grid;
-            gap: 14px;
-        }
-
-        .meta-list li {
-            padding-top: 14px;
-            border-top: 1px solid var(--line);
-        }
-
-        .meta-list li:first-child {
-            padding-top: 0;
-            border-top: 0;
-        }
-
-        .meta-list strong {
-            display: block;
-            margin-bottom: 4px;
-            color: var(--text);
-        }
-
-        footer {
-            margin-top: 20px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        @media (max-width: 860px) {
-            .intro,
-            .meta,
-            .docs {
-                grid-column: 1 / -1;
-            }
-
-            .docs {
-                grid-template-columns: 1fr;
-            }
-
-            .hero,
-            .panel,
-            .link-card {
-                padding: 24px;
-            }
-        }
-    </style>
+    <meta name="description" content="Centro legal público de QR Asistencia con política de privacidad, términos del servicio e información para Google Cloud.">
+    <title>QR Asistencia | Centro Legal</title>
+    <link rel="stylesheet" href="./legal.css">
 </head>
 <body>
-    <main class="shell">
-        <section class="hero">
-            <div class="hero-copy">
-                <span class="eyebrow">QR Asistencia · Información pública</span>
-                <h1>Documentación legal para el uso de la app</h1>
-                <p>QR Asistencia es una aplicación para registrar asistencia laboral mediante códigos QR. Esta sección pública reúne la política de privacidad, los términos del servicio y la información básica del tratamiento de datos utilizada para la integración con Google Cloud y Google Sheets API.</p>
-                <div class="link-row">
-                    <a class="cta primary" href="./privacidad.html">Ver política de privacidad</a>
-                    <a class="cta secondary" href="./terminos.html">Ver términos del servicio</a>
+    <main class="legal-shell">
+        <header class="legal-topbar fade-rise">
+            <a class="brand" href="./index.html">
+                <span class="brand-mark">QR</span>
+                <span class="brand-copy">
+                    <span class="brand-title">QR Asistencia</span>
+                    <span class="brand-subtitle">Centro legal público</span>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Navegación principal">
+                <a class="active" href="./index.html">Inicio</a>
+                <a href="./privacidad.html">Privacidad</a>
+                <a href="./terminos.html">Términos</a>
+            </nav>
+        </header>
+
+        <section class="hero-card fade-rise delay-1">
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <span class="kicker">Información pública para usuarios y verificación</span>
+                    <h1>Un espacio legal claro, serio y accesible para la aplicación.</h1>
+                    <p class="lede">QR Asistencia centraliza aquí la documentación pública requerida para su uso operativo y para la integración con Google Cloud, Google Sign-In y Google Sheets API. Las rutas publicadas en esta sección son estables, públicas y legibles desde cualquier dispositivo.</p>
+                    <div class="hero-actions">
+                        <a class="btn btn-primary" href="./privacidad.html">Leer política de privacidad</a>
+                        <a class="btn btn-secondary" href="./terminos.html">Leer términos del servicio</a>
+                    </div>
+                    <div class="hero-stats">
+                        <article class="stat-card">
+                            <span class="stat-label">Uso principal</span>
+                            <span class="stat-value">Registro de asistencia</span>
+                            <p class="stat-note">Marcación de entradas y salidas mediante códigos QR.</p>
+                        </article>
+                        <article class="stat-card">
+                            <span class="stat-label">Integración</span>
+                            <span class="stat-value">Google y Supabase</span>
+                            <p class="stat-note">Autenticación, sincronización y respaldo operativo.</p>
+                        </article>
+                        <article class="stat-card">
+                            <span class="stat-label">Disponibilidad</span>
+                            <span class="stat-value">Páginas públicas</span>
+                            <p class="stat-note">Listas para revisión de usuarios y procesos de validación.</p>
+                        </article>
+                    </div>
                 </div>
+
+                <aside class="hero-side">
+                    <article class="highlight-card">
+                        <div class="highlight-title">
+                            <h2>Estado de cumplimiento</h2>
+                        </div>
+                        <span class="badge">Listo para Google Cloud</span>
+                        <ul style="margin-top: 16px;">
+                            <li>Política de privacidad pública y accesible.</li>
+                            <li>Términos del servicio en URL estable.</li>
+                            <li>Descripción clara del tratamiento de datos.</li>
+                            <li>Contacto visible del responsable del servicio.</li>
+                        </ul>
+                    </article>
+
+                    <article class="highlight-card">
+                        <div class="eyebrow-title">Datos del servicio</div>
+                        <ul>
+                            <li><strong>Responsable:</strong> AVS Ingeniería.</li>
+                            <li><strong>Correo:</strong> jobarreras879@gmail.com.</li>
+                            <li><strong>Dominio público:</strong> GitHub Pages.</li>
+                        </ul>
+                    </article>
+                </aside>
             </div>
         </section>
 
-        <section class="grid" aria-label="Resumen legal">
-            <article class="panel intro">
-                <h2>Propósito de la aplicación</h2>
-                <p>La aplicación permite a empleados autorizados registrar entradas, salidas y eventos de asistencia asociados a un proyecto o centro de trabajo. La información capturada se utiliza únicamente con fines operativos y administrativos internos de control de asistencia.</p>
-            </article>
+        <section class="home-grid">
+            <div class="stack">
+                <article class="feature-card fade-rise delay-2">
+                    <div class="eyebrow-title">Propósito de la aplicación</div>
+                    <h2>Control de asistencia con trazabilidad operativa</h2>
+                    <p>La aplicación permite a usuarios autorizados registrar asistencia asociada a jornadas, proyectos o centros de trabajo. La información se utiliza únicamente con fines administrativos, de control interno y soporte operativo.</p>
+                </article>
 
-            <aside class="panel meta">
-                <h2>Datos clave</h2>
-                <ul class="meta-list">
-                    <li>
-                        <strong>Responsable del servicio</strong>
-                        AVS Ingeniería
-                    </li>
-                    <li>
-                        <strong>Correo de contacto</strong>
-                        jobarreras879@gmail.com
-                    </li>
-                    <li>
-                        <strong>Integración principal</strong>
-                        Google Sign-In y Google Sheets API
-                    </li>
-                </ul>
+                <div class="feature-grid">
+                    <article class="feature-card fade-rise delay-3">
+                        <h3>Política de privacidad</h3>
+                        <p>Explica qué datos se recopilan, para qué se usan, cómo se almacenan y cuál es el alcance del acceso solicitado a servicios de Google.</p>
+                        <a class="feature-link" href="./privacidad.html">Abrir documento</a>
+                    </article>
+
+                    <article class="feature-card fade-rise delay-4">
+                        <h3>Términos del servicio</h3>
+                        <p>Define reglas de uso, restricciones, responsabilidades del usuario, disponibilidad del servicio y condiciones generales de operación.</p>
+                        <a class="feature-link" href="./terminos.html">Abrir documento</a>
+                    </article>
+                </div>
+            </div>
+
+            <aside class="stack">
+                <article class="sidebar-card fade-rise delay-2">
+                    <h3>Qué encontrará aquí</h3>
+                    <ul class="sidebar-list" style="margin-top: 16px;">
+                        <li>
+                            <strong>Textos públicos</strong>
+                            Versiones legibles desde navegador y móvil.
+                        </li>
+                        <li>
+                            <strong>Lenguaje claro</strong>
+                            Redacción directa para usuarios y revisores.
+                        </li>
+                        <li>
+                            <strong>Rutas permanentes</strong>
+                            Enlaces preparados para su uso en Google Cloud Console.
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="sidebar-card fade-rise delay-3">
+                    <h3>Accesos rápidos</h3>
+                    <div class="inline-links">
+                        <a href="./privacidad.html">Privacidad</a>
+                        <a href="./terminos.html">Términos</a>
+                        <a href="mailto:jobarreras879@gmail.com">Contacto</a>
+                    </div>
+                </article>
             </aside>
-
-            <section class="docs" aria-label="Documentos legales">
-                <a class="link-card" href="./privacidad.html">
-                    <strong>Política de privacidad</strong>
-                    <p>Describe qué datos se recaban, cómo se usan, qué acceso se solicita a Google y cómo puede solicitarse la eliminación o actualización de la información.</p>
-                    <span>Abrir documento</span>
-                </a>
-                <a class="link-card" href="./terminos.html">
-                    <strong>Términos del servicio</strong>
-                    <p>Define las reglas de uso de QR Asistencia, responsabilidades del usuario, restricciones de uso, disponibilidad del servicio y limitaciones aplicables.</p>
-                    <span>Abrir documento</span>
-                </a>
-            </section>
         </section>
 
-        <footer>
-            Ultima actualización: 11 de abril de 2026
+        <footer class="legal-footer">
+            <span>Última actualización: 11 de abril de 2026</span>
+            <a href="mailto:jobarreras879@gmail.com">jobarreras879@gmail.com</a>
         </footer>
     </main>
 </body>

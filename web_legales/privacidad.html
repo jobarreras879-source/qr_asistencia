@@ -4,242 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY">
-    <meta name="description" content="Política de Privacidad de QR Asistencia para usuarios y procesos de verificación de Google Cloud.">
+    <meta name="description" content="Política de Privacidad pública de QR Asistencia para usuarios y procesos de verificación de Google Cloud.">
     <title>Política de Privacidad | QR Asistencia</title>
-    <style>
-        :root {
-            --bg: #f5f1ea;
-            --paper: rgba(255, 252, 247, 0.95);
-            --text: #1f1b18;
-            --muted: #63584f;
-            --line: rgba(61, 47, 35, 0.12);
-            --accent: #7a4b24;
-            --accent-soft: rgba(122, 75, 36, 0.08);
-            --shadow: 0 28px 70px rgba(58, 40, 25, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top right, rgba(122, 75, 36, 0.12), transparent 25%),
-                linear-gradient(180deg, #faf5ee 0%, var(--bg) 100%);
-        }
-
-        main {
-            width: min(960px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 32px 0 48px;
-        }
-
-        .card {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 28px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .hero {
-            padding: 34px 34px 28px;
-            border-bottom: 1px solid var(--line);
-            background:
-                linear-gradient(135deg, rgba(122, 75, 36, 0.08), transparent 55%),
-                rgba(255, 252, 247, 0.98);
-        }
-
-        .eyebrow {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            font-size: 0.82rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        h1,
-        h2 {
-            margin: 0;
-            line-height: 1.1;
-        }
-
-        h1 {
-            margin-top: 16px;
-            font-size: clamp(2.2rem, 4vw, 3.8rem);
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            margin-bottom: 14px;
-        }
-
-        p,
-        li {
-            color: var(--muted);
-            font-size: 1.03rem;
-            line-height: 1.78;
-        }
-
-        .hero p {
-            max-width: 760px;
-            margin-top: 16px;
-        }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        nav a,
-        .mail {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        nav a:hover,
-        .mail:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 10px 34px 34px;
-        }
-
-        section {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--line);
-        }
-
-        section:last-child {
-            border-bottom: 0;
-        }
-
-        ul {
-            margin: 14px 0 0;
-            padding-left: 22px;
-        }
-
-        .notice {
-            margin-top: 18px;
-            padding: 18px 20px;
-            border-radius: 20px;
-            background: var(--accent-soft);
-            border: 1px solid rgba(122, 75, 36, 0.12);
-        }
-
-        .footer {
-            margin-top: 18px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.94rem;
-        }
-
-        @media (max-width: 720px) {
-            .hero,
-            .content {
-                padding-left: 22px;
-                padding-right: 22px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./legal.css">
 </head>
 <body>
-    <main>
-        <article class="card">
-            <header class="hero">
-                <span class="eyebrow">QR Asistencia · Legal</span>
-                <h1>Política de Privacidad</h1>
-                <p>Esta Política de Privacidad explica cómo QR Asistencia recopila, usa, almacena y protege la información de sus usuarios. Este documento también sirve como referencia pública para la configuración y verificación del uso de APIs de Google.</p>
-                <nav aria-label="Navegación legal">
-                    <a href="./index.html">Inicio legal</a>
-                    <a href="./terminos.html">Términos del servicio</a>
-                </nav>
-            </header>
+    <main class="legal-shell">
+        <header class="legal-topbar fade-rise">
+            <a class="brand" href="./index.html">
+                <span class="brand-mark">QR</span>
+                <span class="brand-copy">
+                    <span class="brand-title">QR Asistencia</span>
+                    <span class="brand-subtitle">Centro legal público</span>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Navegación principal">
+                <a href="./index.html">Inicio</a>
+                <a class="active" href="./privacidad.html">Privacidad</a>
+                <a href="./terminos.html">Términos</a>
+            </nav>
+        </header>
 
-            <div class="content">
-                <section>
-                    <h2>1. Responsable del tratamiento</h2>
-                    <p>QR Asistencia es operada por AVS Ingeniería. Para consultas relacionadas con esta política, acceso a datos o solicitudes de eliminación, puede escribir a <a class="mail" href="mailto:jobarreras879@gmail.com">jobarreras879@gmail.com</a>.</p>
+        <section class="doc-hero fade-rise delay-1">
+            <div class="doc-hero-grid">
+                <div class="doc-hero-main">
+                    <span class="kicker">QR Asistencia · Documento legal</span>
+                    <h1>Política de Privacidad</h1>
+                    <p class="lede">Este documento describe cómo QR Asistencia recopila, utiliza, protege y conserva la información vinculada con el registro de asistencia. También sirve como referencia pública para la integración y verificación del uso de APIs de Google.</p>
+                    <div class="doc-actions">
+                        <a class="btn btn-primary" href="mailto:jobarreras879@gmail.com">Contactar responsable</a>
+                        <a class="btn btn-secondary" href="./terminos.html">Ver términos del servicio</a>
+                    </div>
+                </div>
+
+                <aside class="doc-meta-grid">
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Responsable</span>
+                        <strong>AVS Ingeniería</strong>
+                    </article>
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Integraciones</span>
+                        <strong>Google Sign-In, Google Sheets API y Supabase</strong>
+                    </article>
+                    <article class="mini-meta">
+                        <span class="mini-meta-label">Actualización</span>
+                        <strong>11 de abril de 2026</strong>
+                    </article>
+                </aside>
+            </div>
+        </section>
+
+        <div class="doc-layout">
+            <aside class="sidebar-card fade-rise delay-2">
+                <div>
+                    <h3>Resumen rápido</h3>
+                    <ul class="sidebar-list" style="margin-top: 16px;">
+                        <li>
+                            <strong>Qué se recopila</strong>
+                            Datos básicos de identidad y registros de asistencia.
+                        </li>
+                        <li>
+                            <strong>Para qué se usa</strong>
+                            Control operativo, administrativo y soporte interno.
+                        </li>
+                        <li>
+                            <strong>Cómo solicitar ayuda</strong>
+                            Mediante jobarreras879@gmail.com.
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Secciones</h3>
+                    <ul class="toc-list" style="margin-top: 16px;">
+                        <li><a href="#responsable">1. Responsable</a></li>
+                        <li><a href="#datos">2. Datos recopilados</a></li>
+                        <li><a href="#google">3. Uso de servicios de Google</a></li>
+                        <li><a href="#finalidad">4. Finalidad</a></li>
+                        <li><a href="#almacenamiento">5. Almacenamiento y compartición</a></li>
+                        <li><a href="#retencion">6. Conservación</a></li>
+                        <li><a href="#seguridad">7. Seguridad</a></li>
+                        <li><a href="#derechos">8. Derechos del usuario</a></li>
+                        <li><a href="#cambios">9. Cambios</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <article class="doc-content">
+                <section class="section-card fade-rise delay-2" id="responsable">
+                    <span class="section-number">1. Responsable del tratamiento</span>
+                    <h2>Identidad y canal de contacto</h2>
+                    <p>QR Asistencia es operada por AVS Ingeniería. Para consultas relacionadas con esta política, solicitudes de acceso, corrección o eliminación de datos, puede escribir a <a href="mailto:jobarreras879@gmail.com" style="color: var(--accent-strong); font-weight: 700; text-decoration: none;">jobarreras879@gmail.com</a>.</p>
                 </section>
 
-                <section>
-                    <h2>2. Información que recopilamos</h2>
-                    <p>La aplicación recopila únicamente la información necesaria para gestionar asistencia y autenticar usuarios autorizados.</p>
+                <section class="section-card fade-rise delay-3" id="datos">
+                    <span class="section-number">2. Información que recopilamos</span>
+                    <h2>Datos mínimos para operar el servicio</h2>
+                    <p>La aplicación recopila únicamente la información necesaria para autenticar usuarios autorizados y registrar asistencia.</p>
                     <ul>
-                        <li>Datos de identificación básica, como nombre y correo electrónico, cuando el usuario inicia sesión.</li>
-                        <li>Datos operativos de asistencia, como fecha, hora, tipo de registro y proyecto o ubicación asociada.</li>
-                        <li>Datos técnicos mínimos requeridos para el funcionamiento, seguridad, auditoría y sincronización del servicio.</li>
+                        <li>Datos de identificación básica, como nombre y correo electrónico al iniciar sesión.</li>
+                        <li>Datos operativos de asistencia, como fecha, hora, tipo de registro y proyecto o ubicación vinculada.</li>
+                        <li>Datos técnicos mínimos necesarios para funcionamiento, auditoría, seguridad y sincronización.</li>
                     </ul>
                 </section>
 
-                <section>
-                    <h2>3. Uso de Google Sign-In y Google Sheets API</h2>
+                <section class="section-card fade-rise delay-4" id="google">
+                    <span class="section-number">3. Uso de Google Sign-In y Google Sheets API</span>
+                    <h2>Acceso limitado al propósito funcional</h2>
                     <p>QR Asistencia utiliza servicios de Google para autenticar al usuario y registrar la información de asistencia en hojas de cálculo administradas por la organización responsable.</p>
                     <ul>
-                        <li>El acceso a Google se solicita únicamente para identificar al usuario y para crear, consultar o actualizar los registros necesarios dentro de la hoja de cálculo configurada para el servicio.</li>
-                        <li>No utilizamos los datos obtenidos desde APIs de Google para publicidad, venta de datos ni elaboración de perfiles no relacionados con la funcionalidad principal de la aplicación.</li>
-                        <li>No accedemos intencionalmente a otros archivos del usuario fuera del alcance necesario para la operación autorizada.</li>
+                        <li>El acceso a Google se solicita únicamente para identificar al usuario y crear, consultar o actualizar registros necesarios dentro de la hoja configurada para el servicio.</li>
+                        <li>No se usan los datos obtenidos desde APIs de Google para publicidad, venta de información o elaboración de perfiles no relacionados con la función principal.</li>
+                        <li>No se accede intencionalmente a otros archivos del usuario fuera del alcance estrictamente necesario para la operación autorizada.</li>
                     </ul>
-                    <div class="notice">
-                        El uso y la transferencia de información recibida desde APIs de Google por QR Asistencia cumplen con la <a class="mail" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, incluidos los requisitos de uso limitado cuando resulten aplicables.
+                    <div class="callout">
+                        <strong>Referencia de cumplimiento:</strong> El uso y la transferencia de información recibida desde APIs de Google por QR Asistencia cumplen con la <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" style="color: var(--accent-strong); font-weight: 700; text-decoration: none;">Google API Services User Data Policy</a>, incluidos los requisitos de uso limitado cuando resulten aplicables.
                     </div>
                 </section>
 
-                <section>
-                    <h2>4. Finalidad del tratamiento</h2>
+                <section class="section-card" id="finalidad">
+                    <span class="section-number">4. Finalidad del tratamiento</span>
+                    <h2>Uso operativo y administrativo</h2>
                     <ul>
                         <li>Registrar asistencia laboral o institucional.</li>
-                        <li>Sincronizar registros con la infraestructura autorizada del servicio.</li>
-                        <li>Permitir auditoría administrativa, control operativo y soporte técnico.</li>
+                        <li>Sincronizar información con la infraestructura autorizada del servicio.</li>
+                        <li>Permitir auditoría administrativa, soporte interno y control operativo.</li>
                         <li>Prevenir uso no autorizado, fraude o errores en el registro.</li>
                     </ul>
                 </section>
 
-                <section>
-                    <h2>5. Compartición y almacenamiento de datos</h2>
-                    <p>Los datos se almacenan en la infraestructura utilizada por QR Asistencia y en los servicios integrados necesarios para operar el sistema, incluidos Google Sheets y Supabase cuando corresponda a la configuración del servicio.</p>
+                <section class="section-card" id="almacenamiento">
+                    <span class="section-number">5. Compartición y almacenamiento</span>
+                    <h2>Acceso restringido y sin venta de datos</h2>
+                    <p>Los datos se almacenan en la infraestructura utilizada por QR Asistencia y en los servicios integrados necesarios para operar el sistema, incluidos Google Sheets y Supabase cuando corresponda a la configuración activa del servicio.</p>
                     <ul>
-                        <li>No vendemos datos personales a terceros.</li>
-                        <li>No compartimos información con terceros ajenos a la operación normal del servicio, salvo obligación legal o requerimiento técnico indispensable.</li>
-                        <li>El acceso a los registros queda limitado a personal autorizado o administradores designados.</li>
+                        <li>No se venden datos personales a terceros.</li>
+                        <li>No se comparte información con terceros ajenos a la operación normal del servicio, salvo obligación legal o necesidad técnica indispensable.</li>
+                        <li>El acceso a registros queda limitado a personal autorizado o administradores designados.</li>
                     </ul>
                 </section>
 
-                <section>
-                    <h2>6. Conservación y eliminación</h2>
-                    <p>La información se conserva durante el tiempo necesario para cumplir con fines operativos, administrativos, contractuales o legales. Si desea solicitar corrección o eliminación de sus datos, puede contactar al responsable del servicio mediante el correo indicado en esta página.</p>
+                <section class="section-card" id="retencion">
+                    <span class="section-number">6. Conservación y eliminación</span>
+                    <h2>Retención razonable según la operación</h2>
+                    <p>La información se conserva durante el tiempo necesario para cumplir fines operativos, administrativos, contractuales o legales. Las solicitudes de corrección o eliminación pueden realizarse a través del canal de contacto indicado en esta página.</p>
                 </section>
 
-                <section>
-                    <h2>7. Seguridad</h2>
-                    <p>Aplicamos medidas razonables de seguridad para proteger la información contra acceso no autorizado, alteración, pérdida o divulgación indebida. Estas medidas incluyen controles de autenticación, cifrado en tránsito y restricción de acceso según roles.</p>
+                <section class="section-card" id="seguridad">
+                    <span class="section-number">7. Seguridad</span>
+                    <h2>Protección razonable del acceso y la integridad</h2>
+                    <p>Se aplican medidas razonables para proteger la información contra acceso no autorizado, alteración, pérdida o divulgación indebida. Estas medidas incluyen autenticación, cifrado en tránsito y restricciones de acceso según roles.</p>
                 </section>
 
-                <section>
-                    <h2>8. Derechos del usuario</h2>
-                    <p>El usuario puede solicitar información sobre sus datos, corrección de información inexacta, revocación de permisos cuando aplique y eliminación de datos, sujeto a las obligaciones administrativas o legales que correspondan.</p>
+                <section class="section-card" id="derechos">
+                    <span class="section-number">8. Derechos del usuario</span>
+                    <h2>Consulta, corrección y revocación cuando proceda</h2>
+                    <p>El usuario puede solicitar información sobre sus datos, corrección de información inexacta, revocación de permisos cuando aplique y eliminación de datos, sujeto a las obligaciones administrativas o legales correspondientes.</p>
                 </section>
 
-                <section>
-                    <h2>9. Cambios a esta política</h2>
-                    <p>Podemos actualizar esta política para reflejar cambios legales, operativos o técnicos. La versión publicada en esta página será la versión vigente.</p>
+                <section class="section-card" id="cambios">
+                    <span class="section-number">9. Cambios a esta política</span>
+                    <h2>Vigencia de la versión publicada</h2>
+                    <p>Esta política puede actualizarse para reflejar cambios legales, operativos o técnicos. La versión publicada en esta URL será la versión vigente para revisión pública.</p>
                 </section>
-            </div>
-        </article>
-
-        <div class="footer">
-            Ultima actualización: 11 de abril de 2026
+            </article>
         </div>
+
+        <footer class="legal-footer">
+            <span>Política pública de QR Asistencia</span>
+            <a href="./terminos.html">Ir a términos del servicio</a>
+        </footer>
     </main>
 </body>
 </html>
