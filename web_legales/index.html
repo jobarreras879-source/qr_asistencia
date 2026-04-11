@@ -3,34 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY" />
-    <title>AVS Ingeniería - Control de Asistencia</title>
+    <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY">
+    <meta name="description" content="Documentos legales y descripción pública de QR Asistencia para Google Cloud y usuarios de la aplicación.">
+    <title>QR Asistencia | Información Legal</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .footer { margin-top: 50px; font-size: 0.9em; color: #7f8c8d; text-align: center; }
-        a { color: #3498db; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        :root {
+            --bg: #f4efe7;
+            --surface: rgba(255, 252, 247, 0.92);
+            --surface-strong: #fffaf2;
+            --text: #1e1a16;
+            --muted: #65584f;
+            --line: rgba(61, 47, 35, 0.12);
+            --accent: #99663a;
+            --accent-deep: #6f431f;
+            --shadow: 0 24px 70px rgba(58, 40, 25, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(184, 135, 90, 0.2), transparent 28%),
+                radial-gradient(circle at right center, rgba(111, 67, 31, 0.12), transparent 26%),
+                linear-gradient(180deg, #f8f2ea 0%, var(--bg) 100%);
+            min-height: 100vh;
+        }
+
+        .shell {
+            width: min(1100px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 40px 0 56px;
+        }
+
+        .hero,
+        .panel {
+            background: var(--surface);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            border-radius: 28px;
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 1px solid rgba(153, 102, 58, 0.15);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(153, 102, 58, 0.25);
+            color: var(--accent-deep);
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(255, 250, 242, 0.88);
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.05;
+        }
+
+        h1 {
+            margin-top: 18px;
+            font-size: clamp(2.4rem, 5vw, 4.5rem);
+            max-width: 11ch;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.75;
+            font-size: 1.03rem;
+        }
+
+        .hero-copy {
+            max-width: 720px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .link-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .cta,
+        .link-card a {
+            text-decoration: none;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .cta:hover,
+        .cta:focus-visible,
+        .link-card:hover,
+        .link-card:focus-within {
+            transform: translateY(-2px);
+        }
+
+        .cta.primary {
+            background: var(--accent-deep);
+            color: #fff9f1;
+        }
+
+        .cta.secondary {
+            background: rgba(255, 250, 242, 0.82);
+            color: var(--accent-deep);
+            border-color: rgba(153, 102, 58, 0.26);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .panel {
+            border-radius: 24px;
+            padding: 28px;
+        }
+
+        .panel h2 {
+            font-size: 1.55rem;
+            margin-bottom: 14px;
+        }
+
+        .intro {
+            grid-column: span 7;
+        }
+
+        .meta {
+            grid-column: span 5;
+            background: var(--surface-strong);
+        }
+
+        .docs {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .link-card {
+            display: grid;
+            gap: 14px;
+            border-radius: 22px;
+            padding: 26px;
+            background: rgba(255, 250, 242, 0.92);
+            border: 1px solid var(--line);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .link-card strong {
+            font-size: 1.28rem;
+            color: var(--text);
+        }
+
+        .link-card span {
+            color: var(--accent-deep);
+            font-weight: 600;
+        }
+
+        .meta-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 14px;
+        }
+
+        .meta-list li {
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .meta-list li:first-child {
+            padding-top: 0;
+            border-top: 0;
+        }
+
+        .meta-list strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 860px) {
+            .intro,
+            .meta,
+            .docs {
+                grid-column: 1 / -1;
+            }
+
+            .docs {
+                grid-template-columns: 1fr;
+            }
+
+            .hero,
+            .panel,
+            .link-card {
+                padding: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>App: QR Asistencia</h1>
-        <hr>
-        <h3>Propósito de la aplicación:</h3>
-        <p><strong>QR Asistencia</strong> es una herramienta diseñada para el control y registro de asistencia laboral. La aplicación permite a los trabajadores marcar su entrada y salida mediante el escaneo de códigos QR, enviando los datos de asistencia directamente a una hoja de cálculo de Google Sheets para su gestión administrativa por parte de AVS Ingeniería.</p>
-        
-        <div style="background: #e1f5fe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3>Documentos Legales Obligatorios:</h3>
-            <ul>
-                <li><a href="https://jobarreras879-source.github.io/qr_asistencia/web_legales/privacidad.html" style="font-weight: bold; font-size: 1.2em;">POLÍTICA DE PRIVACIDAD</a></li>
-                <li><a href="https://jobarreras879-source.github.io/qr_asistencia/web_legales/terminos.html">Términos y Condiciones</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer">
-        © 2026 AVS Ingeniería. Todos los derechos reservados.
-    </div>
+    <main class="shell">
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">QR Asistencia · Información pública</span>
+                <h1>Documentación legal para el uso de la app</h1>
+                <p>QR Asistencia es una aplicación para registrar asistencia laboral mediante códigos QR. Esta sección pública reúne la política de privacidad, los términos del servicio y la información básica del tratamiento de datos utilizada para la integración con Google Cloud y Google Sheets API.</p>
+                <div class="link-row">
+                    <a class="cta primary" href="./privacidad.html">Ver política de privacidad</a>
+                    <a class="cta secondary" href="./terminos.html">Ver términos del servicio</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid" aria-label="Resumen legal">
+            <article class="panel intro">
+                <h2>Propósito de la aplicación</h2>
+                <p>La aplicación permite a empleados autorizados registrar entradas, salidas y eventos de asistencia asociados a un proyecto o centro de trabajo. La información capturada se utiliza únicamente con fines operativos y administrativos internos de control de asistencia.</p>
+            </article>
+
+            <aside class="panel meta">
+                <h2>Datos clave</h2>
+                <ul class="meta-list">
+                    <li>
+                        <strong>Responsable del servicio</strong>
+                        AVS Ingeniería
+                    </li>
+                    <li>
+                        <strong>Correo de contacto</strong>
+                        jobarreras879@gmail.com
+                    </li>
+                    <li>
+                        <strong>Integración principal</strong>
+                        Google Sign-In y Google Sheets API
+                    </li>
+                </ul>
+            </aside>
+
+            <section class="docs" aria-label="Documentos legales">
+                <a class="link-card" href="./privacidad.html">
+                    <strong>Política de privacidad</strong>
+                    <p>Describe qué datos se recaban, cómo se usan, qué acceso se solicita a Google y cómo puede solicitarse la eliminación o actualización de la información.</p>
+                    <span>Abrir documento</span>
+                </a>
+                <a class="link-card" href="./terminos.html">
+                    <strong>Términos del servicio</strong>
+                    <p>Define las reglas de uso de QR Asistencia, responsabilidades del usuario, restricciones de uso, disponibilidad del servicio y limitaciones aplicables.</p>
+                    <span>Abrir documento</span>
+                </a>
+            </section>
+        </section>
+
+        <footer>
+            Ultima actualización: 11 de abril de 2026
+        </footer>
+    </main>
 </body>
 </html>
