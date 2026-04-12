@@ -116,7 +116,7 @@ class AttendanceService {
 
       var query = _supabase
           .from('registros')
-          .select('fecha_hora')
+          .count(CountOption.exact)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
@@ -124,9 +124,9 @@ class AttendanceService {
         query = query.eq('usuario_logueado', normalizedUsername);
       }
 
-      final data = await query;
+      final int count = await query;
 
-      return List<Map<String, dynamic>>.from(data).length;
+      return count;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
       return 0;
@@ -143,15 +143,15 @@ class AttendanceService {
 
       final role = await AuthService.getCurrentUserRole();
 
-      var query = _supabase
-          .from('registros')
-          .select();
+      var query = _supabase.from('registros').select();
 
       if (role != 'ADMIN') {
         query = query.eq('usuario_logueado', username);
       }
 
-      final data = await query.order('fecha_hora', ascending: false).limit(limit);
+      final data = await query
+          .order('fecha_hora', ascending: false)
+          .limit(limit);
 
       return List<Map<String, dynamic>>.from(data);
     } catch (e, stack) {

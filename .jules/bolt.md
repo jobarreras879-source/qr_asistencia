@@ -1,0 +1,3 @@
+## 2024-04-12 - Supabase Client Count Optimization
+**Learning:** `supabase_flutter` provides `.count(CountOption.exact)` as a query builder option. When counting rows without needing the data payload, this instructs Postgres to perform the count server-side rather than fetching all rows using `.select()` and computing `List<Map<...>>.from(data).length` locally, which forces massive network bandwidth overhead. In v2+ of `supabase_flutter`, awaiting the `PostgrestFilterBuilder` directly returns a `Future<int>` count, changing both latency and client memory usage from O(N) to O(1).
+**Action:** Always prefer `.count(CountOption.exact)` over `.select()` when only an integer count is needed in Supabase queries.
