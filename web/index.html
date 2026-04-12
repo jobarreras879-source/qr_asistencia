@@ -2,53 +2,48 @@
 <html>
 
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="QR Asistencia de AVS Ingeniería: acceso seguro para control de asistencia, historial operativo y sincronización administrativa.">
-  <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY" />
+    content="QR Asistencia de AVS Ingeniería. Public application homepage with product information, Google data usage details, privacy policy, and terms of service.">
+  <meta name="google-site-verification" content="-0QPk5zMb6PAjap6JmrT9uRgapGlD3vXnIWxjk0B9JY">
   <meta name="theme-color" content="#031c74">
   <meta property="og:title" content="QR Asistencia | AVS Ingeniería">
   <meta property="og:description"
-    content="Sistema de asistencia QR con acceso seguro, historial operativo y sincronización administrativa.">
+    content="Attendance tracking with QR scanning, operational history, and optional Google Sheets synchronization.">
   <meta property="og:type" content="website">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="QR Asistencia">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
 
   <title>QR Asistencia | AVS Ingeniería</title>
-  <link rel="manifest" href="manifest.json">
 
   <style>
     :root {
-      color-scheme: light;
-      --bg: #06143f;
-      --bg-deep: #020918;
-      --panel: rgba(8, 24, 74, 0.86);
-      --panel-border: rgba(142, 176, 255, 0.18);
-      --text: #f5f8ff;
-      --muted: #a8b6df;
-      --accent: #45c3ff;
-      --accent-strong: #89e0ff;
+      color-scheme: dark;
+      --bg-top: #071537;
+      --bg-bottom: #030916;
+      --panel: rgba(8, 20, 58, 0.84);
+      --panel-strong: rgba(8, 20, 58, 0.96);
+      --border: rgba(144, 186, 255, 0.16);
+      --text: #f4f7ff;
+      --muted: #a7b8df;
+      --muted-strong: #cad7f4;
+      --accent: #51c8ff;
+      --accent-strong: #8ee6ff;
+      --success: #8ff0c2;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --content-width: 1120px;
     }
 
     * {
@@ -60,9 +55,10 @@
       margin: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top left, rgba(55, 126, 255, 0.28), transparent 28%),
-        radial-gradient(circle at right center, rgba(69, 195, 255, 0.18), transparent 24%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+        radial-gradient(circle at top left, rgba(64, 136, 255, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(81, 200, 255, 0.16), transparent 20%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color: var(--text);
       font-family: "Segoe UI", system-ui, sans-serif;
     }
 
@@ -74,87 +70,392 @@
       background-image:
         linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.38), transparent 82%);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 80%);
     }
 
-    .compliance-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10001;
-      display: flex;
-      justify-content: center;
-      padding: 14px 16px;
-      pointer-events: none;
+    a {
+      color: inherit;
     }
 
-    .compliance-inner {
-      width: min(100%, 1040px);
+    .site-shell {
+      position: relative;
+      z-index: 1;
+      width: min(calc(100% - 32px), var(--content-width));
+      margin: 0 auto;
+      padding: 22px 0 72px;
+    }
+
+    .site-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 14px 18px;
+      gap: 20px;
+      padding: 16px 18px;
+      margin-bottom: 28px;
+      border-radius: 22px;
+      background: rgba(3, 12, 34, 0.66);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
       border-radius: 18px;
-      background: rgba(3, 14, 43, 0.82);
-      border: 1px solid rgba(142, 176, 255, 0.16);
-      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(16px);
-      pointer-events: auto;
+      background: linear-gradient(135deg, rgba(81, 200, 255, 0.24), rgba(142, 230, 255, 0.16));
+      border: 1px solid rgba(142, 230, 255, 0.18);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
     }
 
-    .compliance-copy {
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .compliance-copy strong {
+    .brand-copy strong,
+    .brand-copy span {
       display: block;
-      margin-bottom: 2px;
-      font-size: 15px;
     }
 
-    .compliance-nav {
+    .brand-copy strong {
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-copy span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-links {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
 
-    .compliance-nav a {
+    .nav-links a,
+    .nav-links button,
+    .hero-actions a,
+    .hero-actions button,
+    .legal-cta a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 40px;
-      padding: 0 14px;
+      min-height: 44px;
+      padding: 0 16px;
       border-radius: 999px;
-      color: var(--accent-strong);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      border: 1px solid rgba(137, 224, 255, 0.18);
+      border: 1px solid rgba(142, 230, 255, 0.18);
+      color: var(--text);
       background: rgba(255, 255, 255, 0.04);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
     }
 
-    .compliance-nav a:hover,
-    .compliance-nav a:focus-visible {
-      text-decoration: underline;
+    .nav-links a:hover,
+    .nav-links button:hover,
+    .hero-actions a:hover,
+    .hero-actions button:hover,
+    .legal-cta a:hover,
+    .nav-links a:focus-visible,
+    .nav-links button:focus-visible,
+    .hero-actions a:focus-visible,
+    .hero-actions button:focus-visible,
+    .legal-cta a:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(142, 230, 255, 0.34);
+      background: rgba(255, 255, 255, 0.08);
       outline: none;
     }
 
-    #app-loader {
+    .nav-links .primary,
+    .hero-actions .primary,
+    .legal-cta .primary {
+      color: #041227;
+      background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+      border-color: transparent;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-panel,
+    .section-panel,
+    .legal-panel {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(142, 230, 255, 0.14);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(81, 200, 255, 0.12);
+    }
+
+    h1 {
+      margin: 18px 0 0;
+      max-width: 11ch;
+      font-size: clamp(2.8rem, 6vw, 4.9rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .hero-copy p {
+      margin: 18px 0 0;
+      max-width: 62ch;
+      color: var(--muted-strong);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .hero-points span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-meta article {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-meta strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .hero-meta span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .hero-panel {
+      padding: 28px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .hero-panel h2,
+    .section-title {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .summary-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .summary-card p,
+    .summary-card li,
+    .section-panel p,
+    .section-panel li,
+    .legal-panel p {
+      color: var(--muted-strong);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .summary-card ul,
+    .section-panel ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .grid-sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .section-panel,
+    .legal-panel {
+      padding: 28px;
+    }
+
+    .section-panel .section-title + p,
+    .legal-panel .section-title + p {
+      margin-top: 10px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .feature-grid article {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .feature-grid strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .data-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .data-list article {
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .data-list strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .legal-panel {
+      margin-top: 24px;
+      background: var(--panel-strong);
+    }
+
+    .legal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .legal-link {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+    }
+
+    .legal-link strong,
+    .legal-link span {
+      display: block;
+    }
+
+    .legal-link strong {
+      font-size: 15px;
+    }
+
+    .legal-link span {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .legal-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .app-loader {
       position: fixed;
       inset: 0;
       z-index: 9999;
-      display: grid;
+      display: none;
       place-items: center;
       padding: 24px;
       transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
-    body.app-ready #app-loader {
+    body.app-mode .app-loader {
+      display: grid;
+    }
+
+    body.app-ready .app-loader {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -166,81 +467,32 @@
       border-radius: 32px;
       background: var(--panel);
       color: var(--text);
-      border: 1px solid var(--panel-border);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
       backdrop-filter: blur(16px);
       text-align: center;
     }
 
-    .loader-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(137, 224, 255, 0.18);
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--accent-strong);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .loader-badge::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
-      box-shadow: 0 0 0 4px rgba(69, 195, 255, 0.12);
-    }
-
     .loader-logo {
-      width: 78px;
-      height: 78px;
+      width: 76px;
+      height: 76px;
       margin: 22px auto 18px;
       display: grid;
       place-items: center;
       border-radius: 24px;
-      background: linear-gradient(135deg, rgba(69, 195, 255, 0.22), rgba(137, 224, 255, 0.12));
-      border: 1px solid rgba(137, 224, 255, 0.18);
+      background: linear-gradient(135deg, rgba(81, 200, 255, 0.22), rgba(142, 230, 255, 0.12));
+      border: 1px solid rgba(142, 230, 255, 0.18);
       font-size: 28px;
       font-weight: 800;
       letter-spacing: 0.08em;
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 2.8rem);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-    }
-
-    .loader-text {
+    .loader-shell p {
       margin: 14px auto 0;
-      max-width: 42ch;
-      color: var(--muted);
+      max-width: 38ch;
+      color: var(--muted-strong);
       font-size: 15px;
       line-height: 1.7;
-    }
-
-    .loader-pills {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 22px;
-    }
-
-    .loader-pills span {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(137, 224, 255, 0.12);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
     }
 
     .loader-status {
@@ -250,7 +502,7 @@
       margin-top: 24px;
       color: var(--accent-strong);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .loader-dot {
@@ -258,7 +510,7 @@
       height: 10px;
       border-radius: 999px;
       background: var(--accent);
-      box-shadow: 0 0 0 8px rgba(69, 195, 255, 0.12);
+      box-shadow: 0 0 0 8px rgba(81, 200, 255, 0.12);
       animation: pulse 1.4s ease-in-out infinite;
     }
 
@@ -274,11 +526,13 @@
       color: var(--accent-strong);
       text-decoration: none;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .loader-links a:hover {
+    .loader-links a:hover,
+    .loader-links a:focus-visible {
       text-decoration: underline;
+      outline: none;
     }
 
     noscript {
@@ -286,7 +540,7 @@
       left: 16px;
       right: 16px;
       bottom: 16px;
-      z-index: 10000;
+      z-index: 10002;
       padding: 14px 16px;
       border-radius: 18px;
       background: rgba(255, 248, 240, 0.95);
@@ -301,7 +555,8 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
+      0%,
+      100% {
         transform: scale(1);
         opacity: 1;
       }
@@ -312,96 +567,294 @@
       }
     }
 
-    @media (max-width: 640px) {
-      .compliance-bar {
-        padding: 10px 10px 0;
+    @media (max-width: 980px) {
+      .hero,
+      .grid-sections,
+      .feature-grid,
+      .legal-grid {
+        grid-template-columns: 1fr;
       }
 
-      .compliance-inner {
+      .hero-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .site-nav {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
-        padding: 14px;
       }
 
-      .compliance-nav {
+      .nav-links {
         width: 100%;
       }
 
-      .compliance-nav a {
+      .nav-links a,
+      .nav-links button {
         flex: 1 1 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .site-shell {
+        width: min(calc(100% - 20px), var(--content-width));
+        padding-top: 12px;
+      }
+
+      .hero-copy,
+      .hero-panel,
+      .section-panel,
+      .legal-panel {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      h1 {
+        max-width: none;
+        font-size: clamp(2.4rem, 12vw, 3.4rem);
+      }
+
+      .hero-actions,
+      .legal-cta {
+        flex-direction: column;
+      }
+
+      .hero-actions a,
+      .hero-actions button,
+      .legal-cta a {
+        width: 100%;
       }
 
       .loader-shell {
         padding: 28px 22px;
         border-radius: 26px;
       }
-
-      .loader-logo {
-        width: 68px;
-        height: 68px;
-        margin-top: 18px;
-        font-size: 24px;
-      }
     }
   </style>
 </head>
 
 <body>
-  <header class="compliance-bar">
-    <div class="compliance-inner">
-      <div class="compliance-copy">
-        <strong>QR Asistencia</strong>
-        Public application page with direct access to the Privacy Policy and Terms of Service.
+  <main id="public-home" class="site-shell">
+    <nav class="site-nav" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">QR</div>
+        <div class="brand-copy">
+          <strong>QR Asistencia</strong>
+          <span>AVS Ingeniería</span>
+        </div>
       </div>
-      <nav class="compliance-nav" aria-label="Legal links">
+      <div class="nav-links">
         <a href="web_legales/privacidad.html">Privacy Policy</a>
         <a href="web_legales/terminos.html">Terms of Service</a>
-      </nav>
-    </div>
-  </header>
+        <a class="primary" href="?app=1">Open Secure App</a>
+      </div>
+    </nav>
 
-  <div id="app-loader" aria-live="polite">
+    <section class="hero" aria-labelledby="app-homepage-title">
+      <article class="hero-copy">
+        <div class="eyebrow">Public Application Homepage</div>
+        <h1 id="app-homepage-title">Attendance tracking with QR scanning and Google Sheets sync.</h1>
+        <p>
+          QR Asistencia is an internal attendance management application used to register worker attendance through QR
+          code scans. The application helps authorized staff record check-ins, review operational history, and
+          optionally synchronize attendance logs to a Google Spreadsheet selected by the user.
+        </p>
+        <div class="hero-points" aria-label="Core functions">
+          <span>QR-based attendance check-in</span>
+          <span>Operational history</span>
+          <span>Optional Google Sheets export</span>
+        </div>
+        <div class="hero-actions">
+          <a class="primary" href="?app=1">Open Secure App</a>
+          <a href="web_legales/privacidad.html">Review Privacy Policy</a>
+        </div>
+        <div class="hero-meta">
+          <article>
+            <strong>Who uses it</strong>
+            <span>Authorized internal users responsible for attendance administration and operational follow-up.</span>
+          </article>
+          <article>
+            <strong>What it stores</strong>
+            <span>Attendance records such as worker ID, name, project, date, time, logged-in user, and event type.</span>
+          </article>
+          <article>
+            <strong>Why Google access is requested</strong>
+            <span>To create or connect a Google Spreadsheet and append attendance records generated by the app.</span>
+          </article>
+        </div>
+      </article>
+
+      <aside class="hero-panel" aria-labelledby="verification-summary-title">
+        <h2 id="verification-summary-title">Verification Summary</h2>
+        <section class="summary-card">
+          <strong>Public information without login</strong>
+          <p>This page is accessible without requiring users to sign in to the application.</p>
+        </section>
+        <section class="summary-card">
+          <strong>Google user data purpose</strong>
+          <ul>
+            <li>Create a spreadsheet during setup when needed.</li>
+            <li>Connect a spreadsheet explicitly selected by the user.</li>
+            <li>Append attendance rows generated from QR scans.</li>
+          </ul>
+        </section>
+        <section class="summary-card">
+          <strong>Data minimization</strong>
+          <p>
+            The application does not use Google user data for advertising, profiling, selling data, or unrelated
+            services such as Gmail or Contacts.
+          </p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="grid-sections" aria-label="Application details">
+      <article class="section-panel">
+        <h2 class="section-title">App Functions</h2>
+        <p>
+          The application is designed for internal attendance workflows. It records attendance events, keeps an
+          auditable history, and supports administrative review of operational records.
+        </p>
+        <div class="feature-grid">
+          <article>
+            <strong>QR attendance flow</strong>
+            <p>Workers are identified through QR-based scanning to generate attendance events.</p>
+          </article>
+          <article>
+            <strong>History review</strong>
+            <p>Authorized users can inspect attendance history for operational control and follow-up.</p>
+          </article>
+          <article>
+            <strong>Sheets synchronization</strong>
+            <p>Attendance rows can be written to a Google Spreadsheet chosen by the authorized user.</p>
+          </article>
+        </div>
+      </article>
+
+      <article class="section-panel">
+        <h2 class="section-title">How Google Data Is Used</h2>
+        <p>
+          Google access is requested only when an authorized user wants to use Google Sheets as the export destination
+          for attendance records.
+        </p>
+        <div class="data-list">
+          <article>
+            <strong>Requested access</strong>
+            <p>Google Sign-In and Google Sheets access for spreadsheet setup, connection, and row creation.</p>
+          </article>
+          <article>
+            <strong>Operational use</strong>
+            <p>Write attendance information such as worker ID, name, project, date, time, logged-in user, and event.</p>
+          </article>
+          <article>
+            <strong>Scope of use</strong>
+            <p>The data is used only for attendance administration and internal reporting related to the app.</p>
+          </article>
+        </div>
+      </article>
+    </section>
+
+    <section class="legal-panel" aria-labelledby="legal-resources-title">
+      <h2 id="legal-resources-title" class="section-title">Legal and Transparency Resources</h2>
+      <p>
+        The documents below describe the application, its data handling practices, and the terms that apply to users
+        of QR Asistencia.
+      </p>
+      <div class="legal-grid">
+        <a class="legal-link" href="web_legales/privacidad.html">
+          <strong>Privacy Policy</strong>
+          <span>Explains what information is accessed, how it is used, and how users can contact the developer.</span>
+        </a>
+        <a class="legal-link" href="web_legales/terminos.html">
+          <strong>Terms of Service</strong>
+          <span>Describes the intended use of the application, access conditions, and user responsibilities.</span>
+        </a>
+      </div>
+      <div class="legal-cta">
+        <a href="web_legales/privacidad.html">Read Privacy Policy</a>
+        <a href="web_legales/terminos.html">Read Terms of Service</a>
+        <a class="primary" href="?app=1">Launch App</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="app-loader" class="app-loader" aria-live="polite" hidden>
     <div class="loader-shell">
-      <div class="loader-badge">AVS Ingeniería</div>
+      <div class="eyebrow">Secure Access</div>
       <div class="loader-logo">QR</div>
       <h1>QR Asistencia</h1>
-      <p class="loader-text">
-        Acceso seguro para control de asistencia, historial operativo y sincronización administrativa.
+      <p>
+        Loading the secured application experience. Public information remains available on the homepage and legal
+        pages.
       </p>
-      <div class="loader-pills">
-        <span>Marcación QR</span>
-        <span>Historial diario</span>
-        <span>Google Sheets</span>
-      </div>
       <div class="loader-status">
         <span class="loader-dot"></span>
-        Cargando aplicación...
+        Loading application...
       </div>
       <div class="loader-links">
-        <a href="web_legales/privacidad.html">Privacidad</a>
-        <a href="web_legales/terminos.html">Términos</a>
+        <a href="./">Back to public homepage</a>
+        <a href="web_legales/privacidad.html">Privacy Policy</a>
+        <a href="web_legales/terminos.html">Terms of Service</a>
       </div>
     </div>
   </div>
 
   <noscript>
-    Esta aplicación requiere JavaScript para ejecutarse. Puede consultar los documentos públicos en
-    <a href="web_legales/privacidad.html">Política de privacidad</a> y
-    <a href="web_legales/terminos.html">Términos del servicio</a>.
+    This public homepage is available without login. You can review the
+    <a href="web_legales/privacidad.html">Privacy Policy</a> and
+    <a href="web_legales/terminos.html">Terms of Service</a>.
   </noscript>
 
   <script>
-    window.addEventListener('flutter-first-frame', function () {
-      document.body.classList.add('app-ready');
-      window.setTimeout(function () {
-        var loader = document.getElementById('app-loader');
-        if (loader) loader.remove();
-      }, 450);
-    });
+    (function () {
+      var publicHome = document.getElementById('public-home');
+      var appLoader = document.getElementById('app-loader');
+      var params = new URLSearchParams(window.location.search);
+      var isAppMode = params.get('app') === '1';
+
+      function loadScript(src, async) {
+        return new Promise(function (resolve, reject) {
+          var script = document.createElement('script');
+          script.src = src;
+          script.async = !!async;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+
+      window.addEventListener('flutter-first-frame', function () {
+        document.body.classList.add('app-ready');
+        window.setTimeout(function () {
+          if (appLoader) {
+            appLoader.remove();
+          }
+        }, 450);
+      });
+
+      if (!isAppMode) {
+        if (appLoader) {
+          appLoader.hidden = true;
+        }
+        return;
+      }
+
+      document.body.classList.add('app-mode');
+      if (publicHome) {
+        publicHome.hidden = true;
+      }
+      if (appLoader) {
+        appLoader.hidden = false;
+      }
+
+      loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js', false)
+        .then(function () {
+          return loadScript('flutter_bootstrap.js', true);
+        })
+        .catch(function (error) {
+          console.error('Failed to load application bootstrap.', error);
+        });
+    })();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-  <script src="flutter_bootstrap.js" async></script>
 </body>
 
 </html>
