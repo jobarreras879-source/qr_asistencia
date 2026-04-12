@@ -78,6 +78,72 @@
       mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.38), transparent 82%);
     }
 
+    .compliance-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10001;
+      display: flex;
+      justify-content: center;
+      padding: 14px 16px;
+      pointer-events: none;
+    }
+
+    .compliance-inner {
+      width: min(100%, 1040px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(3, 14, 43, 0.82);
+      border: 1px solid rgba(142, 176, 255, 0.16);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .compliance-copy {
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .compliance-copy strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 15px;
+    }
+
+    .compliance-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .compliance-nav a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: var(--accent-strong);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid rgba(137, 224, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .compliance-nav a:hover,
+    .compliance-nav a:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+
     #app-loader {
       position: fixed;
       inset: 0;
@@ -247,6 +313,25 @@
     }
 
     @media (max-width: 640px) {
+      .compliance-bar {
+        padding: 10px 10px 0;
+      }
+
+      .compliance-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .compliance-nav {
+        width: 100%;
+      }
+
+      .compliance-nav a {
+        flex: 1 1 100%;
+      }
+
       .loader-shell {
         padding: 28px 22px;
         border-radius: 26px;
@@ -263,6 +348,19 @@
 </head>
 
 <body>
+  <header class="compliance-bar">
+    <div class="compliance-inner">
+      <div class="compliance-copy">
+        <strong>QR Asistencia</strong>
+        Public application page with direct access to the Privacy Policy and Terms of Service.
+      </div>
+      <nav class="compliance-nav" aria-label="Legal links">
+        <a href="web_legales/privacidad.html">Privacy Policy</a>
+        <a href="web_legales/terminos.html">Terms of Service</a>
+      </nav>
+    </div>
+  </header>
+
   <div id="app-loader" aria-live="polite">
     <div class="loader-shell">
       <div class="loader-badge">AVS Ingeniería</div>
