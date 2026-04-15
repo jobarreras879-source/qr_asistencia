@@ -1,0 +1,3 @@
+## 2024-04-15 - Replace select with count for counting Supabase rows
+**Learning:** Querying Supabase just to count the number of matching rows using `.select('...')` followed by converting to a Dart list and getting `.length` is inefficient, as it downloads all matching records to the client over the network and incurs JSON parsing and memory allocation overhead.
+**Action:** Use `.count(CountOption.exact)` instead of `.select()` when only the number of matching rows is needed, as `supabase_flutter` v2+ directly returns a `Future<int>` for `.count(CountOption.exact)`, executing the count operation entirely on the database side.
