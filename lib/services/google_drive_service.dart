@@ -15,7 +15,9 @@ class GoogleDriveService {
     serverClientId: kIsWeb ? null : AppConfig.googleServerClientId,
     scopes: [
       drive.DriveApi.driveFileScope,
-      drive.DriveApi.driveMetadataReadonlyScope, // Necesario para buscar archivos existentes
+      drive
+          .DriveApi
+          .driveMetadataReadonlyScope, // Necesario para buscar archivos existentes
       sheets.SheetsApi.spreadsheetsScope,
     ],
   );
@@ -237,7 +239,8 @@ class GoogleDriveService {
         supportsAllDrives: true,
         includeItemsFromAllDrives: true,
         $fields: 'files(id, name, createdTime, webViewLink)',
-        orderBy: 'name asc', // Cambiado a orden alfabético para facilitar la búsqueda visual
+        orderBy:
+            'name asc', // Cambiado a orden alfabético para facilitar la búsqueda visual
       );
 
       if (fileList.files == null) return [];
@@ -389,10 +392,10 @@ class GoogleDriveService {
     // Almacenar globalmente
     try {
       await _ensureGlobalConfigExists();
-      await _supabase.from('configuracion_global').update({
-        'drive_folder_id': id,
-        'drive_folder_name': name,
-      }).eq('id', 1);
+      await _supabase
+          .from('configuracion_global')
+          .update({'drive_folder_id': id, 'drive_folder_name': name})
+          .eq('id', 1);
     } catch (e) {
       _logError('setDriveFolder_Supabase', e);
     }
@@ -407,10 +410,10 @@ class GoogleDriveService {
     // Borramos globalmente si se solicita (por un admin)
     if (global) {
       try {
-        await _supabase.from('configuracion_global').update({
-          'drive_folder_id': null,
-          'drive_folder_name': null,
-        }).eq('id', 1);
+        await _supabase
+            .from('configuracion_global')
+            .update({'drive_folder_id': null, 'drive_folder_name': null})
+            .eq('id', 1);
       } catch (e) {
         _logError('clearDriveFolder_Supabase', e);
       }
@@ -466,16 +469,22 @@ class GoogleDriveService {
     await prefs.setString('sheets_spreadsheet_id', id);
     await prefs.setString('sheets_spreadsheet_name', name);
     await prefs.setString('sheets_spreadsheet_url', url);
-    await prefs.setBool('sheets_auto_sync', true); // Auto-sync on by default when linked
+    await prefs.setBool(
+      'sheets_auto_sync',
+      true,
+    ); // Auto-sync on by default when linked
 
     try {
       await _ensureGlobalConfigExists();
-      await _supabase.from('configuracion_global').update({
-        'sheets_spreadsheet_id': id,
-        'sheets_spreadsheet_name': name,
-        'sheets_spreadsheet_url': url,
-        'sheets_auto_sync': true,
-      }).eq('id', 1);
+      await _supabase
+          .from('configuracion_global')
+          .update({
+            'sheets_spreadsheet_id': id,
+            'sheets_spreadsheet_name': name,
+            'sheets_spreadsheet_url': url,
+            'sheets_auto_sync': true,
+          })
+          .eq('id', 1);
     } catch (e) {
       _logError('setSheetsInfo_Supabase', e);
     }
@@ -490,12 +499,15 @@ class GoogleDriveService {
 
     if (global) {
       try {
-        await _supabase.from('configuracion_global').update({
-          'sheets_spreadsheet_id': null,
-          'sheets_spreadsheet_name': null,
-          'sheets_spreadsheet_url': null,
-          'sheets_auto_sync': false,
-        }).eq('id', 1);
+        await _supabase
+            .from('configuracion_global')
+            .update({
+              'sheets_spreadsheet_id': null,
+              'sheets_spreadsheet_name': null,
+              'sheets_spreadsheet_url': null,
+              'sheets_auto_sync': false,
+            })
+            .eq('id', 1);
       } catch (e) {
         _logError('clearSheetsInfo_Supabase', e);
       }
@@ -514,16 +526,24 @@ class GoogleDriveService {
         if (id.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('sheets_spreadsheet_id', id);
-          await prefs.setString('sheets_spreadsheet_name', result['sheets_spreadsheet_name']?.toString() ?? 'Hoja');
-          await prefs.setString('sheets_spreadsheet_url', result['sheets_spreadsheet_url']?.toString() ?? '');
-          
+          await prefs.setString(
+            'sheets_spreadsheet_name',
+            result['sheets_spreadsheet_name']?.toString() ?? 'Hoja',
+          );
+          await prefs.setString(
+            'sheets_spreadsheet_url',
+            result['sheets_spreadsheet_url']?.toString() ?? '',
+          );
+
           final syncDb = result['sheets_auto_sync'];
           final autoSync = syncDb != null ? (syncDb as bool) : false;
           await prefs.setBool('sheets_auto_sync', autoSync);
-          
+
           return {
             'id': id,
-            'name': result['sheets_spreadsheet_name']?.toString() ?? 'Hoja de Asistencia',
+            'name':
+                result['sheets_spreadsheet_name']?.toString() ??
+                'Hoja de Asistencia',
             'url': result['sheets_spreadsheet_url']?.toString() ?? '',
             'autoSync': autoSync,
           };
@@ -539,7 +559,8 @@ class GoogleDriveService {
 
     return {
       'id': id,
-      'name': prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
+      'name':
+          prefs.getString('sheets_spreadsheet_name') ?? 'Hoja de Asistencia',
       'url': prefs.getString('sheets_spreadsheet_url') ?? '',
       'autoSync': prefs.getBool('sheets_auto_sync') ?? false,
     };
@@ -551,9 +572,10 @@ class GoogleDriveService {
 
     try {
       await _ensureGlobalConfigExists();
-      await _supabase.from('configuracion_global').update({
-        'sheets_auto_sync': value,
-      }).eq('id', 1);
+      await _supabase
+          .from('configuracion_global')
+          .update({'sheets_auto_sync': value})
+          .eq('id', 1);
     } catch (e) {
       _logError('setAutoSync_Supabase', e);
     }
