@@ -414,7 +414,10 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.link_off_rounded, color: AppTheme.error),
+                  icon: const Icon(
+                    Icons.link_off_rounded,
+                    color: AppTheme.error,
+                  ),
                   onPressed: _confirmUnlinkDrive,
                   tooltip: 'Desvincular globalmente',
                 ),
@@ -537,6 +540,7 @@ class _DriveConfigScreenState extends State<DriveConfigScreen> {
       ],
     );
   }
+
   Future<void> _confirmUnlinkDrive() async {
     final confirmed = await showDialog<bool>(
       context: context,

@@ -1,0 +1,12 @@
+<<<<<<< SEARCH
+      if (password.length < 6)
+        return 'La contraseña debe tener mínimo 6 caracteres.';
+
+      await _supabase.from(_tableName).insert({
+=======
+      if (password.length < 6) {
+        return 'La contraseña debe tener mínimo 6 caracteres.';
+      }
+
+      await _supabase.from(_tableName).insert({
+>>>>>>> REPLACE

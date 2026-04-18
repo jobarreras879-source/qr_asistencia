@@ -95,7 +95,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
         return StatefulBuilder(
           builder: (context, setStateBuilder) {
             // Load initial search results if not loaded
-            if (isSearching && searchResults.isEmpty && searchController.text.isEmpty) {
+            if (isSearching &&
+                searchResults.isEmpty &&
+                searchController.text.isEmpty) {
               GoogleDriveService.searchSpreadsheets('').then((results) {
                 if (context.mounted) {
                   setStateBuilder(() {
@@ -171,8 +173,10 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                                     ),
                                     onChanged: (value) async {
                                       setStateBuilder(() => isSearching = true);
-                                      final results = await GoogleDriveService
-                                          .searchSpreadsheets(value);
+                                      final results =
+                                          await GoogleDriveService.searchSpreadsheets(
+                                            value,
+                                          );
                                       if (context.mounted) {
                                         setStateBuilder(() {
                                           searchResults = results;
@@ -194,43 +198,45 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                                             ),
                                           )
                                         : searchResults.isEmpty
-                                            ? Center(
-                                                child: Text(
-                                                  'No se encontraron hojas de cálculo',
-                                                  style: GoogleFonts.inter(
-                                                    color: AppTheme.textSecondary,
-                                                  ),
+                                        ? Center(
+                                            child: Text(
+                                              'No se encontraron hojas de cálculo',
+                                              style: GoogleFonts.inter(
+                                                color: AppTheme.textSecondary,
+                                              ),
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            itemCount: searchResults.length,
+                                            itemBuilder: (context, index) {
+                                              final sheet =
+                                                  searchResults[index];
+                                              return ListTile(
+                                                leading: const Icon(
+                                                  Icons.table_chart_rounded,
+                                                  color: AppTheme.success,
                                                 ),
-                                              )
-                                            : ListView.builder(
-                                                itemCount: searchResults.length,
-                                                itemBuilder: (context, index) {
-                                                  final sheet = searchResults[index];
-                                                  return ListTile(
-                                                    leading: const Icon(
-                                                      Icons.table_chart_rounded,
-                                                      color: AppTheme.success,
-                                                    ),
-                                                    title: Text(
-                                                      sheet['name'] ?? '',
-                                                      style: GoogleFonts.inter(
-                                                        color: AppTheme.textPrimary,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                    onTap: () {
-                                                      Navigator.pop(context);
-                                                      _doLinkSpreadsheet(
-                                                        sheet['id']!,
-                                                        sheet['name']!,
-                                                        sheet['link']!,
-                                                      );
-                                                    },
+                                                title: Text(
+                                                  sheet['name'] ?? '',
+                                                  style: GoogleFonts.inter(
+                                                    color: AppTheme.textPrimary,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  _doLinkSpreadsheet(
+                                                    sheet['id']!,
+                                                    sheet['name']!,
+                                                    sheet['link']!,
                                                   );
                                                 },
-                                              ),
+                                              );
+                                            },
+                                          ),
                                   ),
                                 ],
                               ),
@@ -270,7 +276,10 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                                           createController.text.trim(),
                                         );
                                       },
-                                      icon: const Icon(Icons.check_rounded, size: 20),
+                                      icon: const Icon(
+                                        Icons.check_rounded,
+                                        size: 20,
+                                      ),
                                       label: Text(
                                         'Crear y Vincular',
                                         style: GoogleFonts.inter(
@@ -284,7 +293,9 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                                           vertical: 14,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -820,7 +831,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                     await GoogleDriveService.setAutoSync(val);
                     setState(() => _autoSync = val);
                   },
-                  activeColor: AppTheme.success,
+                  activeThumbColor: AppTheme.success,
                 ),
               ],
             ),
@@ -861,8 +872,11 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           Center(
             child: TextButton.icon(
               onPressed: _confirmUnlink,
-              icon: const Icon(Icons.link_off_rounded,
-                  color: AppTheme.error, size: 18),
+              icon: const Icon(
+                Icons.link_off_rounded,
+                color: AppTheme.error,
+                size: 18,
+              ),
               label: Text(
                 'Desvincular Hoja Globalmente',
                 style: GoogleFonts.inter(
