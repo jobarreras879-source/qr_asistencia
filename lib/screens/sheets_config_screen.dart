@@ -390,21 +390,10 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           .select()
           .order('fecha_hora', ascending: true);
 
-      int successCount = 0;
-      int errorCount = 0;
-
-      for (var reg in data) {
-        final success = await GoogleDriveService.appendAttendanceRow(
-          _sheetsInfo!['id'],
-          reg,
-        );
-
-        if (success) {
-          successCount++;
-        } else {
-          errorCount++;
-        }
-      }
+      final success = await GoogleDriveService.batchAppendAttendanceRows(
+        _sheetsInfo!['id'],
+        data,
+      );
 
       if (!mounted) return;
       setState(() => _isSyncing = false);
@@ -412,9 +401,11 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Sincronización: $successCount exitosos, $errorCount errores.',
+            success
+                ? 'Sincronización: ${data.length} registros sincronizados exitosamente.'
+                : 'Sincronización fallida al enviar los registros en lote.',
           ),
-          backgroundColor: errorCount > 0 ? AppTheme.warning : AppTheme.success,
+          backgroundColor: success ? AppTheme.success : AppTheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -820,7 +811,7 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
                     await GoogleDriveService.setAutoSync(val);
                     setState(() => _autoSync = val);
                   },
-                  activeColor: AppTheme.success,
+                  activeThumbColor: AppTheme.success,
                 ),
               ],
             ),
