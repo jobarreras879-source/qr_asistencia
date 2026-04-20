@@ -28,6 +28,13 @@ class AuthService {
   static String? _currentUsername;
   static String? _currentRole;
 
+  @visibleForTesting
+  static void setMockSession(String? userId, String? username, String? role) {
+    _currentUserId = userId;
+    _currentUsername = username;
+    _currentRole = role;
+  }
+
   // ─── Estado de sesión ────────────────────────────────────────────
 
   /// ID del usuario actualmente autenticado en la sesión local.
