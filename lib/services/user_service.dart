@@ -6,7 +6,10 @@ import 'password_hash_service.dart';
 
 /// Servicio simple para CRUD de usuarios sobre una tabla propia.
 class UserService {
-  static final _supabase = Supabase.instance.client;
+  static SupabaseClient _supabase = Supabase.instance.client;
+
+  @visibleForTesting
+  static set supabaseClient(SupabaseClient client) => _supabase = client;
   static const _tableName = 'usuarios';
   static const _validRoles = {'ADMIN', 'USUARIO'};
 
