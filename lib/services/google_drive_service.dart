@@ -286,6 +286,35 @@ class GoogleDriveService {
     }
   }
 
+  static String _escapeFormula(String value) {
+    if (value.startsWith('=') || value.startsWith('+') || value.startsWith('-') || value.startsWith('@')) {
+      return "'$value";
+    }
+    return value;
+  }
+
+  static List<Object?> _mapRowDataToValueList(Map<String, dynamic> rowData) {
+    final dpi = _escapeFormula((rowData['DPI'] ?? '').toString());
+    final nombre = _escapeFormula((rowData['nombre'] ?? '').toString());
+    final proyecto = _escapeFormula((rowData['proyecto'] ?? '').toString());
+    final tipo = _escapeFormula((rowData['tipo'] ?? '').toString());
+    final fechaHora = (rowData['fecha_hora'] ?? '').toString();
+    final usuario = _escapeFormula((rowData['usuario_logueado'] ?? '').toString());
+
+    // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
+    String fecha = '';
+    String hora = '';
+    if (fechaHora.contains(' ')) {
+      final parts = fechaHora.split(' ');
+      fecha = parts[0];
+      hora = parts[1];
+    } else {
+      fecha = fechaHora;
+    }
+
+    return <Object?>[dpi, nombre, proyecto, fecha, hora, usuario, tipo];
+  }
+
   /// Agrega una fila de asistencia
   static Future<bool> appendAttendanceRow(
     String spreadsheetId,
@@ -301,28 +330,10 @@ class GoogleDriveService {
 
       final sheetsApi = sheets.SheetsApi(client);
 
-      final dpi = rowData['DPI'] ?? '';
-      final nombre = rowData['nombre'] ?? '';
-      final proyecto = rowData['proyecto'] ?? '';
-      final tipo = rowData['tipo'] ?? '';
-      final fechaHora = rowData['fecha_hora'] ?? '';
-      final usuario = rowData['usuario_logueado'] ?? '';
-
-      // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
-      String fecha = '';
-      String hora = '';
-      if (fechaHora.contains(' ')) {
-        final parts = fechaHora.split(' ');
-        fecha = parts[0];
-        hora = parts[1];
-      } else {
-        fecha = fechaHora;
-      }
+      final valueList = _mapRowDataToValueList(rowData);
 
       final valueRange = sheets.ValueRange()
-        ..values = [
-          [dpi, nombre, proyecto, fecha, hora, usuario, tipo],
-        ];
+        ..values = [valueList];
 
       await sheetsApi.spreadsheets.values.append(
         valueRange,
@@ -335,6 +346,41 @@ class GoogleDriveService {
       return true;
     } catch (error, stack) {
       _logError('appendAttendanceRow', error, stack);
+      return false;
+    }
+  }
+
+  /// Agrega multiples filas de asistencia en batch
+  static Future<bool> batchAppendAttendanceRows(
+    String spreadsheetId,
+    List<Map<String, dynamic>> rowsData,
+  ) async {
+    if (rowsData.isEmpty) return true;
+
+    try {
+      final account = await signInSilently() ?? await signIn();
+      if (account == null) return false;
+
+      final client = await _googleSignIn.authenticatedClient();
+      if (client == null) return false;
+
+      final sheetsApi = sheets.SheetsApi(client);
+
+      final values = rowsData.map((row) => _mapRowDataToValueList(row)).toList();
+
+      final valueRange = sheets.ValueRange()..values = values;
+
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        'A1:G', // Rango para buscar la última fila escrita
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+      );
+
+      return true;
+    } catch (error, stack) {
+      _logError('batchAppendAttendanceRows', error, stack);
       return false;
     }
   }
