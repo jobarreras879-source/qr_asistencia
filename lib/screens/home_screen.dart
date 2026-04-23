@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
       hasInternet = result.isNotEmpty && result.first.rawAddress.isNotEmpty;
     } on SocketException {
       hasInternet = false;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Internet check error: $e');
       hasInternet = false;
     }
 
