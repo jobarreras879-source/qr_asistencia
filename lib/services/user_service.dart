@@ -56,9 +56,12 @@ class UserService {
   ) async {
     try {
       final normalizedUsername = PasswordHashService.normalizeUsername(usuario);
-      if (normalizedUsername.isEmpty) return 'El usuario es obligatorio.';
-      if (password.length < 6)
+      if (normalizedUsername.isEmpty) {
+        return 'El usuario es obligatorio.';
+      }
+      if (password.length < 6) {
         return 'La contraseña debe tener mínimo 6 caracteres.';
+      }
 
       await _supabase.from(_tableName).insert({
         'usuario': normalizedUsername,
