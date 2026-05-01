@@ -114,9 +114,11 @@ class AttendanceService {
       final startOfDay = DateTime(now.year, now.month, now.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
+      // Performance optimization: use .count() instead of .select() to avoid
+      // downloading all records just to get the length.
       var query = _supabase
           .from('registros')
-          .select('fecha_hora')
+          .count(CountOption.exact)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
@@ -126,7 +128,7 @@ class AttendanceService {
 
       final data = await query;
 
-      return List<Map<String, dynamic>>.from(data).length;
+      return data;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
       return 0;

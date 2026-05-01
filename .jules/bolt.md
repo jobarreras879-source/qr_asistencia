@@ -1,0 +1,3 @@
+## 2024-05-01 - Supabase Count Performance Issue
+**Learning:** Querying Supabase just to get the number of matching rows using `.select()` downloads all matching records to the client and parses them into Dart structures. For `attendance_service.dart`, `getTodayCount` was downloading all records just to call `.length`.
+**Action:** Use `.count(CountOption.exact)` instead of `.select()` when only the row count is needed. This avoids data transfer and parsing overhead. In `supabase_flutter` v2+, the `.count()` method returns a `PostgrestFilterBuilder<int>` which can be awaited directly as a `Future<int>`.
