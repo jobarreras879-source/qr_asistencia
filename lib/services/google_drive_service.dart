@@ -278,11 +278,44 @@ class GoogleDriveService {
     }
   }
 
+  /// Convierte los datos de una fila en una lista de objetos para Sheets
+  static List<Object?> _mapRowDataToValueList(Map<String, dynamic> rowData) {
+    final dpi = rowData['DPI'] ?? '';
+    final nombre = rowData['nombre'] ?? '';
+    final proyecto = rowData['proyecto'] ?? '';
+    final tipo = rowData['tipo'] ?? '';
+    final fechaHora = rowData['fecha_hora'] ?? '';
+    final usuario = rowData['usuario_logueado'] ?? '';
+
+    // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
+    String fecha = '';
+    String hora = '';
+    if (fechaHora is String && fechaHora.contains(' ')) {
+      final parts = fechaHora.split(' ');
+      fecha = parts[0];
+      hora = parts[1];
+    } else {
+      fecha = fechaHora.toString();
+    }
+
+    return [dpi, nombre, proyecto, fecha, hora, usuario, tipo];
+  }
+
   /// Agrega una fila de asistencia
   static Future<bool> appendAttendanceRow(
     String spreadsheetId,
     Map<String, dynamic> rowData,
   ) async {
+    return batchAppendAttendanceRows(spreadsheetId, [rowData]);
+  }
+
+  /// Agrega múltiples filas de asistencia en una sola operación de red
+  static Future<bool> batchAppendAttendanceRows(
+    String spreadsheetId,
+    List<Map<String, dynamic>> rowsData,
+  ) async {
+    if (rowsData.isEmpty) return true;
+
     try {
       // Intentar modo silencioso primero para operaciones background
       final account = await signInSilently() ?? await signIn();
@@ -293,28 +326,8 @@ class GoogleDriveService {
 
       final sheetsApi = sheets.SheetsApi(client);
 
-      final dpi = rowData['DPI'] ?? '';
-      final nombre = rowData['nombre'] ?? '';
-      final proyecto = rowData['proyecto'] ?? '';
-      final tipo = rowData['tipo'] ?? '';
-      final fechaHora = rowData['fecha_hora'] ?? '';
-      final usuario = rowData['usuario_logueado'] ?? '';
-
-      // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
-      String fecha = '';
-      String hora = '';
-      if (fechaHora.contains(' ')) {
-        final parts = fechaHora.split(' ');
-        fecha = parts[0];
-        hora = parts[1];
-      } else {
-        fecha = fechaHora;
-      }
-
       final valueRange = sheets.ValueRange()
-        ..values = [
-          [dpi, nombre, proyecto, fecha, hora, usuario, tipo],
-        ];
+        ..values = rowsData.map((row) => _mapRowDataToValueList(row)).toList();
 
       await sheetsApi.spreadsheets.values.append(
         valueRange,
@@ -326,7 +339,7 @@ class GoogleDriveService {
 
       return true;
     } catch (error, stack) {
-      _logError('appendAttendanceRow', error, stack);
+      _logError('batchAppendAttendanceRows', error, stack);
       return false;
     }
   }
