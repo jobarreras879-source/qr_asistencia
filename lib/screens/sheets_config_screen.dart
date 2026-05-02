@@ -390,34 +390,31 @@ class _SheetsConfigScreenState extends State<SheetsConfigScreen> {
           .select()
           .order('fecha_hora', ascending: true);
 
-      int successCount = 0;
-      int errorCount = 0;
-
-      for (var reg in data) {
-        final success = await GoogleDriveService.appendAttendanceRow(
-          _sheetsInfo!['id'],
-          reg,
-        );
-
-        if (success) {
-          successCount++;
-        } else {
-          errorCount++;
-        }
-      }
+      final success = await GoogleDriveService.batchAppendAttendanceRows(
+        _sheetsInfo!['id'],
+        data,
+      );
 
       if (!mounted) return;
       setState(() => _isSyncing = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Sincronización: $successCount exitosos, $errorCount errores.',
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sincronización exitosa: ${data.length} registros.'),
+            backgroundColor: AppTheme.success,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: errorCount > 0 ? AppTheme.warning : AppTheme.success,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al sincronizar algunos registros.'),
+            backgroundColor: AppTheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSyncing = false);
