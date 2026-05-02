@@ -1,0 +1,3 @@
+## 2024-05-02 - Optimize Supabase row count queries
+**Learning:** In `supabase_flutter` v2+, the `.count(CountOption.exact)` query builder returns a `PostgrestFilterBuilder<int>` which can be chained with filtering methods like `.gte()` and then awaited directly for the final count as a `Future<int>`, instead of requiring unpacking from a `PostgrestResponse` or parsing the rows directly on the client side. This avoids allocating memory for result sets and sending entire records across the network.
+**Action:** When performing aggregate counting without needing row data, replace `.select()` chained builders with `.count(CountOption.exact)` and await the resulting integer directly.
