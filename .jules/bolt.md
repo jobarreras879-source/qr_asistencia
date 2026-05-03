@@ -1,0 +1,3 @@
+## 2024-05-19 - Supabase Count Performance Fix
+**Learning:** In Supabase Flutter, calling `.select()` and then `.length` on the result fetches all data across the network and parses it into Dart Maps. It is better to use `.count(CountOption.exact)` as this delegates counting to PostgreSQL. Crucially, `.count()` returns a `PostgrestFilterBuilder<int>`, allowing chained filters (like `.eq()` or `.gte()`) after `.count()` and directly awaiting the integer count without having to parse a response object.
+**Action:** Whenever a method only needs to return the number of rows matching a condition, exclusively use `.count(CountOption.exact)` instead of `.select()`.
