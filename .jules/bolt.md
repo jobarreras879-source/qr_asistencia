@@ -1,0 +1,3 @@
+## 2024-05-24 - Supabase exact count optimization
+**Learning:** `supabase-flutter` provides an exact `count(CountOption.exact)` builder which effectively operates as `PostgrestFilterBuilder<int>`. Because it's an int, you can append `await` at the very end directly instead of unpacking a generic `List<Map<String, dynamic>>` locally, effectively avoiding sending heavy datasets down the pipe for operations like pagination or aggregations.
+**Action:** When querying Supabase just to get the number of matching rows, use `.count(CountOption.exact)` instead of `.select()` to avoid downloading all matching records to the client.
