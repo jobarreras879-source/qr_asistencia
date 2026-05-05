@@ -286,6 +286,64 @@ class GoogleDriveService {
     }
   }
 
+  static List<Object> _mapRowDataToValueList(Map<String, dynamic> rowData) {
+    final dpi = rowData['DPI'] ?? '';
+    final nombre = rowData['nombre'] ?? '';
+    final proyecto = rowData['proyecto'] ?? '';
+    final tipo = rowData['tipo'] ?? '';
+    final fechaHora = rowData['fecha_hora'] ?? '';
+    final usuario = rowData['usuario_logueado'] ?? '';
+
+    // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
+    String fecha = '';
+    String hora = '';
+    if (fechaHora.toString().contains(' ')) {
+      final parts = fechaHora.toString().split(' ');
+      fecha = parts[0];
+      hora = parts[1];
+    } else {
+      fecha = fechaHora.toString();
+    }
+
+    return <Object>[dpi, nombre, proyecto, fecha, hora, usuario, tipo];
+  }
+
+  /// Agrega múltiples filas de asistencia de forma masiva
+  static Future<bool> batchAppendAttendanceRows(
+    String spreadsheetId,
+    List<Map<String, dynamic>> rowsData,
+  ) async {
+    if (rowsData.isEmpty) return true;
+
+    try {
+      // Intentar modo silencioso primero para operaciones background
+      final account = await signInSilently() ?? await signIn();
+      if (account == null) return false;
+
+      final client = await _googleSignIn.authenticatedClient();
+      if (client == null) return false;
+
+      final sheetsApi = sheets.SheetsApi(client);
+
+      final values = rowsData.map((row) => _mapRowDataToValueList(row)).toList();
+
+      final valueRange = sheets.ValueRange()..values = values;
+
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        'A1:G', // Rango para buscar la última fila escrita
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+      );
+
+      return true;
+    } catch (error, stack) {
+      _logError('batchAppendAttendanceRows', error, stack);
+      return false;
+    }
+  }
+
   /// Agrega una fila de asistencia
   static Future<bool> appendAttendanceRow(
     String spreadsheetId,
@@ -301,27 +359,9 @@ class GoogleDriveService {
 
       final sheetsApi = sheets.SheetsApi(client);
 
-      final dpi = rowData['DPI'] ?? '';
-      final nombre = rowData['nombre'] ?? '';
-      final proyecto = rowData['proyecto'] ?? '';
-      final tipo = rowData['tipo'] ?? '';
-      final fechaHora = rowData['fecha_hora'] ?? '';
-      final usuario = rowData['usuario_logueado'] ?? '';
-
-      // Dividir fecha y hora si vienen en formato "YYYY-MM-DD HH:MM:SS"
-      String fecha = '';
-      String hora = '';
-      if (fechaHora.contains(' ')) {
-        final parts = fechaHora.split(' ');
-        fecha = parts[0];
-        hora = parts[1];
-      } else {
-        fecha = fechaHora;
-      }
-
       final valueRange = sheets.ValueRange()
         ..values = [
-          [dpi, nombre, proyecto, fecha, hora, usuario, tipo],
+          _mapRowDataToValueList(rowData),
         ];
 
       await sheetsApi.spreadsheets.values.append(
