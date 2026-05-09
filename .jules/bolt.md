@@ -1,0 +1,3 @@
+## 2024-05-09 - Replace .select() and counting length with .count(CountOption.exact) for Supabase queries
+**Learning:** When querying Supabase to just get the count of rows, using `.select()` downloads all rows to the client and `.length` calculates the count in Dart. This causes unnecessary network payloads, parsing latency, and memory consumption. Supabase provides `.count(CountOption.exact)` to perform the count on the database level, returning just the integer. This is especially important for the `getTodayCount` method which is called often and could otherwise return a large dataset.
+**Action:** Use `.count(CountOption.exact)` for count queries. The `PostgrestFilterBuilder<int>` can be awaited as a `Future<int>` after chaining filters.
