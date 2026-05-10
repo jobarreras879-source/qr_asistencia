@@ -1,0 +1,3 @@
+## 2024-05-18 - Supabase \`.count()\` optimization
+**Learning:** Querying a Supabase table with \`.select()\` and then checking \`.length\` on the client downloads all matching records and parses them into Dart Maps. In \`supabase_flutter\` v2+, the \`.count(CountOption.exact)\` method returns a \`PostgrestFilterBuilder<int>\` which can be chained with filters and directly awaited as a \`Future<int>\`, completely avoiding the need to unpack a \`PostgrestResponse\` or download data objects.
+**Action:** Always prefer \`.count(CountOption.exact)\` over \`.select().length\` when only the number of matching rows is needed to eliminate O(N) network payload and parsing overhead.
