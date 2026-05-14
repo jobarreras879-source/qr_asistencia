@@ -1,0 +1,3 @@
+## 2024-05-14 - Replace Supabase .select().length with .count()
+**Learning:** In Dart/Supabase architectures, fetching entire row sets via `.select()` and calculating `.length` in memory is a common anti-pattern that heavily degrades performance as the dataset grows. The engine spends significant CPU time downloading the JSON payload and parsing it into Dart `List<Map<String, dynamic>>` structures unnecessarily.
+**Action:** Always prefer `.count(CountOption.exact)` for integer aggregate queries. Supabase handles this query efficiently at the Postgres layer and returns only a tiny numeric payload over the network.
