@@ -24,12 +24,17 @@ void main() {
     expect(DateFormatter.formatDate(''), '');
   });
 
+  test('formatDate returns original string for invalid values', () {
+    expect(DateFormatter.formatDate('invalid-date'), 'invalid-date');
+  });
+
   test('formatTime returns HH:MM for valid datetime strings', () {
     expect(DateFormatter.formatTime('2026-03-22 05:07:00'), '05:07');
   });
 
   test('formatTime returns empty string for invalid values', () {
     expect(DateFormatter.formatTime('fecha-invalida'), '');
+    expect(DateFormatter.formatTime(''), '');
     expect(DateFormatter.formatTime(null), '');
   });
 
