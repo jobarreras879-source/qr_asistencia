@@ -1,0 +1,3 @@
+## 2024-05-17 - Supabase Client Count Optimization
+**Learning:** In Supabase Dart SDK v2+, using `.select()` when only needing a count fetches all row data over the network, parses it into nested Dart Maps, and then calculates the length client-side. The `.count(CountOption.exact)` builder method natively returns a `PostgrestFilterBuilder<int>`, allowing queries to resolve directly to an integer count, which dramatically reduces network payload and memory usage.
+**Action:** When querying Supabase just to get the number of matching rows, always use `.count(CountOption.exact)` instead of `.select().then((data) => data.length)`.
