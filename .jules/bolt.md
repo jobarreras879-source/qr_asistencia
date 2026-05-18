@@ -1,0 +1,3 @@
+## 2024-05-15 - Batch Google Sheets Export
+**Learning:** Found an N+1 API call bottleneck in the export to Google Sheets feature. The code was iterating over Supabase records and calling the Sheets API `append` endpoint for each record individually. This is highly inefficient and prone to rate limiting.
+**Action:** Created `batchAppendAttendanceRows` which maps all records to a `List<List<Object>>` and sends them in a single `ValueRange` payload using `sheetsApi.spreadsheets.values.append` with `INSERT_ROWS`. When working with external APIs, always look for bulk/batch operation endpoints instead of looping single requests.
