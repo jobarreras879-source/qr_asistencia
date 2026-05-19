@@ -1,0 +1,3 @@
+## 2024-05-24 - Supabase Query Counting Optimization
+**Learning:** In `supabase_flutter` v2+, using `.select()` when only the count is needed forces the database to serialize, transmit, and the client to deserialize the entire result set into Dart Maps, which is extremely inefficient for simple length checks. The SDK natively supports a `.count(CountOption.exact)` method that returns a `PostgrestFilterBuilder<int>` directly, entirely bypassing the payload serialization overhead.
+**Action:** When querying Supabase just to check lengths or existence, always use `.count()` directly instead of `.select()` and then checking `.length` on the client.
