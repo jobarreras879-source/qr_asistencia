@@ -116,7 +116,9 @@ class AttendanceService {
 
       var query = _supabase
           .from('registros')
-          .select('fecha_hora')
+          // Optimization: Use .count() instead of .select() to avoid fetching all matching records
+          // and decoding them into memory just to get their count.
+          .count(CountOption.exact)
           .gte('fecha_hora', DateFormatter.toStorageString(startOfDay))
           .lt('fecha_hora', DateFormatter.toStorageString(endOfDay));
 
@@ -124,9 +126,9 @@ class AttendanceService {
         query = query.eq('usuario_logueado', normalizedUsername);
       }
 
-      final data = await query;
+      final count = await query;
 
-      return List<Map<String, dynamic>>.from(data).length;
+      return count;
     } catch (e, stack) {
       _logError('getTodayCount', e, stack);
       return 0;
