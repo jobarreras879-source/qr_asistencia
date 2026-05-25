@@ -1,0 +1,3 @@
+## 2024-03-24 - Supabase Count Query Optimization
+**Learning:** In `supabase_flutter` v2+, the `.count(CountOption.exact)` method returns a `PostgrestFilterBuilder<int>`. You can chain filtering methods directly and `await` it to get an integer directly, rather than using `.select()` and parsing the entire returned result array to determine the length. Using `.select()` unnecessarily downloads all records to the client memory and allocates Dart objects.
+**Action:** Always use `.count(CountOption.exact)` when querying Supabase for the number of matching records instead of retrieving them with `.select()` and calculating `List.length`.
